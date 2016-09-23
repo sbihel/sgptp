@@ -12,10 +12,10 @@ int main(void) {
         perror("fork failure");
         exit(1);
     } else if (pid == 0) {
-         execl("./partie2", "partie2", 0, (char *)0);
-         perror("execl failure");
-    } 
-    
+        execl("./partie2", "partie2", 0, (char *)0);
+        perror("execl failure");
+    }
+
     wait(&status);
     printf("%d\n", WEXITSTATUS(status));
 

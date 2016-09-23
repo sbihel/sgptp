@@ -22,10 +22,11 @@ int main(void) {
 
     } else if (pid == 0) {
         while (fgets(buf1, max_buf, stdin) != 0 && buf1[0] != '\n') {
-            close(fd[0]); 
-            write(fd[1], buf1, max_buf); 
+            close(fd[0]);
+            write(fd[1], buf1, max_buf);
         }
-        write(fd[1], '\0', 1); 
+        write(fd[1], "\0", sizeof("\0"));
+        // '\0' is treated as null pointer in clang
 
     } else {
         while (1) {
@@ -37,7 +38,7 @@ int main(void) {
                 case 0:
                     exit(0);
             }
-            printf("> %s", buf2); 
+            printf("> %s", buf2);
         }
     }
 

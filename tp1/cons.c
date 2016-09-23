@@ -7,28 +7,30 @@
 
 int main(void) {
     int fd;
-    char * fifo = "/tmp/fifo";
+    char *fifo = "/tmp/fifo";
 
-    fd = open(fifo, S_IFIFO | O_RDONLY);
-    
+    if ((fd = open(fifo, S_IFIFO | O_RDONLY)) == -1) {
+        perror("open");
+        exit(1);
+    }
+
     int max_buf = 1024;
     char buf[max_buf];
 
     while (1) {
-    
         switch (read(fd, buf, max_buf)) {
             case -1:
                 perror("read");
                 break;
-            case 0: 
+            case 0:
                 exit(0);
         }
-        
+
         printf("> %s", buf);
     }
 
     close(fd);
-    
+
     unlink(fifo);
 
     return 0;

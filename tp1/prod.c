@@ -7,17 +7,20 @@
 
 int main(void) {
     int fd;
-    char * fifo = "/tmp/fifo";
+    char *fifo = "/tmp/fifo";
 
-    mknod(fifo, S_IFIFO | 0666, 0);
+    if (mknod(fifo, S_IFIFO | 0666, 0) == -1) {
+        perror("mknod");
+        exit(1);
+    }
 
     fd = open(fifo, O_WRONLY);
 
     int max_buf = 1024;
     char buf[max_buf];
-   
+
     while (fgets(buf, max_buf, stdin) != 0 && buf[0] != '\n') {
-        write(fd, buf, max_buf);        
+        write(fd, buf, max_buf);
     }
 
     close(fd);
