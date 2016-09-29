@@ -1,5 +1,8 @@
 CC=gcc
-CFLAGS=-Wall -Werror -Wextra -Wno-error=div-by-zero -Wno-error=unused-parameter
+CFLAGS=-Wall -Werror -Wextra \
+	-Wno-error=div-by-zero \
+	-Wno-error=unused-parameter \
+	-Wno-error=unused-variable
 
 main: exo1 exo2 exo3
 
