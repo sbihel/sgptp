@@ -24,8 +24,28 @@ int main() {
       usleep(10000);
     }
   } else {
+    /*if(ptrace(PT_ATTACH, pid, 0, 0)) {*/
+    if(ptrace(PTRACE_ATTACH, pid, 0, 0)) {
+      perror("PTRACE_ATTACH");
+      exit(1);
+    }
+    int buf;
     while(1) {
-      printf("%d\n", *glob_var);
+      /*printf("%d\n", *glob_var);*/
+      /*if((buf = ptrace(PT_READ_D, pid, (void *)&glob_var, 0)) == -1) {*/
+      if((buf = ptrace(PTRACE_PEEKDATA, pid, (void *)&glob_var, 0)) == -1) {
+        perror("PTRACE_PEEKDATA");
+        /*if(ptrace(PT_DETACH, pid, 0, 0))*/
+        if(ptrace(PTRACE_DETACH, pid, 0, 0))
+          perror("PTRACE_DETACH");
+        exit(1);
+      }
+      printf("%d\n", buf);
+    }
+    /*if(ptrace(PT_DETACH, pid, 0, 0)) {*/
+    if(ptrace(PTRACE_DETACH, pid, 0, 0)) {
+      perror("PTRACE_DETACH");
+      exit(1);
     }
     munmap(glob_var, sizeof *glob_var);
   }
