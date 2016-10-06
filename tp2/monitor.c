@@ -7,6 +7,7 @@
 #include <sys/wait.h>
 #include <sys/ptrace.h>
 #include <sys/types.h>
+#include <errno.h>
 
 static int *glob_var;
 
@@ -15,37 +16,47 @@ int main() {
   glob_var = mmap(NULL, sizeof *glob_var, PROT_READ | PROT_WRITE,
       MAP_SHARED | MAP_ANONYMOUS, -1, 0);
   *glob_var = 1;
-  if ((pid = fork()) < 0) {
+  pid = fork();
+  if (pid < 0) {
     perror("fork failure");
     exit(1);
-  } else if (pid == 0) {
-    ptrace(PT_TRACE_ME, 0, 0, 0);
+  } else if (pid == 0) {  // child
+    ptrace(PTRACE_TRACEME, 0, 0, 0);
     for(*glob_var = 0; *glob_var < 1337; (*glob_var)++) {
-      usleep(10000);
+      usleep(5000);
     }
-  } else {
-    /*if(ptrace(PT_ATTACH, pid, 0, 0)) {*/
-    if(ptrace(PTRACE_ATTACH, pid, 0, 0)) {
+  } else {  // parent
+
+    if(ptrace(PTRACE_ATTACH, pid, 0, 0) == -1) {
       perror("PTRACE_ATTACH");
       exit(1);
     }
+    int wstatus;
+    wait(&wstatus);  // should be WIFSTOPPED
+
+    if(ptrace(PTRACE_CONT, pid, 0, SIGCONT) == -1) {
+      perror("PTRACE_CONT");
+      exit(1);
+    }
+
     int buf;
     while(1) {
-      /*printf("%d\n", *glob_var);*/
-      /*if((buf = ptrace(PT_READ_D, pid, (void *)&glob_var, 0)) == -1) {*/
-      if((buf = ptrace(PTRACE_PEEKDATA, pid, (void *)&glob_var, 0)) == -1) {
+      kill(pid, SIGSTOP);
+      wait(&wstatus);
+      buf = ptrace(PTRACE_PEEKDATA, pid, glob_var, 0);
+      if(buf == -1 && errno) {  // will be triggered when the child finishes
         perror("PTRACE_PEEKDATA");
-        /*if(ptrace(PT_DETACH, pid, 0, 0))*/
         if(ptrace(PTRACE_DETACH, pid, 0, 0))
           perror("PTRACE_DETACH");
         exit(1);
       }
+      if(ptrace(PTRACE_CONT, pid, 0, SIGCONT) == -1) {
+        perror("PTRACE_CONT");
+        exit(1);
+      }
       printf("%d\n", buf);
-    }
-    /*if(ptrace(PT_DETACH, pid, 0, 0)) {*/
-    if(ptrace(PTRACE_DETACH, pid, 0, 0)) {
-      perror("PTRACE_DETACH");
-      exit(1);
+      fflush(stdout);
+      usleep(2500);
     }
     munmap(glob_var, sizeof *glob_var);
   }

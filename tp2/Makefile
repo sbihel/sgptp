@@ -1,4 +1,4 @@
-CC=gcc-6
+CC=gcc
 CFLAGS=-Wall -Werror -Wextra \
 	-Wno-error=div-by-zero \
 	-Wno-error=unused-parameter \
