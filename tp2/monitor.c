@@ -9,20 +9,17 @@
 #include <sys/types.h>
 #include <errno.h>
 
-static int *glob_var;
-
 int main() {
   pid_t pid;
-  glob_var = mmap(NULL, sizeof *glob_var, PROT_READ | PROT_WRITE,
-      MAP_SHARED | MAP_ANONYMOUS, -1, 0);
-  *glob_var = 1;
+  int glob_var = 1;
+
   pid = fork();
   if (pid < 0) {
     perror("fork failure");
     exit(1);
   } else if (pid == 0) {  // child
     ptrace(PTRACE_TRACEME, 0, 0, 0);
-    for(*glob_var = 0; *glob_var < 1337; (*glob_var)++) {
+    for(glob_var = 0; glob_var < 1337; glob_var++) {
       usleep(5000);
     }
   } else {  // parent
@@ -41,14 +38,26 @@ int main() {
 
     int buf;
     while(1) {
-      kill(pid, SIGSTOP);
+      if(kill(pid, SIGSTOP) == -1) {
+        printf("Child has died.\n");
+        break;
+      }
+      // even if the child has been killed there is a STOP signal emited except
+      // for SIGKILL, so we avoid blocking on wait()
+      // But apparently kill() never returns -1 even after sending SIGKILL
       wait(&wstatus);
-      buf = ptrace(PTRACE_PEEKDATA, pid, glob_var, 0);
-      if(buf == -1 && errno) {  // will be triggered when the child finishes
-        perror("PTRACE_PEEKDATA");
-        if(ptrace(PTRACE_DETACH, pid, 0, 0))
-          perror("PTRACE_DETACH");
-        exit(1);
+
+      buf = ptrace(PTRACE_PEEKDATA, pid, &glob_var, 0);
+      if(buf == -1 && errno) {
+        if(errno == ESRCH) {  // We're sure it means child's death as it is stopped
+          printf("Child has finished/died.\n");
+          break;
+        } else {
+          perror("PTRACE_PEEKDATA");
+          if(ptrace(PTRACE_DETACH, pid, 0, 0))
+            perror("PTRACE_DETACH");
+          exit(1);
+        }
       }
       if(ptrace(PTRACE_CONT, pid, 0, SIGCONT) == -1) {
         perror("PTRACE_CONT");
@@ -58,7 +67,6 @@ int main() {
       fflush(stdout);
       usleep(2500);
     }
-    munmap(glob_var, sizeof *glob_var);
   }
 
   return 0;
