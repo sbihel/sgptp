@@ -2,4 +2,5 @@ TP2 for the SGP course.
 Students: Louis Béziaud and Simon Bihel.
 
 *Report
-Everything has been fine.
+- The ptrace library differs between Mac OS and Linux. We chooses to focus on a Linux compatibility only.
+- It seems that kill() never returns -1 even after sending SIGKILL although the man says otherwise.

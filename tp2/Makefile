@@ -5,7 +5,7 @@ CFLAGS=-Wall -Werror -Wextra \
 	-Wno-error=unused-variable\
 	-Wno-error=unused-value
 
-main: exo1 exo2 exo3 exo4
+all: exo1 exo2 exo3 exo4
 
 exo1: div0
 
