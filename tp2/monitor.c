@@ -7,6 +7,7 @@
 #include <sys/wait.h>
 #include <sys/ptrace.h>
 #include <sys/types.h>
+#include <sys/prctl.h>
 #include <errno.h>
 
 int main() {
@@ -18,6 +19,8 @@ int main() {
     perror("fork failure");
     exit(1);
   } else if (pid == 0) {  // child
+    prctl(PR_SET_PDEATHSIG, SIGKILL);
+    // kill the child if parent dies to avoid getting stuck on STOP
     ptrace(PTRACE_TRACEME, 0, 0, 0);
     for(glob_var = 0; glob_var < 1337; glob_var++) {
       usleep(5000);
