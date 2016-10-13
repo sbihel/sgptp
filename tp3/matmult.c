@@ -15,11 +15,13 @@ void *dot8(void *arg);
 int main() {
   srand(time(NULL));
   for (size_t i = 0; i < N; i++) {
-    //M1[i][i] = 1;
-    //M2[i][i] = 1;
     for (size_t j = 0; j < N; j++) {
-      M1[i][j] = rand();
-      M2[i][j] = rand();
+      // resulting matrice should be [[64]]
+      M1[i][j] = 1;
+      M2[i][j] = 1;
+      
+      //M1[i][j] = rand();
+      //M2[i][j] = rand();
     }
   }
 
