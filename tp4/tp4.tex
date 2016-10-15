@@ -3,6 +3,8 @@
 \usepackage[T1]{fontenc} 
 \usepackage[utf8]{inputenc}
 
+\usepackage{fullpage}
+
 \title{SGP -- TP4\\Prise en main de Nachos}
 \author{Louis Béziaud \and Simon Bihel}
 
@@ -15,12 +17,12 @@
 \section{Gestion de threads et de processus}
 
 \begin{enumerate}
-\item
-\item
-\item
-\item
-\item
-\item
+\item Lors d'un changement de contexte l'état de l'ancien thread ({\tt SaveProcessorState()}) ainsi que celui du simulateur ({\tt SaveSimulatorState()}) son sauvegardés. {\bf càd ? voir InitThreadContext et InitSimulatorContext}
+\item La variable {\tt readyList} est utilisée pour mémoriser les threads prêts à s'exécuter. Le thread actif n'appartient pas à cette liste. Celui-ci est accessible par le pointeur {\tt g\_current\_thread}.
+\item La variable {\tt g\_alive} list les threads existants. {\bf différence {\tt g\_alive} {\tt readyList} ?}
+\item 
+\item Un objet bloqué sur un sémaphore est placé dans la liste {\tt queue} de ce dernier. {\bf où dans le scheduler ?}
+\item 
 \item
 \item
 \end{enumerate}
