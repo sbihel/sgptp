@@ -19,16 +19,16 @@ int main() {
       // resulting matrice should be [[64]]
       M1[i][j] = 1;
       M2[i][j] = 1;
-      
-      //M1[i][j] = rand();
-      //M2[i][j] = rand();
     }
   }
 
+  pthread_t tids[K];
   for (size_t i = 0; i < K; i++) {
-    pthread_t tid;
-    pthread_create(&tid, NULL, dot8, (void *)i);
-    pthread_join(tid, NULL); // the parent waits all threads
+    pthread_create(&(tids[i]), NULL, dot8, (void *)i);
+  }
+
+  for (size_t i = 0; i < K; i++) {
+    pthread_join(tids[i], NULL); // the parent waits all threads
   }
 
   for (size_t i = 0; i < N; i++) {
