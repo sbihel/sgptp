@@ -13,6 +13,7 @@
 \maketitle
 
 \section{Mécanisme d'appel système}
+Lorsqu'on exécute la commande {\tt ./nachos test/hello} on fourni à la fonction {\tt main} de nachos l'exécutable à exécuter. Cette fonction {\tt main} boot la machine et le système puis crée un processus (pour la mémoire) et un thread (pour l'exécution) pour l'exécutable. Ensuite on fait finir le main thread et quand le dernier thread finira le système sera shutdown {\bf par qui? cpas clair j'ai l'impression que c'est pas encore implémenté}. Quand c'est au tour du thread de notre exécutable, on appel la fonction {\tt n\_printf} qui va calculer la chaine de caractères à afficher et ensuite écrire dans le buffer (implémenté sous la forme d'un fichier) de la console. Cette console est un composant hardware (et après l'écriture dans le buffer il faut lui dire que elle peut lire je crois).
 
 \section{Gestion de threads et de processus}
 
@@ -20,19 +21,19 @@
 \item Lors d'un changement de contexte l'état de l'ancien thread ({\tt SaveProcessorState()}) ainsi que celui du simulateur ({\tt SaveSimulatorState()}) sont sauvegardés. {\bf càd ? voir InitThreadContext et InitSimulatorContext}
 \item La variable {\tt readyList} est utilisée pour mémoriser les threads prêts à s'exécuter. Le thread actif n'appartient pas à cette liste. Celui-ci est accessible par le pointeur {\tt g\_current\_thread}.
 \item La variable {\tt g\_alive} liste les threads existants. {\tt readyList} est donc inclue dans {\tt g\_alive} avec en plus les threads actifs, les bloqués et ceux qui ont terminé.
-\item Lors de son initialisation, on fourni au thread un stack déjà alloué. Lors de la destruction d'un thread c'est ce dernier qui va désalouer son stack. Les objets conservent l'addresse de leur stack donc il est normal que ce soit eux qui se chargent de la désallocation. Cependant ils ne peuvent pas savoir quel espace mémoire est disponible et pour éviter des problèmes de concurence sur l'allocation il faut allouer dès que possible. {\bf is that true?}
+\item Lors de son initialisation, on fourni au thread un stack déjà alloué. Lors de la destruction d'un thread c'est ce dernier qui va désalouer son stack. Les objets conservent l'adresse de leur stack donc il est normal que ce soit eux qui se chargent de la désallocation. Cependant ils ne peuvent pas savoir quel espace mémoire est disponible et pour éviter des problèmes de concurrence sur l'allocation il faut allouer dès que possible. {\bf is that true?}
 \item Un thread bloqué sur un sémaphore se trouve dans {\tt g\_alive} et la {\tt queue} du sémaphore en question (mais pas dans {\tt readyList}).
 \item ... You disable interrupts ??
 \item {\tt SwitchTo} permet de changer de thread actif. Bah c'est pour stocker le contexte. Bah 'y en a une qui sauvegarde le contexte (les signaux bloqués, la zone où se trouve la stack, les registres sauvegardés, le contexte à restaurer quand le thread aura fini, la position de la stack et sa taille) du simulateur et l'autre qui le remet. Bah sauvegarder/restaurer le contexte du thread (les registres d'entiers, de flottants et de conditions);
-\item C'est pour vérifier que les objets fourni par l'utilisateur au système sont du bon type. Ça permet de savoir ce qui ne va pas et arreter le programme utilisateur plutôt que le programme du système soit cassé parce-qu'il a lu un mauvais espace mémoire et du coup c'est tout le système qui plante.
+\item C'est pour vérifier que les objets fourni par l'utilisateur au système sont du bon type. Ça permet de savoir ce qui ne va pas et arrêter le programme utilisateur plutôt que le programme du système soit cassé parce qu'il a lu un mauvais espace mémoire et du coup c'est tout le système qui plante.
 \end{enumerate}
 
 \section{Environnement de développement}
 
 \begin{enumerate}
-\item
-\item
-\item
+\item {\tt gdb} est utilisable, il y aussi des statistiques pour les processus.
+\item {\tt gdb} permet de suivre l'exécution du programme. Donc typiquement pour des fonction ``not fully implemented'' ça va permettre de voir si des variables ont bien été changées, si le contexte a bien été restauré, {\it etc}.
+\item L'exécution des programmes utilisateurs est encadrées par le noyau donc oui (?).
 \end{enumerate}
 
 \end{document}
