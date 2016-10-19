@@ -33,8 +33,30 @@ Lorsqu'on exécute la commande {\tt ./nachos test/hello} on fourni à la fonctio
 \begin{enumerate}
 \item {\tt Nachos} offre certaines routines permettant d’afficher des messages facilitant le déboguage des fonctions et méthodes système lors de leur implantation. {\tt Nachos} propose une structure de listes ainsi que les accès classiques aux listes et à leurs éléments. {\tt Nachos} contient également des objets bitmap définis dans la classe BitMap. Et bien sur, {\tt Nachos} propose toute une panoplie d'appels système et une bibliothèque de fonctions.
 
-Si l'on voulait visualiser les opérations effectuées par la machine MIPS on pourrait utiliser la fonction {\tt ./nachos -s} pour avoir une exécution pas à pas.
-\item {\tt gdb} permet de suivre l'exécution du programme. Donc typiquement pour des fonction ``not fully implemented'' ça va permettre de voir si des variables ont bien été changées, si le contexte a bien été restauré, {\it etc}.
+  Si l'on voulait visualiser les opérations effectuées par la machine MIPS on pourrait utiliser la fonction {\tt ./nachos -s} pour avoir une exécution pas à pas.
+
+  Un exemple de déboguage est donné ci-dessous.
+\begin{verbatim}
+$ ./nachos -d
+Initializing the disk, 0x40b0fa
+[ctor] Clear active
+Initializing the disk, 0x40b110
+[ctor] Clear active
+Create empty process
+Allocationg translation table for 200000 pages (25000 kB)
+**** Warning: method Thread::Start is not implemented yet
+\end{verbatim}
+
+\item L'utilitaire \texttt{gdb} permet de suivre l'exécution de Nachos, comme dans l'exemple ci-dessous.
+\begin{verbatim}
+(gdb) run 
+Starting program: /home/louis/Documents/sgp/nachos/nachos 
+**** Warning: method Thread::Start is not implemented yet
+[Inferior 1 (process 28354) exited with code 0377]
+(gdb) bt
+No stack.
+\end{verbatim}
+
 \item L'exécution des programmes utilisateurs est encadrées par le noyau donc oui (?).
 \end{enumerate}
 
