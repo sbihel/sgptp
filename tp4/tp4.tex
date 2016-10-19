@@ -31,7 +31,9 @@ Lorsqu'on exécute la commande {\tt ./nachos test/hello} on fourni à la fonctio
 \section{Environnement de développement}
 
 \begin{enumerate}
-\item {\tt gdb} est utilisable, il y aussi des statistiques pour les processus.
+\item {\tt Nachos} offre certaines routines permettant d’afficher des messages facilitant le déboguage des fonctions et méthodes système lors de leur implantation. {\tt Nachos} propose une structure de listes ainsi que les accès classiques aux listes et à leurs éléments. {\tt Nachos} contient également des objets bitmap définis dans la classe BitMap. Et bien sur, {\tt Nachos} propose toute une panoplie d'appels système et une bibliothèque de fonctions.
+
+Si l'on voulait visualiser les opérations effectuées par la machine MIPS on pourrait utiliser la fonction {\tt ./nachos -s} pour avoir une exécution pas à pas.
 \item {\tt gdb} permet de suivre l'exécution du programme. Donc typiquement pour des fonction ``not fully implemented'' ça va permettre de voir si des variables ont bien été changées, si le contexte a bien été restauré, {\it etc}.
 \item L'exécution des programmes utilisateurs est encadrées par le noyau donc oui (?).
 \end{enumerate}
