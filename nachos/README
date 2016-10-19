@@ -1,0 +1,60 @@
+This directory contains the source code and documentation
+of the Nachos instructional operating system. Nachos was
+designed by the University of Berkeley (see kernel/copyright.h
+for copyright information). This version of Nachos is a modified
+version of Nachos made at the university of Rennes.
+
+Enhancements compared to the Berkeley Nachos (reverse chronological order):
+--------------------------------------------------------------------------
+- all constants in upper case + consistency in method names (still partial)
+- embedded documentation through the use of doxygen
+- reorganisation of the source code
+- addition of an ACIA device and ACIA device driver
+- addition of a MMU (linear page tables)
+- modification of the Nachos statistics module (finer decomposition of
+  the execution time of instructions, management of stats on a 
+  per-program basis)
+- addition of a simplified libc for Nachos (string routines essentially)
+- addition of a configuration file so that the hardware and software
+  configuration of Nachos can be changed without recompiling it
+  (memory size, initial file system contents, ...)
+- extension of the file system to support large files and extensible files
+- new roadmap to Nachos and new assigments (written in french only, but
+  if you have time to translate it in english, feel free to do it)
+- use of portable code for kernel context switch (using u_contexts)
+- addition of system calls (thread management, error management)
+- floating point arithmetic for the MIPS user programs
+- new process object that aggregates an address space and a set of
+  threads
+- ELF32 binary file format for the MIPS user programs, instead of noff
+
+Directory contents:
+-------------------
+doc: 		Nachos documentation and assignments (in french)
+filesys: 	Nachos filesystem
+drivers:	device drivers (console, disk, ACIA)
+kernel:		Nachos kernel (system calls, multithreading, multiprogramming)
+machine:	Nachos virtual machine (MIPS emulator, MMU, devices)
+utility:	Several utility routines (bitmaps, lists, ...)
+vm:		Virtual memory management
+userlib:	User space (MIPS) basic C library and syscall user interface
+test:		Simple user space (MIPS) test programs
+
+Assignments:
+-----------
+Parallelism and synchronization
+  implementation of user-level threads and synchronization tools
+  traps to the operating system
+Implementation of an ACIA device driver
+Virtual memory
+  implementation of multiprogramming
+  design of the page fault manager and replacement policy
+Addition of mapped files to Nachos
+
+Parts of the source code was intentionnaly cut at the places that must
+be designed filled-in the assigments. The complete source code is available
+on demand (for teachers only :-)
+
+Bugs, questions, suggestions for improvements:
+---------------------------------------------
+mail puaut@irisa.fr
