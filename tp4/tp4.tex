@@ -1,6 +1,6 @@
 \documentclass[a4paper,11pt,french]{article}
 
-\usepackage[T1]{fontenc} 
+\usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
 
 \usepackage{babel}
@@ -23,7 +23,11 @@
 \maketitle
 
 \section{Mécanisme d'appel système}
-Lorsqu'on exécute la commande \texttt{./nachos test/hello} on fourni à la fonction \texttt{main} de nachos l'exécutable à exécuter. Cette fonction \texttt{main} boot la machine et le système puis crée un processus (pour la mémoire) et un thread (pour l'exécution) pour l'exécutable. Ensuite on fait finir le main thread et quand le dernier thread finira le système sera shutdown {\bf par qui? cpas clair j'ai l'impression que c'est pas encore implémenté}. Quand c'est au tour du thread de notre exécutable, on appel la fonction \texttt{n\_printf} qui va calculer la chaine de caractères à afficher et ensuite la passer au driver de la console.
+Lorsqu'on exécute la commande \texttt{./nachos test/hello} on fourni à la fonction \texttt{main} de nachos l'exécutable à exécuter. Cette fonction \texttt{main} boot la machine et le système puis crée un processus (pour la mémoire) et un thread (pour l'exécution) pour l'exécutable. Ensuite on fait finir le main thread et quand le dernier thread finira, le système sera shutdown. Quand c'est au tour du thread de notre exécutable, on affiche notre message.
+
+%appel la fonction \texttt{n\_printf} qui va calculer la chaine de caractères à afficher et ensuite la passer au driver de la console.
+
+Regardons maintenant plus précisément les appels effectués pour l'affichage. On part d'un appel à \texttt{n\_printf} qui est une fonction définie dans les fichiers \texttt{userlib/libnachos}. Dans cette fonction, il va y avoir une traduction de la chaîne de caractères de base et des arguments vers une chaîne simple, près à l'affichage (voir format strings et va\_lists d'arguments). Ensuite il va y avoir un appel système \texttt{Write} qui va permettre d'écrire notre message dans le fichier qui correspond à la sortie de la console. Plus concrètement, cet appel système va, comme tout appel système, passer par une exception pour écrire le message dans un fichier adressé par son identifiant. De plus, on n'interagit pas directement avec la console car on passe par son driver qui va se charger de ne faire qu'une opération à chaque instant, c'est lui qui va lire le fichier. On entre ensuite dans la partie matériel pour afficher le message. Tout ce chemin parcours va se refaire dans l'autre sens pour retourner le nombre d'octets (i.e. le nombre de caractères) effectivement écris (et donc, normalement, affichés).
 
 \section{Gestion de threads et de processus}
 
@@ -59,8 +63,8 @@ Allocationg translation table for 200000 pages (25000 kB)
 
 \item L'utilitaire \texttt{gdb} permet de suivre l'exécution de \textsc{Nachos}, comme dans l'exemple ci-dessous.
 \begin{verbatim}
-(gdb) run 
-Starting program: /home/louis/Documents/sgp/nachos/nachos 
+(gdb) run
+Starting program: /home/louis/Documents/sgp/nachos/nachos
 **** Warning: method Thread::Start is not implemented yet
 [Inferior 1 (process 28354) exited with code 0377]
 (gdb) bt
