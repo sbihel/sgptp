@@ -13,6 +13,8 @@
 \usepackage{enumitem}
 \setlist[enumerate]{leftmargin=*}
 
+\setlength{\parindent}{0cm}
+
 \usepackage{fullpage}
 
 \title{SGP -- TP4\\Prise en main de \textsc{Nachos}}
@@ -23,31 +25,99 @@
 \maketitle
 
 \section{Mécanisme d'appel système}
-Lorsqu'on exécute la commande \texttt{./nachos test/hello} on fourni à la fonction \texttt{main} de nachos l'exécutable à exécuter. Cette fonction \texttt{main} boot la machine et le système puis crée un processus (pour la mémoire) et un thread (pour l'exécution) pour l'exécutable. Ensuite on fait finir le main thread et quand le dernier thread finira, le système sera shutdown. Quand c'est au tour du thread de notre exécutable, on affiche notre message.
+Lorsqu'on exécute la commande \texttt{./nachos test/hello} on fourni à
+la fonction \texttt{main} de nachos l'exécutable à exécuter. Cette
+fonction \texttt{main} boot la machine et le système puis crée un
+processus (pour la mémoire) et un thread (pour l'exécution) pour
+l'exécutable. Ensuite on fait finir le main thread et quand le dernier
+thread finira, le système sera shutdown. Quand c'est au tour du thread
+de notre exécutable, on affiche notre message.
 
-%appel la fonction \texttt{n\_printf} qui va calculer la chaine de caractères à afficher et ensuite la passer au driver de la console.
+%appel la fonction \texttt{n\_printf} qui va calculer la chaine de
+%caractères à afficher et ensuite la passer au driver de la console.
 
-Regardons maintenant plus précisément les appels effectués pour l'affichage. On part d'un appel à \texttt{n\_printf} qui est une fonction définie dans les fichiers \texttt{userlib/libnachos}. Dans cette fonction, il va y avoir une traduction de la chaîne de caractères de base et des arguments vers une chaîne simple, près à l'affichage (voir format strings et va\_lists d'arguments). Ensuite il va y avoir un appel système \texttt{Write} qui va permettre d'écrire notre message dans le fichier qui correspond à la sortie de la console. Plus concrètement, cet appel système va, comme tout appel système, passer par une exception pour écrire le message dans un fichier adressé par son identifiant. De plus, on n'interagit pas directement avec la console car on passe par son driver qui va se charger de ne faire qu'une opération à chaque instant, c'est lui qui va lire le fichier. On entre ensuite dans la partie matériel pour afficher le message. Tout ce chemin parcours va se refaire dans l'autre sens pour retourner le nombre d'octets (i.e. le nombre de caractères) effectivement écris (et donc, normalement, affichés).
+Regardons maintenant plus précisément les appels effectués pour
+l'affichage. On part d'un appel à \texttt{n\_printf} qui est une
+fonction définie dans les fichiers \texttt{userlib/libnachos}. Dans
+cette fonction, il va y avoir une traduction de la chaîne de
+caractères de base et des arguments vers une chaîne simple, près à
+l'affichage (voir format strings et va\_lists d'arguments). Ensuite il
+va y avoir un appel système \texttt{Write} qui va permettre d'écrire
+notre message dans le fichier qui correspond à la sortie de la
+console. Plus concrètement, cet appel système va, comme tout appel
+système, passer par une exception pour écrire le message dans un
+fichier adressé par son identifiant. De plus, on n'interagit pas
+directement avec la console car on passe par son driver qui va se
+charger de ne faire qu'une opération à chaque instant, c'est lui qui
+va lire le fichier. On entre ensuite dans la partie matériel pour
+afficher le message. Tout ce chemin parcours va se refaire dans
+l'autre sens pour retourner le nombre d'octets (i.e. le nombre de
+caractères) effectivement écris (et donc, normalement, affichés).
 
 \section{Gestion de threads et de processus}
 
 \begin{enumerate}
-\item Lors d'un changement de contexte entre deux threads, il est nécessaire de sauvegarder les contextes utilisateur (avec \texttt{SaveProcessorState()}) et noyau (avec \texttt{SaveSimulatorState()}). Le contexte du thread est constitué de l'état des registres de la machine MIPS (\texttt{thread\_context.int\_registers} et \texttt{thread\_context.float\_registers}), celui du simulateur regroupe les variables d'état du simulateur (\texttt{simulator\_context.buf}) et le pointeur de pile (\texttt{simulator\_context.stackPointer}).
-\item La variable \texttt{readyList} est utilisée pour mémoriser les threads prêts à s'exécuter. Le thread actif n'appartient pas à cette liste. Celui-ci est accessible par le pointeur \texttt{g\_current\_thread}.
-\item La variable \texttt{g\_alive} liste les threads existants. \texttt{readyList} est donc inclue dans \texttt{g\_alive}, en plus des threads actifs, bloqués et terminés.
-\item Les routines de gestion de listes n'allouent que leurs propres éléments et ce sont les threads qui se chargent de leurs allocations/désallocations. Seuls les threads peuvent gérer cette tâche puisque qu'ils se mettent eux-mêmes dans certaines listes et ont besoin d'être associés à un processus pour avoir une zone d'adressage.
-\item Un thread bloqué sur un sémaphore se trouve dans \texttt{g\_alive} et la \texttt{queue} du sémaphore en question, mais pas dans \texttt{readyList}.
-\item Il est possible d'interdire les interruptions à l'aide de \texttt{SetStatus(INTERRUPTS\_OFF)}.
-\item \texttt{SwitchTo} permet de changer de thread actif. Le changement de contexte entraîne la sauvegarde de l'ancien contexte. Le caractère simulé de \textsc{Nachos} nécessite de sauvegarder deux contextes : celui de l'utilisateur (\texttt{thread\_context}) et celui du noyau (\texttt{simulator\_context}). La méthode \texttt{SaveSimulatorState} (resp. \texttt{RestoreSimulatorState}) sauvegarde (resp. restaure) le contexte du noyau. Les méthodes \texttt{SaveProcessorState} et \texttt{RestoreProcessorState} doivent, respectivement, sauvegarder et restaurer le contexte utilisateur, c'est à dire les variables décrites à la question 2.1.
-\item Le champ \texttt{type} permet de vérifier que les objets fournis par l'utilisateur au système sont du bon type. Ce mécanisme permet de repérer un problème de type au niveau du programme (qui entraînerait une lecture mémoire incorrecte) et d'arrêter ce dernier plutôt que l'ensemble du système.
+\item Lors d'un changement de contexte entre deux threads, il est
+  nécessaire de sauvegarder les contextes utilisateur (avec
+  \texttt{SaveProcessorState()}) et noyau (avec
+  \texttt{SaveSimulatorState()}). Le contexte du thread est constitué
+  de l'état des registres de la machine MIPS
+  (\texttt{thread\_context.int\_registers} et
+  \texttt{thread\_context.float\_registers}), celui du simulateur
+  regroupe les variables d'état du simulateur
+  (\texttt{simulator\_context.buf}) et le pointeur de pile
+  (\texttt{simulator\_context.stackPointer}).
+\item La variable \texttt{readyList} est utilisée pour mémoriser les
+  threads prêts à s'exécuter. Le thread actif n'appartient pas à cette
+  liste. Celui-ci est accessible par le pointeur
+  \texttt{g\_current\_thread}.
+\item La variable \texttt{g\_alive} liste les threads
+  existants. \texttt{readyList} est donc inclue dans
+  \texttt{g\_alive}, en plus des threads actifs, bloqués et terminés.
+\item Les routines de gestion de listes n'allouent que leurs propres
+  éléments et ce sont les threads qui se chargent de leurs
+  allocations/désallocations. Seuls les threads peuvent gérer cette
+  tâche puisque qu'ils se mettent eux-mêmes dans certaines listes et
+  ont besoin d'être associés à un processus pour avoir une zone
+  d'adressage.
+\item Un thread bloqué sur un sémaphore se trouve dans
+  \texttt{g\_alive} et la \texttt{queue} du sémaphore en question,
+  mais pas dans \texttt{readyList}.
+\item Il est possible d'interdire les interruptions à l'aide de
+  \texttt{SetStatus(INTERRUPTS\_OFF)}.
+\item \texttt{SwitchTo} permet de changer de thread actif. Le
+  changement de contexte entraîne la sauvegarde de l'ancien
+  contexte. Le caractère simulé de \textsc{Nachos} nécessite de
+  sauvegarder deux contextes : celui de l'utilisateur
+  (\texttt{thread\_context}) et celui du noyau
+  (\texttt{simulator\_context}). La méthode
+  \texttt{SaveSimulatorState} (resp. \texttt{RestoreSimulatorState})
+  sauvegarde (resp. restaure) le contexte du noyau. Les méthodes
+  \texttt{SaveProcessorState} et \texttt{RestoreProcessorState}
+  doivent, respectivement, sauvegarder et restaurer le contexte
+  utilisateur, c'est à dire les variables décrites à la question 2.1.
+\item Le champ \texttt{type} permet de vérifier que les objets fournis
+  par l'utilisateur au système sont du bon type. Ce mécanisme permet
+  de repérer un problème de type au niveau du programme (qui
+  entraînerait une lecture mémoire incorrecte) et d'arrêter ce dernier
+  plutôt que l'ensemble du système.
 \end{enumerate}
 
 \section{Environnement de développement}
 
 \begin{enumerate}
-\item \textsc{Nachos} offre certaines routines permettant d’afficher des messages facilitant le déboguage des fonctions et méthodes système lors de leur implantation. \textsc{Nachos} propose une structure de listes ainsi que les accès classiques aux listes et à leurs éléments. \textsc{Nachos} contient également des objets bitmap définis dans la classe BitMap. Et bien sur, \textsc{Nachos} propose toute une panoplie d'appels système et une bibliothèque de fonctions.
+\item \textsc{Nachos} offre certaines routines permettant d’afficher
+  des messages facilitant le déboguage des fonctions et méthodes
+  système lors de leur implantation. \textsc{Nachos} propose une
+  structure de listes ainsi que les accès classiques aux listes et à
+  leurs éléments. \textsc{Nachos} contient également des objets bitmap
+  définis dans la classe BitMap. Et bien sur, \textsc{Nachos} propose
+  toute une panoplie d'appels système et une bibliothèque de
+  fonctions.
 
-  Si l'on voulait visualiser les opérations effectuées par la machine MIPS on pourrait utiliser le paramètre \texttt{./nachos -s} pour avoir une exécution pas à pas.
+  Si l'on voulait visualiser les opérations effectuées par la machine
+  MIPS on pourrait utiliser le paramètre \texttt{./nachos -s} pour
+  avoir une exécution pas à pas.
 
   Un exemple de déboguage est donné ci-dessous.
 \begin{verbatim}
@@ -61,7 +131,8 @@ Allocationg translation table for 200000 pages (25000 kB)
 **** Warning: method Thread::Start is not implemented yet
 \end{verbatim}
 
-\item L'utilitaire \texttt{gdb} permet de suivre l'exécution de \textsc{Nachos}, comme dans l'exemple ci-dessous.
+\item L'utilitaire \texttt{gdb} permet de suivre l'exécution de
+  \textsc{Nachos}, comme dans l'exemple ci-dessous.
 \begin{verbatim}
 (gdb) run
 Starting program: /home/louis/Documents/sgp/nachos/nachos
@@ -71,7 +142,11 @@ Starting program: /home/louis/Documents/sgp/nachos/nachos
 No stack.
 \end{verbatim}
 
-\item L'utilitaire \texttt{gdb} n'est pas utilisable pour mettre au point les programmes utilisateur. En effet, il n'est pas interfacé avec le simulateur de MIPS. L'observation de \textsc{Nachos} à travers \texttt{gdb} peut cependant aider à déterminer le comportement d'un programme.
+\item L'utilitaire \texttt{gdb} n'est pas utilisable pour mettre au
+  point les programmes utilisateur. En effet, il n'est pas interfacé
+  avec le simulateur de MIPS. L'observation de \textsc{Nachos} à
+  travers \texttt{gdb} peut cependant aider à déterminer le
+  comportement d'un programme.
 \end{enumerate}
 
 \end{document}
