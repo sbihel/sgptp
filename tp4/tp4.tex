@@ -15,7 +15,7 @@
 
 \usepackage{fullpage}
 
-\title{SGP -- TP4\\Prise en main de Nachos}
+\title{SGP -- TP4\\Prise en main de \textsc{Nachos}}
 \author{Louis Béziaud \and Simon Bihel}
 
 \begin{document}
@@ -34,14 +34,14 @@ Lorsqu'on exécute la commande \texttt{./nachos test/hello} on fourni à la fonc
 \item Les routines de gestion de listes n'allouent que leurs propres éléments et ce sont les threads qui se chargent de leurs allocations/désallocations. Seuls les threads peuvent gérer cette tâche puisque qu'ils se mettent eux-mêmes dans certaines listes et ont besoin d'être associés à un processus pour avoir une zone d'adressage.
 \item Un thread bloqué sur un sémaphore se trouve dans \texttt{g\_alive} et la \texttt{queue} du sémaphore en question, mais pas dans \texttt{readyList}.
 \item Il est possible d'interdire les interruptions à l'aide de \texttt{SetStatus(INTERRUPTS\_OFF)}.
-\item \texttt{SwitchTo} permet de changer de thread actif. Le changement de contexte entraîne la sauvegarde de l'ancien contexte. Le caractère simulé de Nachos nécessite de sauvegarder deux contextes : celui de l'utilisateur (\texttt{thread\_context}) et celui du noyau (\texttt{simulator\_context}). La méthode \texttt{SaveSimulatorState} (resp. \texttt{RestoreSimulatorState}) sauvegarde (resp. restaure) le contexte du noyau. Les méthodes \texttt{SaveProcessorState} et \texttt{RestoreProcessorState} doivent, respectivement, sauvegarder et restaurer le contexte utilisateur, c'est à dire les variables décrites à la question 2.1.
+\item \texttt{SwitchTo} permet de changer de thread actif. Le changement de contexte entraîne la sauvegarde de l'ancien contexte. Le caractère simulé de \textsc{Nachos} nécessite de sauvegarder deux contextes : celui de l'utilisateur (\texttt{thread\_context}) et celui du noyau (\texttt{simulator\_context}). La méthode \texttt{SaveSimulatorState} (resp. \texttt{RestoreSimulatorState}) sauvegarde (resp. restaure) le contexte du noyau. Les méthodes \texttt{SaveProcessorState} et \texttt{RestoreProcessorState} doivent, respectivement, sauvegarder et restaurer le contexte utilisateur, c'est à dire les variables décrites à la question 2.1.
 \item Le champ \texttt{type} permet de vérifier que les objets fournis par l'utilisateur au système sont du bon type. Ce mécanisme permet de repérer un problème de type au niveau du programme (qui entraînerait une lecture mémoire incorrecte) et d'arrêter ce dernier plutôt que l'ensemble du système.
 \end{enumerate}
 
 \section{Environnement de développement}
 
 \begin{enumerate}
-\item \texttt{Nachos} offre certaines routines permettant d’afficher des messages facilitant le déboguage des fonctions et méthodes système lors de leur implantation. \texttt{Nachos} propose une structure de listes ainsi que les accès classiques aux listes et à leurs éléments. it {Nachos} contient également des objets bitmap définis dans la classe BitMap. Et bien sur, \texttt{Nachos} propose toute une panoplie d'appels système et une bibliothèque de fonctions.
+\item \textsc{Nachos} offre certaines routines permettant d’afficher des messages facilitant le déboguage des fonctions et méthodes système lors de leur implantation. \textsc{Nachos} propose une structure de listes ainsi que les accès classiques aux listes et à leurs éléments. \textsc{Nachos} contient également des objets bitmap définis dans la classe BitMap. Et bien sur, \textsc{Nachos} propose toute une panoplie d'appels système et une bibliothèque de fonctions.
 
   Si l'on voulait visualiser les opérations effectuées par la machine MIPS on pourrait utiliser le paramètre \texttt{./nachos -s} pour avoir une exécution pas à pas.
 
@@ -57,7 +57,7 @@ Allocationg translation table for 200000 pages (25000 kB)
 **** Warning: method Thread::Start is not implemented yet
 \end{verbatim}
 
-\item L'utilitaire \texttt{gdb} permet de suivre l'exécution de Nachos, comme dans l'exemple ci-dessous.
+\item L'utilitaire \texttt{gdb} permet de suivre l'exécution de \textsc{Nachos}, comme dans l'exemple ci-dessous.
 \begin{verbatim}
 (gdb) run 
 Starting program: /home/louis/Documents/sgp/nachos/nachos 
@@ -67,7 +67,7 @@ Starting program: /home/louis/Documents/sgp/nachos/nachos
 No stack.
 \end{verbatim}
 
-\item L'exécution des programmes utilisateurs est encadrées par le noyau donc oui (?).
+\item L'utilitaire \texttt{gdb} n'est pas utilisable pour mettre au point les programmes utilisateur. En effet, il n'est pas interfacé avec le simulateur de MIPS. L'observation de \textsc{Nachos} à travers \texttt{gdb} peut cependant aider à déterminer le comportement d'un programme.
 \end{enumerate}
 
 \end{document}
