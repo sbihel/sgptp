@@ -13,8 +13,8 @@
 #define OBJID_H
 
 #include "kernel/copyright.h"
-#include "utility/utility.h"
 #include "utility/list.h"
+#include "utility/utility.h"
 #include <map>
 
 using namespace std;

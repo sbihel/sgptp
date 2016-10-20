@@ -12,10 +12,10 @@
 
 class DriverConsole;
 
-#include "machine/console.h"
-#include "utility/utility.h"
 #include "kernel/synch.h"
 #include "kernel/system.h"
+#include "machine/console.h"
+#include "utility/utility.h"
 
 /*! \brief Defines a "synchronous" console abstraction.
 //

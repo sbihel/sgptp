@@ -21,10 +21,10 @@
   (int8_t *)(((unsigned long)val) & (~(((unsigned long)boundary) - 1)))
 
 /* Align on a boundary (MUST be a power of 2), so that return value >= val */
-#define ALIGN_SUP(val, boundary)                                          \
-  (int8_t *)(                                                             \
-      ((((unsigned long)val) - 1) & (~(((unsigned long)boundary) - 1))) + \
-      ((unsigned long)boundary))
+#define ALIGN_SUP(val, boundary)                    \
+  (int8_t *)(((((unsigned long)val) - 1) &          \
+              (~(((unsigned long)boundary) - 1))) + \
+             ((unsigned long)boundary))
 
 /* Check file to see if there are any characters to be read.
 // If no characters in the file, return without waiting.
@@ -78,8 +78,8 @@ extern void DeallocBoundedArray(int8_t *p, size_t size);
 // These are assumed to be portable, so we don't include a wrapper.
 */
 extern "C" {
-#include <stdlib.h>  // atoi, atof, abs
 #include <stdio.h>   // for printf, fprintf
+#include <stdlib.h>  // atoi, atof, abs
 #include <string.h>  // for DEBUG, etc.
 }
 

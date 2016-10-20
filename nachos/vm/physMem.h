@@ -14,13 +14,13 @@
 
 class PhysicalMemManager;
 
-#include "machine/machine.h"
 #include "kernel/addrspace.h"
-#include "kernel/thread.h"
 #include "kernel/synch.h"
 #include "kernel/system.h"
-#include "vm/swapManager.h"
+#include "kernel/thread.h"
+#include "machine/machine.h"
 #include "utility/list.h"
+#include "vm/swapManager.h"
 
 //-----------------------------------------------------------------
 /*! \brief Implements the physical page management.

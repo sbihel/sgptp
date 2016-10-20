@@ -9,8 +9,8 @@
 //  of liability and disclaimer of warranty provisions.
 //-----------------------------------------------------------------
 
-#include <unistd.h>
 #include "vm/physMem.h"
+#include <unistd.h>
 
 //-----------------------------------------------------------------
 // PhysicalMemManager::PhysicalMemManager

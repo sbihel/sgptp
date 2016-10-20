@@ -14,12 +14,12 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
-#include <strings.h>
-#include "kernel/msgerror.h"
-#include "kernel/system.h"
-#include "filesys/filehdr.h"
 #include "filesys/openfile.h"
 #include "drivers/drvDisk.h"
+#include "filesys/filehdr.h"
+#include "kernel/msgerror.h"
+#include "kernel/system.h"
+#include <strings.h>
 
 //----------------------------------------------------------------------
 // OpenFile::OpenFile

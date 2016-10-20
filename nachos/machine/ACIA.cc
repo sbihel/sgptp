@@ -16,11 +16,11 @@
 */
 //-------------------------------------------------------------------------
 
-#include "kernel/system.h"
-#include "utility/stats.h"
-#include "machine/machine.h"
-#include "machine/ACIA_sysdep.h"
 #include "machine/ACIA.h"
+#include "kernel/system.h"
+#include "machine/ACIA_sysdep.h"
+#include "machine/machine.h"
+#include "utility/stats.h"
 
 //-------------------------------------------------------------------------
 /**

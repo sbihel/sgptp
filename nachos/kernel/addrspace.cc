@@ -18,17 +18,17 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
-#include "machine/machine.h"
-#include "kernel/msgerror.h"
-#include "kernel/system.h"
-#include "kernel/synch.h"
-#include "utility/stats.h"
-#include "filesys/filesys.h"
-#include "filesys/filehdr.h"
-#include "filesys/openfile.h"
-#include "vm/physMem.h"
-#include "kernel/elf32.h"
 #include "kernel/addrspace.h"
+#include "filesys/filehdr.h"
+#include "filesys/filesys.h"
+#include "filesys/openfile.h"
+#include "kernel/elf32.h"
+#include "kernel/msgerror.h"
+#include "kernel/synch.h"
+#include "kernel/system.h"
+#include "machine/machine.h"
+#include "utility/stats.h"
+#include "vm/physMem.h"
 
 #define LONG2HOST(var) var = WordToHost(var)
 #define SHORT2HOST(var) var = ShortToHost(var)

@@ -17,8 +17,8 @@
 
 #include "kernel/thread.h"
 #include "kernel/msgerror.h"
-#include "kernel/synch.h"
 #include "kernel/scheduler.h"
+#include "kernel/synch.h"
 
 #define UNSIGNED_LONG_AT_ADDR(addr) (*((unsigned long int *)(addr)))
 

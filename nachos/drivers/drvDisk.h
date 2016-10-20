@@ -12,8 +12,8 @@
 #ifndef SYNCHDISK_H
 #define SYNCHDISK_H
 
-#include "machine/disk.h"
 #include "kernel/synch.h"
+#include "machine/disk.h"
 
 class Semaphore;
 class Lock;

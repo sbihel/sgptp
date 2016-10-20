@@ -2,9 +2,9 @@
 //  \brief Routines to manage processes
 */
 
-#include "kernel/system.h"
-#include "kernel/msgerror.h"
 #include "kernel/process.h"
+#include "kernel/msgerror.h"
+#include "kernel/system.h"
 
 //----------------------------------------------------------------------
 // Process::Process

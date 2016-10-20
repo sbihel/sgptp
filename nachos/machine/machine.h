@@ -24,8 +24,8 @@
 // Integer sizes (such that MIPS integers are 32-bit values)
 #include <stdint.h>
 
-#include "machine/disk.h"
 #include "kernel/copyright.h"
+#include "machine/disk.h"
 #include "utility/stats.h"
 
 // Possible exceptions recognized by the machine
@@ -48,10 +48,10 @@ enum ExceptionType {
   NUM_EXCEPTION_TYPES
 };
 
-#include "machine/translationtable.h"
-#include "machine/mmu.h"
 #include "machine/ACIA.h"
 #include "machine/interrupt.h"
+#include "machine/mmu.h"
+#include "machine/translationtable.h"
 class Console;
 
 /*! Nachos can be running kernel code (SYSTEM_MODE), user code (USER_MODE),

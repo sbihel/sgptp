@@ -9,10 +9,10 @@
 #ifndef PROCESS_H
 #define PROCESS_H
 
+#include "filesys/openfile.h"
+#include "kernel/addrspace.h"
 #include "kernel/copyright.h"
 #include "kernel/synch.h"
-#include "kernel/addrspace.h"
-#include "filesys/openfile.h"
 #include "utility/stats.h"
 
 class AddrSpace;

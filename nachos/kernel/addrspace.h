@@ -12,9 +12,9 @@
 #ifndef ADDRSPACE_H
 #define ADDRSPACE_H
 
+#include "filesys/openfile.h"
 #include "kernel/copyright.h"
 #include "utility/list.h"
-#include "filesys/openfile.h"
 
 // Forward references
 class Thread;

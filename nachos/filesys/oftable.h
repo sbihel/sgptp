@@ -17,9 +17,9 @@
 #ifndef FS_OFT
 #define FS_OFT
 
+#include "filesys/filehdr.h"
 #include "filesys/openfile.h"
 #include "kernel/synch.h"
-#include "filesys/filehdr.h"
 
 // the max number of file nachos can open at the
 // same time.

@@ -7,8 +7,8 @@
 //  of liability and disclaimer of warranty provisions.
 */
 
-#include "drivers/drvConsole.h"
 #include "kernel/msgerror.h"
+#include "drivers/drvConsole.h"
 
 //-----------------------------------------------------------------
 // SyscallError::SyscallError

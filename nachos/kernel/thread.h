@@ -19,12 +19,12 @@ class Thread;
 #ifndef THREAD_H
 #define THREAD_H
 
-#include "machine/machine.h"
 #include "kernel/copyright.h"
-#include "kernel/system.h"
 #include "kernel/process.h"
-#include "utility/utility.h"
+#include "kernel/system.h"
+#include "machine/machine.h"
 #include "utility/stats.h"
+#include "utility/utility.h"
 #include <ucontext.h>
 
 // Size of the simulator's execution stack

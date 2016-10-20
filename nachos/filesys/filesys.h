@@ -32,8 +32,8 @@
 */
 #define FreeMapFileSize (NUM_SECTORS / BITS_IN_BYTE)
 
-#include "kernel/copyright.h"
 #include "filesys/openfile.h"
+#include "kernel/copyright.h"
 
 int FindDir(char *);
 /*! \brief Defines the Nachos file system

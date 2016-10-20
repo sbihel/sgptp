@@ -9,9 +9,9 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
+#include <map>
 #include <stdio.h>
 #include <stdlib.h>
-#include <map>
 using namespace std;
 
 #include "utility/list.h"
@@ -74,8 +74,8 @@ extern DriverACIA *g_acia_driver;        //!< Serial line driver
 extern FileSystem *g_file_system;         //!< File system
 extern OpenFileTable *g_open_file_table;  //!< Open File Table
 extern SwapManager *g_swap_manager;       //!< Management of swap area
-extern PageFaultManager *
-    g_page_fault_manager;  //!< Page fault handler (used in VMM)
+extern PageFaultManager
+    *g_page_fault_manager;  //!< Page fault handler (used in VMM)
 extern PhysicalMemManager *g_physical_mem_manager;  //!< Physical memory manager
 extern SyscallError *g_syscall_error;               //!< Error management
 extern ObjId *g_object_ids;  //!< list of system objects (used in exception.cc
@@ -97,7 +97,7 @@ extern char host_endianess;
 #define IS_LITTLE_ENDIAN 1
 
 // Name of files used to emulate the Nachos disk
-#define DISK_FILE_NAME (char *) "DISK"
-#define DISK_SWAP_NAME (char *) "SWAPDISK"
+#define DISK_FILE_NAME (char *)"DISK"
+#define DISK_SWAP_NAME (char *)"SWAPDISK"
 
 #endif  // SYSTEM_H

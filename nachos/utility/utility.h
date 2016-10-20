@@ -24,9 +24,9 @@
 #ifndef UTILITY_H
 #define UTILITY_H
 
-#include <stdlib.h>
-#include <inttypes.h>
 #include "kernel/copyright.h"
+#include <inttypes.h>
+#include <stdlib.h>
 
 // Miscellaneous useful routines
 
