@@ -78,7 +78,8 @@ bool FileHeader::Allocate(BitMap *freeMap, int fileSize) {
 }
 //----------------------------------------------------------------------
 // FileHeader::reAllocate
-/*! 	add new data blocks when the file grows up and allocate new header blocks
+/*! 	add new data blocks when the file grows up and allocate new header
+blocks
 //      if necessary.
 //	Allocate data and header blocks for the file out of the map of free disk
 blocks.

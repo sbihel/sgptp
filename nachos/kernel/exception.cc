@@ -601,7 +601,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
           break;
         }
 #ifdef ETUDIANTS_TP
-        case SC_P:
+        case SC_P: {
           DEBUG('e', (char *)"Semaphore: proberen call.\n");
           int32_t sid;
           Semaphore *ptSem;
@@ -617,8 +617,8 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
           }
           DEBUG('e', (char *)"Fin Semaphore");
           break;
-
-        case SC_V:
+	}
+        case SC_V: {
           DEBUG('e', (char *)"Semaphore: verhogen call.\n");
           int32_t sid;
           Semaphore *ptSem;
@@ -634,7 +634,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
           }
           DEBUG('e', (char *)"Fin Semaphore");
           break;
-
+	}
         case SC_SEM_CREATE:
           break;
 

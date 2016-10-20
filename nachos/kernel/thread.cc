@@ -231,7 +231,8 @@ void Thread::CheckOverflow() {
 //
 // 	NOTE: we don't immediately de-allocate the thread data structure
 //	or the execution stack, because we're still running in the thread
-//	and we're still on the stack!  Instead, we set "g_thread_to_be_destroyed",
+//	and we're still on the stack!  Instead, we set
+"g_thread_to_be_destroyed",
 //	so that Scheduler::SwitchTo() will call the destructor, once we're
 //	running in the context of a different thread.
 //

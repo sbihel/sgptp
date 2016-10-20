@@ -64,4 +64,4 @@ print: src.ps
 
 
 indent:
-	find . -iname *.h -o -iname *.cc | xargs clang-format -i
+	find . -iname *.h -o -iname *.cc | xargs clang-format -i -style=Google
