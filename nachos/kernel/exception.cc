@@ -19,16 +19,16 @@
 
 // of liability and disclaimer of warranty provisions.
 
-#include "machine/machine.h"
-#include "kernel/msgerror.h"
-#include "kernel/system.h"
-#include "userlib/syscall.h"
-#include "kernel/synch.h"
 #include "drivers/drvACIA.h"
 #include "drivers/drvConsole.h"
 #include "filesys/oftable.h"
-#include "vm/pagefaultmanager.h"
+#include "kernel/msgerror.h"
+#include "kernel/synch.h"
+#include "kernel/system.h"
+#include "machine/machine.h"
+#include "userlib/syscall.h"
 #include "utility/objid.h"
+#include "vm/pagefaultmanager.h"
 
 //----------------------------------------------------------------------
 // GetLengthParam
@@ -619,6 +619,20 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
           break;
 
         case SC_V:
+          DEBUG('e', (char *)"Semaphore: verhogen call.\n");
+          int32_t sid;
+          Semaphore *ptSem;
+          sid = g_machine->ReadIntRegister(4);
+          ptSem = (Semaphore *)g_object_ids->SearchObject(sid);
+          if (ptSem && ptSem->typeId == SEMAPHORE_TYPE_ID) {
+            ptSem->V();
+            g_syscall_error->SetMsg((char *)"", NoError);
+            g_machine->WriteIntRegister(2, 0);
+          } else {
+            g_syscall_error->SetMsg((char *)"Error", NoError);
+            g_machine->WriteIntRegister(2, 0);
+          }
+          DEBUG('e', (char *)"Fin Semaphore");
           break;
 
         case SC_SEM_CREATE:
