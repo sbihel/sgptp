@@ -158,8 +158,18 @@ Lock::~Lock() {
 */
 //----------------------------------------------------------------------
 void Lock::Acquire() {
-   printf("**** Warning: method Lock::Acquire is not implemented yet\n");
-    exit(-1);
+#ifndef ETUDIANTS_TP
+  printf("**** Warning: method Lock::Acquire is not implemented yet\n");
+  exit(-1);
+#endif
+#ifdef ETUDIANTS_TP
+  IntStatus oldLevel = g_machine->interrupt->GetStatus();
+  g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+  if (!free) {
+    g_current_thread->Sleep();
+  }
+  g_machine->interrupt->SetStatus(oldLevel);
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -172,8 +182,22 @@ void Lock::Acquire() {
 */
 //----------------------------------------------------------------------
 void Lock::Release() {
-    printf("**** Warning: method Lock::Release is not implemented yet\n");
-    exit(-1);
+#ifndef ETUDIANTS_TP
+  printf("**** Warning: method Lock::Release is not implemented yet\n");
+  exit(-1);
+#endif
+#ifdef ETUDIANTS_TP
+  IntStatus oldLevel = g_machine->interrupt->GetStatus();
+  g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+  ASSERT(owner == g_current_thread);
+  if (!sleepqueue->IsEmpty()) {
+    Thread *t =  (Thread *)sleepqueue->Remove();
+    g_scheduler->ReadyToRun(t);
+  } else {
+    free = true;
+  }
+  g_machine->interrupt->SetStatus(oldLevel);
+#endif
 }
 
 //----------------------------------------------------------------------
