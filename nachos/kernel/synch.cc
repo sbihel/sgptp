@@ -189,7 +189,7 @@ void Lock::Release() {
 #ifdef ETUDIANTS_TP
   IntStatus oldLevel = g_machine->interrupt->GetStatus();
   g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
-  ASSERT(owner == g_current_thread);
+  ASSERT(isHeldByCurrentThread());
   if (!sleepqueue->IsEmpty()) {
     Thread *t =  (Thread *)sleepqueue->Remove();
     g_scheduler->ReadyToRun(t);
