@@ -26,11 +26,11 @@
 #include "utility/stats.h"
 
 //! String definition for debugging messages
-static char *intLevelNames[] = {(char *)"off", (char *)"on"};
+static char *intLevelNames[] = {(char *)"off", (char *) "on"};
 //! String definition for debugging messages
-static char *intTypeNames[] = {(char *)"timer",         (char *)"disk",
-                               (char *)"console write", (char *)"console read",
-                               (char *)"ACIA receive",  (char *)"ACIA send"};
+static char *intTypeNames[] = {
+    (char *)"timer",         (char *) "disk",         (char *) "console write",
+    (char *) "console read", (char *) "ACIA receive", (char *) "ACIA send"};
 
 //----------------------------------------------------------------------
 // PendingInterrupt::PendingInterrupt

@@ -17,10 +17,10 @@
  execution, for debugging purpose.
 */
 static char* exceptionNames[] = {
-    (char*)"no exception", (char*)"syscall",
-    (char*)"page fault",   (char*)"page read only",
-    (char*)"bus error",    (char*)"address error",
-    (char*)"overflow",     (char*)"illegal instruction"};
+    (char*)"no exception", (char*) "syscall",
+    (char*) "page fault",  (char*) "page read only",
+    (char*) "bus error",   (char*) "address error",
+    (char*) "overflow",    (char*) "illegal instruction"};
 #define EXCEPTION_NUMBER 7  //!< Size of exceptionNames, used for sanity checks
 
 //----------------------------------------------------------------------
