@@ -694,6 +694,45 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr)
       g_machine->interrupt->Halt(-1);
     }
     break;
+
+  case SC_P:
+    break;
+    
+  case SC_V:
+    break;
+    
+  case SC_SEM_CREATE:
+    break;
+    
+  case SC_SEM_DESTROY:
+    break;
+    
+  case SC_LOCK_CREATE:
+    break;
+    
+  case SC_LOCK_DESTROY:
+    break;
+    
+  case SC_LOCK_ACQUIRE:
+    break;
+    
+  case SC_LOCK_RELEASE:
+    break;
+    
+  case SC_COND_CREATE:
+    break;
+    
+  case SC_COND_DESTROY:
+    break;
+
+  case SC_COND_WAIT:
+    break;
+    
+  case SC_COND_SIGNAL:
+    break;
+    
+  case SC_COND_BROADCAST:
+    break;
     
   default:
     printf("Unknown exception %d\n", exceptiontype);
