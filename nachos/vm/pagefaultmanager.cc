@@ -8,10 +8,10 @@ Routines for the page fault managerPage Fault Manager
 //  of liability and disclaimer of warranty provisions.
 //
 
-#include "vm/pagefaultmanager.h"
 #include "kernel/thread.h"
-#include "vm/physMem.h"
 #include "vm/swapManager.h"
+#include "vm/physMem.h"
+#include "vm/pagefaultmanager.h"
 
 PageFaultManager::PageFaultManager() {}
 

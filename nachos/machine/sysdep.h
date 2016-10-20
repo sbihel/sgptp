@@ -78,8 +78,8 @@ extern void DeallocBoundedArray(int8_t *p, size_t size);
 // These are assumed to be portable, so we don't include a wrapper.
 */
 extern "C" {
-#include <stdio.h>   // for printf, fprintf
 #include <stdlib.h>  // atoi, atof, abs
+#include <stdio.h>   // for printf, fprintf
 #include <string.h>  // for DEBUG, etc.
 }
 

@@ -12,9 +12,9 @@
 #ifndef STATS_H
 #define STATS_H
 
-#include "utility/config.h"
-#include "utility/list.h"
 #include "utility/utility.h"
+#include "utility/list.h"
+#include "utility/config.h"
 
 /*! \brief Defines Nachos statistics that are kept at run-time
 

@@ -10,9 +10,9 @@
 #ifndef CONFIG_H
 #define CONFIG_H
 
-#include "filesys/filesys.h"
-#include "machine/translationtable.h"
 #include <stdio.h>
+#include "machine/translationtable.h"
+#include "filesys/filesys.h"
 
 #define MAXSTRLEN 100
 #define CONFIGFILENAME "nachos.cfg"

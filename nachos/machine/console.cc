@@ -14,9 +14,9 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
-#include "machine/console.h"
 #include "kernel/system.h"
 #include "machine/machine.h"
+#include "machine/console.h"
 
 //! Dummy function because C++ is weird about pointers to member functions
 static void ConsoleReadPoll(int64_t c) {

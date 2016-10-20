@@ -6,21 +6,21 @@
 // of liability and disclaimer of warranty provisions.
 
 #include "kernel/system.h"
-#include "drivers/drvACIA.h"
+#include "kernel/thread.h"
+#include "kernel/scheduler.h"
+#include "kernel/msgerror.h"
 #include "drivers/drvConsole.h"
 #include "drivers/drvDisk.h"
-#include "filesys/filesys.h"
-#include "filesys/oftable.h"
-#include "kernel/msgerror.h"
-#include "kernel/scheduler.h"
-#include "kernel/thread.h"
+#include "drivers/drvACIA.h"
 #include "utility/config.h"
-#include "utility/objid.h"
-#include "utility/stats.h"
 #include "utility/utility.h"
+#include "utility/stats.h"
+#include "vm/swapManager.h"
 #include "vm/pagefaultmanager.h"
 #include "vm/physMem.h"
-#include "vm/swapManager.h"
+#include "filesys/oftable.h"
+#include "filesys/filesys.h"
+#include "utility/objid.h"
 
 /*!  This defines *all* of the global data structures used by Nachos.
 // These are all initialized and de-allocated by this file.

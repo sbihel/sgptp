@@ -15,13 +15,13 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
+#include "machine/machine.h"
+#include "machine/interrupt.h"
 #include "machine/disk.h"
+#include "utility/stats.h"
+#include "utility/config.h"
 #include "kernel/system.h"
 #include "kernel/thread.h"
-#include "machine/interrupt.h"
-#include "machine/machine.h"
-#include "utility/config.h"
-#include "utility/stats.h"
 
 //! dummy procedure because we can't take a pointer of a member function
 static void DiskDone(int64_t arg) { ((Disk *)arg)->HandleInterrupt(); }

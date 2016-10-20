@@ -18,9 +18,9 @@
 #ifndef BITMAP_H
 #define BITMAP_H
 
-#include "filesys/openfile.h"
 #include "kernel/copyright.h"
 #include "utility/utility.h"
+#include "filesys/openfile.h"
 
 // Definitions helpful for representing a bitmap as an array of integers
 #define BITS_IN_BYTE 8

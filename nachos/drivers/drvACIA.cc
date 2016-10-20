@@ -19,10 +19,10 @@
 
 /* Includes */
 
-#include "drivers/drvACIA.h"
-#include "kernel/synch.h"
 #include "kernel/system.h"  // for the ACIA object
+#include "kernel/synch.h"
 #include "machine/ACIA.h"
+#include "drivers/drvACIA.h"
 
 //-------------------------------------------------------------------------
 // DriverACIA::DriverACIA()

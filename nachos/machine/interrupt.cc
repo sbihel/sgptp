@@ -20,9 +20,9 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
+#include "machine/machine.h"
 #include "kernel/system.h"
 #include "kernel/thread.h"
-#include "machine/machine.h"
 #include "utility/stats.h"
 
 //! String definition for debugging messages

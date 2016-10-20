@@ -9,9 +9,9 @@
 #ifndef SYSTEM_H
 #define SYSTEM_H
 
-#include <map>
 #include <stdio.h>
 #include <stdlib.h>
+#include <map>
 using namespace std;
 
 #include "utility/list.h"

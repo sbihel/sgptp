@@ -11,13 +11,13 @@
 //  of liability and disclaimer of warranty provisions.
 */
 
-#include "filesys/oftable.h"
-#include "filesys/directory.h"
-#include "filesys/filesys.h"
+#include <string.h>
 #include "kernel/msgerror.h"
 #include "kernel/system.h"
 #include "utility/bitmap.h"
-#include <string.h>
+#include "filesys/directory.h"
+#include "filesys/filesys.h"
+#include "filesys/oftable.h"
 
 //----------------------------------------------------------
 // OpenFileTableEntry::OpenFileTableEntry()

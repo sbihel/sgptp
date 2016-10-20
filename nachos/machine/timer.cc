@@ -19,9 +19,9 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
+#include "machine/machine.h"
 #include "machine/timer.h"
 #include "kernel/system.h"
-#include "machine/machine.h"
 #include "utility/config.h"
 #include "utility/stats.h"
 

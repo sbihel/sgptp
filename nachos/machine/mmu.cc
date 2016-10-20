@@ -20,11 +20,11 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
-#include "kernel/addrspace.h"
-#include "kernel/system.h"
 #include "machine/machine.h"
-#include "vm/pagefaultmanager.h"
+#include "kernel/system.h"
+#include "kernel/addrspace.h"
 #include "vm/physMem.h"
+#include "vm/pagefaultmanager.h"
 
 //----------------------------------------------------------------------
 // MMU::MMU()

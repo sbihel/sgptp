@@ -21,9 +21,9 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
-#include "kernel/synch.h"
-#include "kernel/scheduler.h"
 #include "kernel/system.h"
+#include "kernel/scheduler.h"
+#include "kernel/synch.h"
 
 //----------------------------------------------------------------------
 // Semaphore::Semaphore

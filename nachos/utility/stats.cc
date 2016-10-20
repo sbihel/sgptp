@@ -8,9 +8,9 @@
 //  of liability and disclaimer of warranty provisions.
 //
 
-#include "utility/stats.h"
 #include "kernel/copyright.h"
 #include "kernel/system.h"
+#include "utility/stats.h"
 
 //----------------------------------------------------------------------
 // Statistics::Statistics

@@ -16,12 +16,12 @@
     of liability and disclaimer of warranty provisions.
 */
 //-------------------------------------------------------------------------
-#include "machine/ACIA_sysdep.h"
-#include "drivers/drvACIA.h"
-#include "machine/ACIA.h"
+#include <strings.h>
 #include "machine/interrupt.h"
 #include "utility/stats.h"
-#include <strings.h>
+#include "drivers/drvACIA.h"
+#include "machine/ACIA.h"
+#include "machine/ACIA_sysdep.h"
 
 //! Dummy functions because C++ is weird about pointers to member function
 static void DummyInterruptRec(int64_t arg) {

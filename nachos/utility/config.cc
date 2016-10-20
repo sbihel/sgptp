@@ -10,12 +10,12 @@ confuguration
 #ifndef CONFIG_CPP
 #define CONFIG_CPP
 
+#include <stdio.h>
+#include "machine/machine.h"
 #include "utility/config.h"
+#include "utility/utility.h"
 #include "filesys/directory.h"
 #include "kernel/system.h"
-#include "machine/machine.h"
-#include "utility/utility.h"
-#include <stdio.h>
 
 #define LINE_LENGTH 256
 #define COMMAND_LENGTH 80

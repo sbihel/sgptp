@@ -11,11 +11,11 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
+#include <math.h> /* For emulating floating point MIPS instructions */
+#include "machine/machine.h"
 #include "machine/mipssim.h"
 #include "kernel/system.h"
 #include "kernel/thread.h"
-#include "machine/machine.h"
-#include <math.h> /* For emulating floating point MIPS instructions */
 
 // Forward definition
 static void Mult(int a, int b, bool signedArith, int *hiPtr, int *loPtr);

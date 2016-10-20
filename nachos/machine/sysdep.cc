@@ -25,27 +25,27 @@
 // All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
-#include "kernel/system.h"
-#include "machine/interrupt.h"
-#include "machine/machine.h"
 #include "utility/config.h"
+#include "machine/machine.h"
+#include "machine/interrupt.h"
+#include "kernel/system.h"
 
 extern "C" {
-#include <fcntl.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <signal.h>
+#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <strings.h>
-#include <sys/file.h>
-#include <sys/mman.h>
-#include <sys/socket.h>
-#include <sys/time.h>
-#include <sys/time.h>
+#include <signal.h>
 #include <sys/types.h>
+#include <sys/time.h>
+#include <sys/socket.h>
+#include <sys/file.h>
 #include <sys/un.h>
-#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/time.h>
+#include <fcntl.h>
+#include <netdb.h>
+#include <netinet/in.h>
 
 // Port Number for sockets
 

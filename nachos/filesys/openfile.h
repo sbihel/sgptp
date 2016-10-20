@@ -14,8 +14,8 @@
 #define OPENFILE_H
 
 #include "kernel/copyright.h"
-#include "kernel/system.h"
 #include "utility/utility.h"
+#include "kernel/system.h"
 
 class FileHeader;
 

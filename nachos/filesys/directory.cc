@@ -21,12 +21,12 @@
 //  of liability and disclaimer of warranty provisions.
 */
 
-#include "filesys/directory.h"
-#include "filesys/filehdr.h"
-#include "kernel/msgerror.h"
 #include "kernel/system.h"
-#include "utility/config.h"
+#include "kernel/msgerror.h"
 #include "utility/utility.h"
+#include "utility/config.h"
+#include "filesys/filehdr.h"
+#include "filesys/directory.h"
 
 //----------------------------------------------------------------------
 // Directory::Directory

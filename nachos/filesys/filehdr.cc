@@ -24,10 +24,10 @@
 //  of liability and disclaimer of warranty provisions.
 */
 
-#include "filesys/filehdr.h"
-#include "drivers/drvDisk.h"
 #include "kernel/system.h"
+#include "filesys/filehdr.h"
 #include "utility/config.h"
+#include "drivers/drvDisk.h"
 
 FileHeader::FileHeader(void) { dataSectors = NULL; }
 

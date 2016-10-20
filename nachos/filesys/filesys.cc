@@ -45,15 +45,15 @@
 //  of liability and disclaimer of warranty provisions.
 */
 
-#include "filesys/filesys.h"
+#include "kernel/system.h"
+#include "kernel/msgerror.h"
+#include "machine/disk.h"
+#include "utility/config.h"
+#include "utility/bitmap.h"
 #include "filesys/directory.h"
 #include "filesys/filehdr.h"
+#include "filesys/filesys.h"
 #include "filesys/oftable.h"
-#include "kernel/msgerror.h"
-#include "kernel/system.h"
-#include "machine/disk.h"
-#include "utility/bitmap.h"
-#include "utility/config.h"
 
 /*! Sectors containing the file headers for the bitmap of free sectors,
 // and the directory of files.  These file headers are placed in well-known

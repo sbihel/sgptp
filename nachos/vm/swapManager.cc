@@ -13,8 +13,8 @@
 #include <unistd.h>
 
 #include "drivers/drvDisk.h"
-#include "kernel/thread.h"
 #include "utility/bitmap.h"
+#include "kernel/thread.h"
 #include "vm/swapManager.h"
 
 //-----------------------------------------------------------------

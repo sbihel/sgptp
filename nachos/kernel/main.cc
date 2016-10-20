@@ -20,12 +20,12 @@
 #include "kernel/copyright.h"
 #undef MAIN
 
-#include "kernel/msgerror.h"
 #include "kernel/system.h"
+#include "kernel/msgerror.h"
 #include "kernel/thread.h"
+#include "utility/utility.h"
 #include "utility/config.h"
 #include "utility/objid.h"
-#include "utility/utility.h"
 
 // External functions used by this file
 extern void Copy(char *unixFile, char *nachosFile);

@@ -17,8 +17,8 @@
 //  of liability and disclaimer of warranty provisions.
 */
 
-#include "drivers/drvConsole.h"
 #include "machine/interrupt.h"
+#include "drivers/drvConsole.h"
 
 //----------------------------------------------------------------------
 // static void ConsoleGet

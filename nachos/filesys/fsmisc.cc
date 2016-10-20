@@ -10,12 +10,12 @@
 // of liability and disclaimer of warranty provisions.
 */
 
-#include "filesys/filesys.h"
-#include "kernel/msgerror.h"
 #include "kernel/system.h"
 #include "kernel/thread.h"
-#include "utility/stats.h"
+#include "kernel/msgerror.h"
 #include "utility/utility.h"
+#include "utility/stats.h"
+#include "filesys/filesys.h"
 
 #define TransferSize 10  // make it small (10), just to be difficult
 
