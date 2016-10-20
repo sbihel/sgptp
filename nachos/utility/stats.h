@@ -26,9 +26,9 @@ class ProcessStat;
 class Statistics {
  private:
   Listint *allStatistics;  //!< enables to keep  statistics of all processes
-                           //when they are finished.
-  Time totalTicks;         //!< Total time spent running Nachos
-  Time idleTicks;          //!< Time spent idle (no thread to run)
+  // when they are finished.
+  Time totalTicks;  //!< Total time spent running Nachos
+  Time idleTicks;   //!< Time spent idle (no thread to run)
 
  public:
   Statistics();   // initialyses everything to zero

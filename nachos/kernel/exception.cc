@@ -601,8 +601,8 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
           break;
         }
 #ifdef ETUDIANTS_TP
-      case SC_P:
-	DEBUG('e', (char *)"Semaphore: proberen call.\n");
+        case SC_P:
+          DEBUG('e', (char *)"Semaphore: proberen call.\n");
           int32_t sid;
           Semaphore *ptSem;
           sid = g_machine->ReadIntRegister(4);
@@ -616,12 +616,12 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
             g_machine->WriteIntRegister(2, 0);
           }
           DEBUG('e', (char *)"Fin Semaphore");
-	break;
-	
-      case SC_V:
           break;
 
-      case SC_SEM_CREATE:
+        case SC_V:
+          break;
+
+        case SC_SEM_CREATE:
           break;
 
         case SC_SEM_DESTROY:

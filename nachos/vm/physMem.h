@@ -59,11 +59,11 @@ class PhysicalMemManager {
     (modified/dirty) are in the page table entry and are directly set by the MMU
     hardware */
   struct tpr_c {
-    bool free;        //!< true if page is free
-    bool locked;      //!< true if page is locked in memory (system page or page
-                      //under sap in/out)
+    bool free;    //!< true if page is free
+    bool locked;  //!< true if page is locked in memory (system page or page
+    // under sap in/out)
     int virtualPage;  //!< Number of the virtualPage which references this real
-                      //page
+    // page
     AddrSpace* owner;  //!< Address space of the owner process
   };
 

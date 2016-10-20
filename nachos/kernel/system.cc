@@ -49,7 +49,7 @@ PageFaultManager *g_page_fault_manager;  //!< Page fault handler (used in VMM)
 PhysicalMemManager *g_physical_mem_manager;  //!< Physical memory manager
 SyscallError *g_syscall_error;               //!< Error management
 ObjId *g_object_ids;  //!< list of system objects (used in exception.cc to
-                      //verify existence of semas, conditions, files ...
+// verify existence of semas, conditions, files ...
 Config *g_cfg;        //!< Configuration of Nachos
 Statistics *g_stats;  //!< performance metrics
 

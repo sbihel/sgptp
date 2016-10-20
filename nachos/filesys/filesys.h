@@ -44,7 +44,7 @@ class FileSystem {
                             //!< Must be called *after* "synchDisk"
                             //!< has been initialized.
   ~FileSystem();  //!< Destructor of file system. Called when Nachos is
-                  //shut-down
+  // shut-down
 
   int Create(char *name, int initialSize);
   //!< Create a file (UNIX creat)

@@ -39,7 +39,7 @@ class Timer {
   //!<  timer generates an interrupt
 
   int TimeOfNextInterrupt();  //!<  figure out when the timer will generate
-  //!<  its next interrupt
+                              //!<  its next interrupt
 
  private:
   bool randomize;           //!< set if we need to use a random timeout delay

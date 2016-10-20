@@ -79,8 +79,8 @@ extern PageFaultManager *
 extern PhysicalMemManager *g_physical_mem_manager;  //!< Physical memory manager
 extern SyscallError *g_syscall_error;               //!< Error management
 extern ObjId *g_object_ids;  //!< list of system objects (used in exception.cc
-                             //to verify existence of semas, conditions, files
-                             //...
+// to verify existence of semas, conditions, files
+//...
 extern Config *g_cfg;        //!< Configuration of Nachos
 extern Statistics *g_stats;  //!< performance metrics
 

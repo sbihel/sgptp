@@ -34,32 +34,32 @@ class Config {
   // Hardware configuration
   int PageSize;      //!< Page size in bytes
   int NumPhysPages;  //!< Number of pages in the memory of the simulated MIPS
-                     //machine
-  int SectorSize;    //!< Disk sector size in bytes (should be equal to the page
-                     //size)
+  // machine
+  int SectorSize;  //!< Disk sector size in bytes (should be equal to the page
+  // size)
   int ProcessorFrequency;  //!< Frequency of the processor (MHz) used to obtain
-                           //execution time statistics
-  int DiskSize;            //!< Total size of the disk (number of sectors)
-  int ACIA;                //!< Use ACIA if USE_ACIA, don't use it if ACIA_NONE
+  // execution time statistics
+  int DiskSize;  //!< Total size of the disk (number of sectors)
+  int ACIA;      //!< Use ACIA if USE_ACIA, don't use it if ACIA_NONE
 
   // File system configuration
-  int NumDirect;        //!< Number of data sectors storable in the first header
-                        //sector
+  int NumDirect;  //!< Number of data sectors storable in the first header
+  // sector
   int MaxFileSize;      //!< Maximum length of a file
   int MaxFileNameSize;  //!< Maximum length of a file name (absolute, path
-                        //included)
-  int NumDirEntries;    //!< Maximum number of files in a directory
-  int DirectoryFileSize;              //!< Length of a directory file
-  int NumPortLoc;                     //!< Local ACIA's port number
-  int NumPortDist;                    //!< Distant ACIA's port number
+  // included)
+  int NumDirEntries;      //!< Maximum number of files in a directory
+  int DirectoryFileSize;  //!< Length of a directory file
+  int NumPortLoc;         //!< Local ACIA's port number
+  int NumPortDist;        //!< Distant ACIA's port number
   char TargetMachineName[MAXSTRLEN];  //!< The name of the target machine for
-                                      //the ACIA
+  // the ACIA
 
   // Kernel (process and address space) configuration
-  int MaxVirtPages;   //!< Maximum number of virtual pages in each address space
-                      //(used to allocate the page table)
-  bool TimeSharing;   //!< Use the time sharing mode if true (1) - not
-                      //implemented in the base code
+  int MaxVirtPages;  //!< Maximum number of virtual pages in each address space
+                     //(used to allocate the page table)
+  bool TimeSharing;  //!< Use the time sharing mode if true (1) - not
+  // implemented in the base code
   int MagicNumber;    //!< 0x456789ab
   int MagicSize;      //!< Size of an integer
   int UserStackSize;  //!< Stack size of user threads in bytes
@@ -74,15 +74,15 @@ class Config {
   bool Remove;         //!< Remove FileToRemove if true
   bool MakeDir;        //!< Make DirToMake if true
   bool RemoveDir;      //!< remove DirToRemove if true
-  char ToCopyUnix[100][MAXSTRLEN];    //!< The table of files to copy from the
-                                      //UNIX filesystem
+  char ToCopyUnix[100][MAXSTRLEN];  //!< The table of files to copy from the
+  // UNIX filesystem
   char ToCopyNachos[100][MAXSTRLEN];  //!< The table of files to copy to the
-                                      //nachos filesystem
-  char ProgramToRun[MAXSTRLEN];       //!< The name of the program to execute
-  char FileToPrint[MAXSTRLEN];        //!< The name of the file to print
-  char FileToRemove[MAXSTRLEN];       //!< The name of the file to remove
-  char DirToMake[MAXSTRLEN];          //!< The name of the directory to make
-  char DirToRemove[MAXSTRLEN];        //!< The name of the directory to remove
+  // nachos filesystem
+  char ProgramToRun[MAXSTRLEN];  //!< The name of the program to execute
+  char FileToPrint[MAXSTRLEN];   //!< The name of the file to print
+  char FileToRemove[MAXSTRLEN];  //!< The name of the file to remove
+  char DirToMake[MAXSTRLEN];     //!< The name of the directory to make
+  char DirToRemove[MAXSTRLEN];   //!< The name of the directory to remove
 
   /**
    * Fill-in the configuration object from configuration information stored in a

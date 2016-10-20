@@ -170,10 +170,10 @@ class Machine {
   // are in terms of these data structures.
 
   int32_t int_registers[NUM_INT_REGS];  //!< CPU Integer registers, for
-                                        //executing user programs
+  // executing user programs
 
   int32_t float_registers[NUM_FP_REGS];  //!< Floating point general purpose
-                                         //registers
+  // registers
 
   int8_t cc; /*!< Condition code. Note that
 since only MIPS I FP instrs are implemented */
