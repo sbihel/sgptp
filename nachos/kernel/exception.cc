@@ -600,14 +600,28 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
           }
           break;
         }
-
-        case SC_P:
+#ifdef ETUDIANTS_TP
+      case SC_P:
+	DEBUG('e', (char *)"Semaphore: proberen call.\n");
+          int32_t sid;
+          Semaphore *ptSem;
+          sid = g_machine->ReadIntRegister(4);
+          ptSem = (Semaphore *)g_object_ids->SearchObject(sid);
+          if (ptSem && ptSem->typeId == SEMAPHORE_TYPE_ID) {
+            ptSem->P();
+            g_syscall_error->SetMsg((char *)"", NoError);
+            g_machine->WriteIntRegister(2, 0);
+          } else {
+            g_syscall_error->SetMsg((char *)"Error", NoError);
+            g_machine->WriteIntRegister(2, 0);
+          }
+          DEBUG('e', (char *)"Fin Semaphore");
+	break;
+	
+      case SC_V:
           break;
 
-        case SC_V:
-          break;
-
-        case SC_SEM_CREATE:
+      case SC_SEM_CREATE:
           break;
 
         case SC_SEM_DESTROY:
@@ -639,7 +653,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 
         case SC_COND_BROADCAST:
           break;
-
+#endif
         default:
           printf("Invalid system call number : %d\n", type);
           exit(-1);
