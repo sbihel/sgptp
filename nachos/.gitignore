@@ -1,0 +1,12 @@
+*.o
+*.a
+*.d
+DISK
+SWAPDISK
+nachos
+test/halt
+test/hello
+test/matmult
+test/shell
+test/sort
+Makefile.config
