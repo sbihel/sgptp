@@ -1,4 +1,4 @@
-/*! \file mmu.cc 
+/*! \file mmu.cc
 //  \brief Routines to translate virtual addresses to physical addresses
 //
 //	Software sets up a table of legal translations.  We look up
@@ -17,7 +17,7 @@
 // DO NOT CHANGE -- part of the machine emulation
 //
 // Copyright (c) 1992-1993 The Regents of the University of California.
-// All rights reserved.  See copyright.h for copyright notice and limitation 
+// All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
 
 #include "machine/machine.h"
@@ -28,82 +28,77 @@
 
 //----------------------------------------------------------------------
 // MMU::MMU()
-/*! Construction. Empty for now  
+/*! Construction. Empty for now
 */
 //----------------------------------------------------------------------
-MMU::MMU() {
-  translationTable = NULL;
-}
+MMU::MMU() { translationTable = NULL; }
 
 //----------------------------------------------------------------------
 // MMU::~MMU()
 /*! Destructor. Empty for now
 */
 //----------------------------------------------------------------------
-MMU::~MMU() {
-  translationTable = NULL;
-}
+MMU::~MMU() { translationTable = NULL; }
 
 //----------------------------------------------------------------------
 // MMU::ReadMem
-/*!     Read "size" (1, 2, 4) bytes of virtual memory at "addr" into 
+/*!     Read "size" (1, 2, 4) bytes of virtual memory at "addr" into
 //	the location pointed to by "value".
 //
 //
 //	\param addr the virtual address to read from
 //	\param size the number of bytes to read (1, 2, 4)
 //	\param value the place to write the result
-//      \return Returns false if the translation step from 
+//      \return Returns false if the translation step from
 //              virtual to physical memory failed, true otherwise.
 */
 //----------------------------------------------------------------------
-bool
-MMU::ReadMem(int virtAddr, int size, int *value, bool is_instruction)
-{
+bool MMU::ReadMem(int virtAddr, int size, int *value, bool is_instruction) {
   int data;
   ExceptionType exc;
   int physAddr;
   int physAddrEnd;
-  
-    DEBUG('h', (char *)"Reading VA 0x%x, size %d\n", virtAddr, size);
 
-    // Update statistics
-    g_current_thread->GetProcessOwner()->stat->incrMemoryAccess();
+  DEBUG('h', (char *)"Reading VA 0x%x, size %d\n", virtAddr, size);
 
-    // Perform address translation
-    exc = Translate(virtAddr, &physAddr, size, false);
-    Translate(virtAddr, &physAddrEnd, size, false);
-    if (exc==NO_EXCEPTION) ASSERT(physAddr==physAddrEnd);
+  // Update statistics
+  g_current_thread->GetProcessOwner()->stat->incrMemoryAccess();
 
-    // Raise an exception if one has been detected during address translation
-    if (exc != NO_EXCEPTION) {
-	g_machine->RaiseException(exc, virtAddr);
-	return false;
-    }
-    
-    // Read data from main memory
-    switch (size) {
-      case 1:
-	data = g_machine->mainMemory[physAddr];
-	*value = data;
-	break;
-	
-      case 2:
-	data = *(unsigned short *) &g_machine->mainMemory[physAddr];
-	*value = ShortToHost(data);
-	break;
-	
-      case 4:
-	data = *(unsigned int *) &g_machine->mainMemory[physAddr];
-	*value = WordToHost(data);
-	break;
+  // Perform address translation
+  exc = Translate(virtAddr, &physAddr, size, false);
+  Translate(virtAddr, &physAddrEnd, size, false);
+  if (exc == NO_EXCEPTION) ASSERT(physAddr == physAddrEnd);
 
-    default: ASSERT(false);
-    }
+  // Raise an exception if one has been detected during address translation
+  if (exc != NO_EXCEPTION) {
+    g_machine->RaiseException(exc, virtAddr);
+    return false;
+  }
 
-    DEBUG('h', (char *)"\tValue read = %8.8x\n", *value);
+  // Read data from main memory
+  switch (size) {
+    case 1:
+      data = g_machine->mainMemory[physAddr];
+      *value = data;
+      break;
 
-    return (true);
+    case 2:
+      data = *(unsigned short *)&g_machine->mainMemory[physAddr];
+      *value = ShortToHost(data);
+      break;
+
+    case 4:
+      data = *(unsigned int *)&g_machine->mainMemory[physAddr];
+      *value = WordToHost(data);
+      break;
+
+    default:
+      ASSERT(false);
+  }
+
+  DEBUG('h', (char *)"\tValue read = %8.8x\n", *value);
+
+  return (true);
 }
 
 //----------------------------------------------------------------------
@@ -119,53 +114,53 @@ MMU::ReadMem(int virtAddr, int size, int *value, bool is_instruction)
 //	\param value the data to be written
 */
 //----------------------------------------------------------------------
-bool
-MMU::WriteMem(int addr, int size, int value)
-{
-    ExceptionType exc;
-    int physicalAddress;
-    int physAddrEnd;
-     
-    DEBUG('h', (char *)"Writing VA 0x%x, size %d, value 0x%x\n", addr, size, value);
+bool MMU::WriteMem(int addr, int size, int value) {
+  ExceptionType exc;
+  int physicalAddress;
+  int physAddrEnd;
 
-    // Update statistics
-    g_current_thread->GetProcessOwner()->stat->incrMemoryAccess();
+  DEBUG('h', (char *)"Writing VA 0x%x, size %d, value 0x%x\n", addr, size,
+        value);
 
-    // Perform address translation
-    exc = Translate(addr, &physicalAddress, size, true);
-    Translate(addr, &physAddrEnd, size, true);
-    if (exc==NO_EXCEPTION) ASSERT(physicalAddress==physAddrEnd);
+  // Update statistics
+  g_current_thread->GetProcessOwner()->stat->incrMemoryAccess();
 
-    if (exc != NO_EXCEPTION) {
-	g_machine->RaiseException(exc, addr);
-	return false;
-    }
+  // Perform address translation
+  exc = Translate(addr, &physicalAddress, size, true);
+  Translate(addr, &physAddrEnd, size, true);
+  if (exc == NO_EXCEPTION) ASSERT(physicalAddress == physAddrEnd);
 
-    // Write into the machine main memory
-    switch (size) {
-      case 1:
-	g_machine->mainMemory[physicalAddress] = (unsigned char) (value & 0xff);
-	break;
+  if (exc != NO_EXCEPTION) {
+    g_machine->RaiseException(exc, addr);
+    return false;
+  }
 
-      case 2:
-	*(unsigned short *) &g_machine->mainMemory[physicalAddress]
-		= ShortToMachine((unsigned short) (value & 0xffff));
-	break;
-      
-      case 4:
-	*(unsigned int *) &g_machine->mainMemory[physicalAddress]
-		= WordToMachine((unsigned int) value);
-	break;
-      default: ASSERT(false);
-    }
-    DEBUG('h', (char *)"\tValue written");
+  // Write into the machine main memory
+  switch (size) {
+    case 1:
+      g_machine->mainMemory[physicalAddress] = (unsigned char)(value & 0xff);
+      break;
 
-    return true;
+    case 2:
+      *(unsigned short *)&g_machine->mainMemory[physicalAddress] =
+          ShortToMachine((unsigned short)(value & 0xffff));
+      break;
+
+    case 4:
+      *(unsigned int *)&g_machine->mainMemory[physicalAddress] =
+          WordToMachine((unsigned int)value);
+      break;
+    default:
+      ASSERT(false);
+  }
+  DEBUG('h', (char *)"\tValue written");
+
+  return true;
 }
 
 //----------------------------------------------------------------------
 // MMU::Translate(int virtAddr, int* physAddr, int size, bool writing)
-/*! 	Translate a virtual address into a physical address, using 
+/*! 	Translate a virtual address into a physical address, using
 //      a linear page table.
 //         - Look for a translation of the virtual page in the page table
 //             - if found, check access rights and physical address
@@ -181,19 +176,18 @@ MMU::WriteMem(int addr, int size, int value)
 //             - returns the physical page
 //
 //      If everything is ok, set the use/dirty bits in
-//	the translation table entry, and store the translated physical 
+//	the translation table entry, and store the translated physical
 //	address in "physAddr".  If there was an error, returns the type
 //	of the exception.
 //
 //	\param virtAddr the virtual address to translate
 //	\param physAddr pointer to the place to store the physical address
 */
-ExceptionType 
-MMU::Translate(int virtAddr, int* physAddr, int size, bool writing)
-{
-  DEBUG('h', (char *)"\tTranslate 0x%x, %s: ",
-	virtAddr, writing ? "write" : "read");
-  
+ExceptionType MMU::Translate(int virtAddr, int *physAddr, int size,
+                             bool writing) {
+  DEBUG('h', (char *)"\tTranslate 0x%x, %s: ", virtAddr,
+        writing ? "write" : "read");
+
   // check for alignment errors
   /*
   if (((size == 4) && (virtAddr & 0x3))
@@ -214,20 +208,20 @@ MMU::Translate(int virtAddr, int* physAddr, int size, bool writing)
   // check the virtual page number
   if (vpn >= translationTable->getMaxNumPages()) {
     DEBUG('h', (char *)"virtual page # %d too large for page table size %d!\n",
-	  vpn, translationTable->getMaxNumPages());
+          vpn, translationTable->getMaxNumPages());
     return ADDRESSERROR_EXCEPTION;
   }
 
   // is the page correctly mapped ?
-  if (!translationTable->getBitReadAllowed(vpn) && !translationTable->getBitWriteAllowed(vpn)) {
+  if (!translationTable->getBitReadAllowed(vpn) &&
+      !translationTable->getBitWriteAllowed(vpn)) {
     DEBUG('h', (char *)"virtual page # %d not mapped !\n", vpn);
     return ADDRESSERROR_EXCEPTION;
   }
 
   // Check access rights
   if (writing && !translationTable->getBitWriteAllowed(vpn)) {
-    DEBUG('h', (char *)"write access on read-only virtual page # %d !\n",
-	  vpn);
+    DEBUG('h', (char *)"write access on read-only virtual page # %d !\n", vpn);
     return READONLY_EXCEPTION;
   }
 
@@ -236,7 +230,7 @@ MMU::Translate(int virtAddr, int* physAddr, int size, bool writing)
     // Update statistics
     g_current_thread->GetProcessOwner()->stat->incrPageFault();
     DEBUG('h', (char *)"Raising page fault exception for page number %i\n",
-	  vpn);
+          vpn);
 
     // call the page fault manager
     g_machine->RaiseException(PAGEFAULT_EXCEPTION, virtAddr);
@@ -248,18 +242,17 @@ MMU::Translate(int virtAddr, int* physAddr, int size, bool writing)
   }
 
   // Make sure physical address is correct
-  if ((translationTable->getPhysicalPage(vpn) < 0)
-      || (translationTable->getPhysicalPage(vpn) >= g_cfg->NumPhysPages))
-    {
-      DEBUG('h', (char *)"MMU: Translated physical page out of bounds (0x%x)\n",
-	    translationTable->getPhysicalPage(vpn));
-      return BUSERROR_EXCEPTION;
-    }
-  
+  if ((translationTable->getPhysicalPage(vpn) < 0) ||
+      (translationTable->getPhysicalPage(vpn) >= g_cfg->NumPhysPages)) {
+    DEBUG('h', (char *)"MMU: Translated physical page out of bounds (0x%x)\n",
+          translationTable->getPhysicalPage(vpn));
+    return BUSERROR_EXCEPTION;
+  }
+
   // Set the U/M bits
   if (writing) {
     translationTable->setBitM(vpn);
-  } 
+  }
   translationTable->setBitU(vpn);
   g_current_thread->GetProcessOwner()->stat->incrMemoryAccess();
 

@@ -4,8 +4,8 @@
 // DO NOT CHANGE -- part of the machine emulation
 //
 //  Copyright (c) 1999-2000 INSA de Rennes.
-//  All rights reserved.  
-//  See copyright_insa.h for copyright notice and limitation 
+//  All rights reserved.
+//  See copyright_insa.h for copyright notice and limitation
 //  of liability and disclaimer of warranty provisions.
 //
 */
@@ -21,14 +21,12 @@
 */
 //----------------------------------------------------------------------
 TranslationTable::TranslationTable() {
-
   // Init private fields
   maxNumPages = g_cfg->MaxVirtPages;
-  
-  DEBUG('h',(char *)"Allocationg translation table for %d pages (%ld kB)\n",
-	maxNumPages, ((long long)maxNumPages*g_cfg->PageSize) >> 10);
-  pageTable = new PageTableEntry[maxNumPages];
 
+  DEBUG('h', (char *)"Allocationg translation table for %d pages (%ld kB)\n",
+        maxNumPages, ((long long)maxNumPages * g_cfg->PageSize) >> 10);
+  pageTable = new PageTableEntry[maxNumPages];
 }
 
 //----------------------------------------------------------------------
@@ -37,9 +35,8 @@ TranslationTable::TranslationTable() {
 */
 //----------------------------------------------------------------------
 TranslationTable::~TranslationTable() {
- delete [] pageTable;
- DEBUG('h',(char *)"Translation table destroyed");
- 
+  delete[] pageTable;
+  DEBUG('h', (char *)"Translation table destroyed");
 }
 
 //----------------------------------------------------------------------
@@ -48,9 +45,7 @@ TranslationTable::~TranslationTable() {
 //  translation table.
 */
 //----------------------------------------------------------------------
-int TranslationTable::getMaxNumPages() {
-  return maxNumPages;
-}
+int TranslationTable::getMaxNumPages() { return maxNumPages; }
 
 //----------------------------------------------------------------------
 // TranslationTable::setPhysicalPage
@@ -60,7 +55,7 @@ int TranslationTable::getMaxNumPages() {
 */
 //----------------------------------------------------------------------
 void TranslationTable::setPhysicalPage(int virtualPage, int physicalPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].physicalPage = physicalPage;
 }
 
@@ -72,7 +67,7 @@ void TranslationTable::setPhysicalPage(int virtualPage, int physicalPage) {
 */
 //----------------------------------------------------------------------
 int TranslationTable::getPhysicalPage(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   return pageTable[virtualPage].physicalPage;
 }
 
@@ -85,7 +80,7 @@ int TranslationTable::getPhysicalPage(int virtualPage) {
 */
 //----------------------------------------------------------------------
 void TranslationTable::setAddrDisk(int virtualPage, int addrDisk) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].addrDisk = addrDisk;
 }
 
@@ -97,7 +92,7 @@ void TranslationTable::setAddrDisk(int virtualPage, int addrDisk) {
 */
 //----------------------------------------------------------------------
 int TranslationTable::getAddrDisk(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   return pageTable[virtualPage].addrDisk;
 }
 
@@ -108,7 +103,7 @@ int TranslationTable::getAddrDisk(int virtualPage) {
 */
 //----------------------------------------------------------------------
 void TranslationTable::setBitValid(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].valid = true;
 }
 
@@ -119,7 +114,7 @@ void TranslationTable::setBitValid(int virtualPage) {
 */
 //----------------------------------------------------------------------
 void TranslationTable::clearBitValid(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].valid = false;
 }
 
@@ -131,8 +126,8 @@ void TranslationTable::clearBitValid(int virtualPage) {
 */
 //----------------------------------------------------------------------
 bool TranslationTable::getBitValid(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
-  return  pageTable[virtualPage].valid;
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
+  return pageTable[virtualPage].valid;
 }
 
 //----------------------------------------------------------------------
@@ -142,7 +137,7 @@ bool TranslationTable::getBitValid(int virtualPage) {
 */
 //----------------------------------------------------------------------
 void TranslationTable::setBitIo(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].io = true;
 }
 
@@ -153,7 +148,7 @@ void TranslationTable::setBitIo(int virtualPage) {
 */
 //----------------------------------------------------------------------
 void TranslationTable::clearBitIo(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].io = false;
 }
 
@@ -165,7 +160,7 @@ void TranslationTable::clearBitIo(int virtualPage) {
 */
 //----------------------------------------------------------------------
 bool TranslationTable::getBitIo(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   return pageTable[virtualPage].io;
 }
 
@@ -176,7 +171,7 @@ bool TranslationTable::getBitIo(int virtualPage) {
 */
 //----------------------------------------------------------------------
 void TranslationTable::setBitSwap(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].swap = true;
 }
 
@@ -187,7 +182,7 @@ void TranslationTable::setBitSwap(int virtualPage) {
 */
 //----------------------------------------------------------------------
 void TranslationTable::clearBitSwap(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].swap = false;
 }
 
@@ -199,7 +194,7 @@ void TranslationTable::clearBitSwap(int virtualPage) {
 */
 //----------------------------------------------------------------------
 bool TranslationTable::getBitSwap(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   return pageTable[virtualPage].swap;
 }
 
@@ -210,7 +205,7 @@ bool TranslationTable::getBitSwap(int virtualPage) {
 */
 //----------------------------------------------------------------------
 void TranslationTable::setBitReadAllowed(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].readAllowed = true;
 }
 
@@ -221,7 +216,7 @@ void TranslationTable::setBitReadAllowed(int virtualPage) {
 */
 //----------------------------------------------------------------------
 void TranslationTable::clearBitReadAllowed(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].readAllowed = false;
 }
 
@@ -233,10 +228,9 @@ void TranslationTable::clearBitReadAllowed(int virtualPage) {
 */
 //----------------------------------------------------------------------
 bool TranslationTable::getBitReadAllowed(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   return pageTable[virtualPage].readAllowed;
 }
-
 
 //----------------------------------------------------------------------
 //  TranslationTable::setBitWriteAllowed
@@ -245,7 +239,7 @@ bool TranslationTable::getBitReadAllowed(int virtualPage) {
 */
 //----------------------------------------------------------------------
 void TranslationTable::setBitWriteAllowed(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].writeAllowed = true;
 }
 
@@ -256,7 +250,7 @@ void TranslationTable::setBitWriteAllowed(int virtualPage) {
 */
 //----------------------------------------------------------------------
 void TranslationTable::clearBitWriteAllowed(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].writeAllowed = false;
 }
 
@@ -268,36 +262,36 @@ void TranslationTable::clearBitWriteAllowed(int virtualPage) {
 */
 //----------------------------------------------------------------------
 bool TranslationTable::getBitWriteAllowed(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   return pageTable[virtualPage].writeAllowed;
 }
 
 void TranslationTable::setBitU(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].U = true;
 }
 
 void TranslationTable::clearBitU(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].U = false;
 }
 bool TranslationTable::getBitU(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   return pageTable[virtualPage].U;
 }
 
 void TranslationTable::setBitM(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].M = true;
 }
 
 void TranslationTable::clearBitM(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
   pageTable[virtualPage].M = false;
 }
 bool TranslationTable::getBitM(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
-  return   pageTable[virtualPage].M;
+  ASSERT((virtualPage >= 0) && (virtualPage < maxNumPages));
+  return pageTable[virtualPage].M;
 }
 
 //----------------------------------------------------------------------
@@ -305,13 +299,12 @@ bool TranslationTable::getBitM(int virtualPage) {
 /*!  Constructor. Defaut initialization of a page table entry
 */
 //----------------------------------------------------------------------
-PageTableEntry::PageTableEntry()
-{
-  valid=false;
-  swap=false;
+PageTableEntry::PageTableEntry() {
+  valid = false;
+  swap = false;
   addrDisk = -1;
-  readAllowed=false;
-  writeAllowed=false;
+  readAllowed = false;
+  writeAllowed = false;
   U = false;
   M = false;
 }

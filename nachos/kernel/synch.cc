@@ -1,7 +1,7 @@
-/*! \file synch.cc 
-//  \brief Routines for synchronizing threads.  
+/*! \file synch.cc
+//  \brief Routines for synchronizing threads.
 //
-//      Three kinds of synchronization routines are defined here: 
+//      Three kinds of synchronization routines are defined here:
 //      semaphores, locks and condition variables.
 //
 // Any implementation of a synchronization routine needs some
@@ -18,9 +18,8 @@
 // that be disabled or enabled).
 */
 // Copyright (c) 1992-1993 The Regents of the University of California.
-// All rights reserved.  See copyright.h for copyright notice and limitation 
+// All rights reserved.  See copyright.h for copyright notice and limitation
 // of liability and disclaimer of warranty provisions.
-
 
 #include "kernel/system.h"
 #include "kernel/scheduler.h"
@@ -34,10 +33,9 @@
 // \param initialValue is the initial value of the semaphore.
 */
 //----------------------------------------------------------------------
-Semaphore::Semaphore(char* debugName, int initialValue)
-{
-  name = new char[strlen(debugName)+1];
-  strcpy(name,debugName);
+Semaphore::Semaphore(char *debugName, int initialValue) {
+  name = new char[strlen(debugName) + 1];
+  strcpy(name, debugName);
   value = initialValue;
   queue = new Listint;
   typeId = SEMAPHORE_TYPE_ID;
@@ -49,17 +47,17 @@ Semaphore::Semaphore(char* debugName, int initialValue)
 //	is still waiting on the semaphore!
 */
 //----------------------------------------------------------------------
-Semaphore::~Semaphore()
-{
+Semaphore::~Semaphore() {
   typeId = INVALID_TYPE_ID;
   if (!queue->IsEmpty()) {
-    DEBUG('s', (char *)"Destructor of semaphore \"%s\", queue is not empty!!\n",name);
-    Thread *t =  (Thread *)queue->Remove();
-    DEBUG('s', (char *)"Queue contents %s\n",t->GetName());
+    DEBUG('s', (char *)"Destructor of semaphore \"%s\", queue is not empty!!\n",
+          name);
+    Thread *t = (Thread *)queue->Remove();
+    DEBUG('s', (char *)"Queue contents %s\n", t->GetName());
     queue->Append((void *)t);
   }
   ASSERT(queue->IsEmpty());
-  delete [] name;
+  delete[] name;
   delete queue;
 }
 
@@ -74,8 +72,7 @@ Semaphore::~Semaphore()
 //	when it is called.
 */
 //----------------------------------------------------------------------
-void
-Semaphore::P() {
+void Semaphore::P() {
 #ifndef ETUDIANTS_TP
   printf("**** Warning: method Semaphore::P is not implemented yet\n");
   exit(-1);
@@ -98,8 +95,7 @@ Semaphore::P() {
 //	are disabled when it is called.
 */
 //----------------------------------------------------------------------
-void
-Semaphore::V() {
+void Semaphore::V() {
 #ifndef ETUDIANTS_TP
   printf("**** Warning: method Semaphore::V is not implemented yet\n");
   exit(-1);
@@ -109,7 +105,7 @@ Semaphore::V() {
   g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
   value++;
   if (!queue->IsEmpty()) {
-    Thread *t =  (Thread *)queue->Remove();
+    Thread *t = (Thread *)queue->Remove();
     g_scheduler->ReadyToRun(t);
   }
   g_machine->interrupt->SetStatus(oldLevel);
@@ -123,15 +119,14 @@ Semaphore::V() {
 //  \param "debugName" is an arbitrary name, useful for debugging.
 */
 //----------------------------------------------------------------------
-Lock::Lock(char* debugName) {
-  name = new char[strlen(debugName)+1];
-  strcpy(name,debugName);
+Lock::Lock(char *debugName) {
+  name = new char[strlen(debugName) + 1];
+  strcpy(name, debugName);
   sleepqueue = new Listint;
   free = true;
   owner = NULL;
   typeId = LOCK_TYPE_ID;
 }
-
 
 //----------------------------------------------------------------------
 // Lock::~Lock
@@ -142,7 +137,7 @@ Lock::Lock(char* debugName) {
 Lock::~Lock() {
   typeId = INVALID_TYPE_ID;
   ASSERT(sleepqueue->IsEmpty());
-  delete [] name;
+  delete[] name;
   delete sleepqueue;
 }
 
@@ -191,7 +186,7 @@ void Lock::Release() {
   g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
   ASSERT(isHeldByCurrentThread());
   if (!sleepqueue->IsEmpty()) {
-    Thread *t =  (Thread *)sleepqueue->Remove();
+    Thread *t = (Thread *)sleepqueue->Remove();
     g_scheduler->ReadyToRun(t);
   } else {
     free = true;
@@ -205,7 +200,7 @@ void Lock::Release() {
 /*! To check if current thread hold the lock
 */
 //----------------------------------------------------------------------
-bool Lock::isHeldByCurrentThread() {return (g_current_thread == owner);}	
+bool Lock::isHeldByCurrentThread() { return (g_current_thread == owner); }
 
 //----------------------------------------------------------------------
 // Condition::Condition
@@ -214,9 +209,9 @@ bool Lock::isHeldByCurrentThread() {return (g_current_thread == owner);}
 //    \param  "debugName" is an arbitrary name, useful for debugging.
 */
 //----------------------------------------------------------------------
-Condition::Condition(char* debugName) { 
-  name = new char[strlen(debugName)+1];
-  strcpy(name,debugName);
+Condition::Condition(char *debugName) {
+  name = new char[strlen(debugName) + 1];
+  strcpy(name, debugName);
   waitqueue = new Listint;
   typeId = CONDITION_TYPE_ID;
 }
@@ -230,7 +225,7 @@ Condition::Condition(char* debugName) {
 Condition::~Condition() {
   typeId = INVALID_TYPE_ID;
   ASSERT(waitqueue->IsEmpty());
-  delete [] name;
+  delete[] name;
   delete waitqueue;
 }
 
@@ -238,23 +233,23 @@ Condition::~Condition() {
 // Condition::Wait
 /*! Block the calling thread (put it in the wait queue).
 //  This operation must be atomic, so we need to disable interrupts.
-*/	
+*/
 //----------------------------------------------------------------------
-void Condition::Wait() { 
-    printf("**** Warning: method Condition::Wait is not implemented yet\n");
-    exit(-1);
+void Condition::Wait() {
+  printf("**** Warning: method Condition::Wait is not implemented yet\n");
+  exit(-1);
 }
 
 //----------------------------------------------------------------------
 // Condition::Signal
 
-/*! Wake up the first thread of the wait queue (if any). 
+/*! Wake up the first thread of the wait queue (if any).
 // This operation must be atomic, so we need to disable interrupts.
 */
 //----------------------------------------------------------------------
-void Condition::Signal() { 
-    printf("**** Warning: method Condition::Signal is not implemented yet\n");
-    exit(-1);
+void Condition::Signal() {
+  printf("**** Warning: method Condition::Signal is not implemented yet\n");
+  exit(-1);
 }
 
 //----------------------------------------------------------------------
@@ -263,7 +258,7 @@ void Condition::Signal() {
 // This operation must be atomic, so we need to disable interrupts.
 */
 //----------------------------------------------------------------------
-void Condition::Broadcast() { 
+void Condition::Broadcast() {
   printf("**** Warning: method Condition::Broadcast is not implemented yet\n");
   exit(-1);
 }

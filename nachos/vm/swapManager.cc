@@ -3,13 +3,13 @@
 //  \brief Routines of the swap manager
 //
 //  Copyright (c) 1999-2000 INSA de Rennes.
-//  All rights reserved.  
-//  See copyright_insa.h for copyright notice and limitation 
+//  All rights reserved.
+//  See copyright_insa.h for copyright notice and limitation
 //  of liability and disclaimer of warranty provisions.
 //
 */
 //-----------------------------------------------------------------
- 
+
 #include <unistd.h>
 
 #include "drivers/drvDisk.h"
@@ -26,11 +26,9 @@
  */
 //-----------------------------------------------------------------
 SwapManager::SwapManager() {
-
-  swap_disk = new DriverDisk("sem swap disk","lock swap disk",
-			     g_machine->diskSwap);
+  swap_disk =
+      new DriverDisk("sem swap disk", "lock swap disk", g_machine->diskSwap);
   page_flags = new BitMap(NUM_SECTORS);
-
 }
 
 //-----------------------------------------------------------------
@@ -41,10 +39,8 @@ SwapManager::SwapManager() {
  */
 //-----------------------------------------------------------------
 SwapManager::~SwapManager() {
-
   delete page_flags;
   delete swap_disk;
-
 }
 
 //-----------------------------------------------------------------
@@ -58,10 +54,9 @@ SwapManager::~SwapManager() {
  */
 //-----------------------------------------------------------------
 int SwapManager::GetFreePage() {
-  
   // Scan the page allocation bitmap
-  for (int i=0;i<NUM_SECTORS;i++) {
-    if (! page_flags->Test(i)) {
+  for (int i = 0; i < NUM_SECTORS; i++) {
+    if (!page_flags->Test(i)) {
       // the page #i is free
       page_flags->Mark(i);
       return i;
@@ -81,66 +76,58 @@ int SwapManager::GetFreePage() {
 */
 //-----------------------------------------------------------------
 void SwapManager::ReleasePageSwap(int num_sector) {
-
-  DEBUG('v',(char *)"Swap page %i released for thread \"%s\"\n",num_sector,
-	g_current_thread->GetName());
+  DEBUG('v', (char *)"Swap page %i released for thread \"%s\"\n", num_sector,
+        g_current_thread->GetName());
   // clear the #num_sector bit of page_flags
   page_flags->Clear(num_sector);
-
 }
 
 //-----------------------------------------------------------------
-/** Fill a buffer with the swap information in a specific sector in the swap area
+/** Fill a buffer with the swap information in a specific sector in the swap
+ *area
  *
  * \param num_sector: sector number in the swap area
  * \param Swap_Page: buffer where to put the data read from the swap area
  */
 //-----------------------------------------------------------------
-void SwapManager::GetPageSwap(int num_sector ,char* SwapPage ) {
-  
-  DEBUG('v',(char *)"Reading swap page %i for \"%s\"\n",num_sector,
-	g_current_thread->GetName());
-  swap_disk->ReadSector(num_sector,SwapPage);
+void SwapManager::GetPageSwap(int num_sector, char *SwapPage) {
+  DEBUG('v', (char *)"Reading swap page %i for \"%s\"\n", num_sector,
+        g_current_thread->GetName());
+  swap_disk->ReadSector(num_sector, SwapPage);
 }
 
 //-----------------------------------------------------------------
 /** This method puts a page into the swapping area. If the sector
  *  number given in parameters is set to -1, the swap manager
  *  chooses a free sector and return its number.
- *  
+ *
  *  \param num_sector is the sector number used in the swapping area,
  *  \param SwapPage is the buffer to transfer in the swapping area.
  *  \return The sector number used in the swapping area. This number
- *          is used to update the field disk_page in the translation 
+ *          is used to update the field disk_page in the translation
  *          table entry.
 */
 //-----------------------------------------------------------------
-int SwapManager::PutPageSwap(int num_sector,char *SwapPage) {
-
+int SwapManager::PutPageSwap(int num_sector, char *SwapPage) {
   if (num_sector >= 0) {
-    DEBUG('v',(char *)"Writing swap page %i for \"%s\"\n",num_sector,
-	    g_current_thread->GetName());
-    swap_disk->WriteSector(num_sector,SwapPage);
+    DEBUG('v', (char *)"Writing swap page %i for \"%s\"\n", num_sector,
+          g_current_thread->GetName());
+    swap_disk->WriteSector(num_sector, SwapPage);
     return num_sector;
-  }
-  else {
+  } else {
     int newpage = GetFreePage();
     if (newpage == -1) {
       return -1;
-    }
-    else {
-      DEBUG('v',(char *)"Writing swap page %i for \"%s\"\n",newpage,
-	    g_current_thread->GetName());
-      swap_disk->WriteSector(newpage,SwapPage);
+    } else {
+      DEBUG('v', (char *)"Writing swap page %i for \"%s\"\n", newpage,
+            g_current_thread->GetName());
+      swap_disk->WriteSector(newpage, SwapPage);
       return newpage;
     }
-  }		 
+  }
 }
 
 //-----------------------------------------------------------------
 /** This method gives to the DriverDisk for the swap area */
 //-----------------------------------------------------------------
-DriverDisk * SwapManager::GetSwapDisk ()
-{
-  return swap_disk;
-}   
+DriverDisk *SwapManager::GetSwapDisk() { return swap_disk; }

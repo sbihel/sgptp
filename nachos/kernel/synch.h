@@ -1,16 +1,16 @@
-/*! \file synch.h 
+/*! \file synch.h
     \brief Data structures for synchronizing threads.
-  
-  	Three kinds of synchronization are defined here: semaphores,
-  	locks, and condition variables. Part or all of them are to be
-  	implemented as part of the first assignment.
-  
-  	Note that all the synchronization objects take a "name" as
-  	part of the initialization.  This is solely for debugging purposes.
-  
+
+    Three kinds of synchronization are defined here: semaphores,
+    locks, and condition variables. Part or all of them are to be
+    implemented as part of the first assignment.
+
+    Note that all the synchronization objects take a "name" as
+    part of the initialization.  This is solely for debugging purposes.
+
    Copyright (c) 1992-1993 The Regents of the University of California.
-   All rights reserved.  See copyright.h for copyright notice and limitation 
-   synch.h -- synchronization primitives.  
+   All rights reserved.  See copyright.h for copyright notice and limitation
+   synch.h -- synchronization primitives.
 */
 
 #ifndef SYNCH_H
@@ -28,8 +28,8 @@
 //	P() -- decrement, then wait if the value becomes < 0
 //
 //	V() -- increment, waking up a thread waiting in P() if necessary
-// 
-// Note that the interface does *not* allow a thread to read the value of 
+//
+// Note that the interface does *not* allow a thread to read the value of
 // the semaphore directly -- even if you did read the value, the
 // only thing you would know is what the value used to be.  You don't
 // know what the value is now, because by the time you get the value
@@ -38,25 +38,25 @@
 // now be different.
 */
 class Semaphore {
-public:
+ public:
   //! Create and set initial value
   Semaphore(char* debugName, int initialValue);
-  
-  //! Delete semaphore
-  ~Semaphore();  
-  
-  //! debugging assist
-  char* getName() { return name;}
-    
-  void P();	 // these are the only operations on a semaphore
-  void V();	 // they are both *atomic*
-    
-private:
-  char *name;      //!< useful for debugging
-  int value;       //!< semaphore value
-  Listint *queue;  //!< threads waiting in P() for the value to be > 0
 
-public:
+  //! Delete semaphore
+  ~Semaphore();
+
+  //! debugging assist
+  char* getName() { return name; }
+
+  void P();  // these are the only operations on a semaphore
+  void V();  // they are both *atomic*
+
+ private:
+  char* name;      //!< useful for debugging
+  int value;       //!< semaphore value
+  Listint* queue;  //!< threads waiting in P() for the value to be > 0
+
+ public:
   //! signature to make sure the semaphore is in the correct state
   ObjectTypeId typeId;
 };
@@ -64,7 +64,7 @@ public:
 /*! \brief Defines the "lock" synchronization tool
 //
 // A lock can be BUSY or FREE.
-// There are only two operations allowed on a lock: 
+// There are only two operations allowed on a lock:
 //
 //	Acquire -- wait until the lock is FREE, then set it to BUSY
 //
@@ -73,58 +73,57 @@ public:
 //
 // In addition, by convention, only the thread that acquired the lock
 // may release it.  As with semaphores, you can't read the lock value
-// (because the value might change immediately after you read it).  
+// (because the value might change immediately after you read it).
 */
 class Lock {
-public:
+ public:
   //! Lock creation
   Lock(char* debugName);
 
   //! Delete a lock
   ~Lock();
 
-  //! For debugging 
+  //! For debugging
   char* getName() { return name; }
-  
+
   //! Acquire a lock (atomic operation)
   void Acquire();
 
   //! Release a lock (atomic operation)
-  void Release(); 
-  
+  void Release();
+
   //! true if the current thread holds this lock.  Useful for checking
   //! in Release, and in Condition variable operations below.
-  bool isHeldByCurrentThread();	 
-  
-private:
-  char* name;            //!< for debugging
-  Listint * sleepqueue;  //!< threads waiting to acquire the lock
-  bool free;             //!< to know if the lock is free
-  Thread * owner;        //!< Thread who has acquired the lock
+  bool isHeldByCurrentThread();
 
-public:
+ private:
+  char* name;           //!< for debugging
+  Listint* sleepqueue;  //!< threads waiting to acquire the lock
+  bool free;            //!< to know if the lock is free
+  Thread* owner;        //!< Thread who has acquired the lock
+
+ public:
   //! signature to make sure the lock is in the correct state
   ObjectTypeId typeId;
 };
 
-
-/*! \class Condition 
+/*! \class Condition
 \brief Defines the "condition variable" synchronization tool
 //
 // A condition
 // variable does not have a value, but threads may be queued, waiting
-// on the variable.  These are only operations on a condition variable: 
+// on the variable.  These are only operations on a condition variable:
 //
-//	Wait() -- relinquish the CPU until signaled, 
+//	Wait() -- relinquish the CPU until signaled,
 //
-//	Signal() -- wake up a thread, if there are any waiting on 
+//	Signal() -- wake up a thread, if there are any waiting on
 //		the condition
 //
 //	Broadcast() -- wake up all threads waiting on the condition
 //
 */
 class Condition {
-public:
+ public:
   //! Create a condition and initialize it to "no one waiting"
   Condition(char* debugName);
 
@@ -133,18 +132,18 @@ public:
 
   //! For debugging
   char* getName() { return (name); }
-  
-  void Wait(); 	     // Wait until the condition is signalled
-  void Signal();     // Wake up one of the thread waiting on the condition 
+
+  void Wait();       // Wait until the condition is signalled
+  void Signal();     // Wake up one of the thread waiting on the condition
   void Broadcast();  // Wake up all threads waiting on the condition
 
-private:
-  char* name;           //!< For debbuging
-  Listint * waitqueue;  //!< Threads asked to wait
+ private:
+  char* name;          //!< For debbuging
+  Listint* waitqueue;  //!< Threads asked to wait
 
-public:
+ public:
   //! Signature to make sure the condition is in the correct state
   ObjectTypeId typeId;
 };
 
-#endif // SYNCH_H
+#endif  // SYNCH_H

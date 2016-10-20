@@ -1,16 +1,15 @@
-/*! \file sysdep.h 
+/*! \file sysdep.h
    \brief System-dependent interface
-  
+
         Nachos uses the routines defined
-  	here, rather than directly calling the UNIX library functions, to
-  	simplify porting between versions of UNIX, and even to
-  	other systems, such as MSDOS and the Macintosh.
+    here, rather than directly calling the UNIX library functions, to
+    simplify porting between versions of UNIX, and even to
+    other systems, such as MSDOS and the Macintosh.
 
  Copyright (c) 1992-1993 The Regents of the University of California.
- All rights reserved.  See copyright.h for copyright notice and limitation 
+ All rights reserved.  See copyright.h for copyright notice and limitation
  of liability and disclaimer of warranty provisions.
 */
-
 
 #ifndef SYSDEP_H
 #define SYSDEP_H
@@ -18,12 +17,14 @@
 #include "kernel/copyright.h"
 
 /* Align on a boundary (MUST be a power of 2), so that return value <= val */
-#define ALIGN_INF(val,boundary)		\
-  (int8_t*)(((unsigned long)val) & (~(((unsigned long)boundary)-1)))
+#define ALIGN_INF(val, boundary) \
+  (int8_t *)(((unsigned long)val) & (~(((unsigned long)boundary) - 1)))
 
 /* Align on a boundary (MUST be a power of 2), so that return value >= val */
-#define ALIGN_SUP(val,boundary)			\
-  (int8_t*)(((((unsigned long)val)-1) & (~(((unsigned long)boundary)-1))) + ((unsigned long)boundary))
+#define ALIGN_SUP(val, boundary)                                          \
+  (int8_t *)(                                                             \
+      ((((unsigned long)val) - 1) & (~(((unsigned long)boundary) - 1))) + \
+      ((unsigned long)boundary))
 
 /* Check file to see if there are any characters to be read.
 // If no characters in the file, return without waiting.
@@ -51,7 +52,8 @@ extern int OpenSocket();
 extern void CloseSocket(int sockID);
 extern void AssignNameToSocket(char *socketName, int sockID);
 extern int ReadFromSocket(int sockID, char *buffer, int packetSize);
-extern void SendToSocket(int sockID, char *buffer, int packetSize, char *toName);
+extern void SendToSocket(int sockID, char *buffer, int packetSize,
+                         char *toName);
 
 // Process control: abort, exit, and sleep
 extern void Abort();
@@ -69,7 +71,7 @@ extern int Random();
 // just beyond either end of the array will cause an error
 */
 
-extern int8_t*AllocBoundedArray(size_t size);
+extern int8_t *AllocBoundedArray(size_t size);
 extern void DeallocBoundedArray(int8_t *p, size_t size);
 
 /* Other C library routines that are used by Nachos.
@@ -81,4 +83,4 @@ extern "C" {
 #include <string.h>  // for DEBUG, etc.
 }
 
-#endif // SYSDEP_H
+#endif  // SYSDEP_H

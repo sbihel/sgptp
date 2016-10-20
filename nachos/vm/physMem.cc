@@ -4,8 +4,8 @@
 */
 //
 //  Copyright (c) 1999-2000 INSA de Rennes.
-//  All rights reserved.  
-//  See copyright_insa.h for copyright notice and limitation 
+//  All rights reserved.
+//  See copyright_insa.h for copyright notice and limitation
 //  of liability and disclaimer of warranty provisions.
 //-----------------------------------------------------------------
 
@@ -20,24 +20,23 @@
 */
 //-----------------------------------------------------------------
 PhysicalMemManager::PhysicalMemManager() {
-
   long i;
 
   tpr = new struct tpr_c[g_cfg->NumPhysPages];
 
-  for (i=0;i<g_cfg->NumPhysPages;i++) {
-    tpr[i].free=true;
-    tpr[i].locked=false;
-    tpr[i].owner=NULL;
+  for (i = 0; i < g_cfg->NumPhysPages; i++) {
+    tpr[i].free = true;
+    tpr[i].locked = false;
+    tpr[i].owner = NULL;
     free_page_list.Append((void*)i);
   }
-  i_clock=-1;
+  i_clock = -1;
 }
 
 PhysicalMemManager::~PhysicalMemManager() {
   // Empty free page list
   int64_t page;
-  while (!free_page_list.IsEmpty()) page =  (int64_t)free_page_list.Remove();
+  while (!free_page_list.IsEmpty()) page = (int64_t)free_page_list.Remove();
 
   // Delete physical page table
   delete[] tpr;
@@ -54,15 +53,15 @@ PhysicalMemManager::~PhysicalMemManager() {
 */
 //-----------------------------------------------------------------
 void PhysicalMemManager::RemovePhysicalToVirtualMapping(long num_page) {
-  
-  // Check that the page is not already free 
+  // Check that the page is not already free
   ASSERT(!tpr[num_page].free);
 
   // Update the physical page table entry
-  tpr[num_page].free=true;
-  tpr[num_page].locked=false;
-  if (tpr[num_page].owner->translationTable!=NULL) 
-    tpr[num_page].owner->translationTable->clearBitValid(tpr[num_page].virtualPage);
+  tpr[num_page].free = true;
+  tpr[num_page].locked = false;
+  if (tpr[num_page].owner->translationTable != NULL)
+    tpr[num_page].owner->translationTable->clearBitValid(
+        tpr[num_page].virtualPage);
 
   // Insert the page in the free list
   free_page_list.Prepend((void*)num_page);
@@ -81,9 +80,9 @@ void PhysicalMemManager::RemovePhysicalToVirtualMapping(long num_page) {
 */
 //-----------------------------------------------------------------
 void PhysicalMemManager::UnlockPage(long num_page) {
-  ASSERT(num_page<g_cfg->NumPhysPages);
-  ASSERT(tpr[num_page].locked==true);
-  ASSERT(tpr[num_page].free==false);
+  ASSERT(num_page < g_cfg->NumPhysPages);
+  ASSERT(tpr[num_page].locked == true);
+  ASSERT(tpr[num_page].free == false);
   tpr[num_page].locked = false;
 }
 
@@ -104,7 +103,7 @@ void PhysicalMemManager::ChangeOwner(long numPage, Thread* owner) {
 }
 
 //-----------------------------------------------------------------
-// PhysicalMemManager::AddPhysicalToVirtualMapping 
+// PhysicalMemManager::AddPhysicalToVirtualMapping
 //
 /*! This method returns a new physical page number. If there is no
 //  page available, it evicts one page (page replacement algorithm).
@@ -118,9 +117,11 @@ void PhysicalMemManager::ChangeOwner(long numPage, Thread* owner) {
 //  \return A new physical page number.
 */
 //-----------------------------------------------------------------
-int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner,int virtualPage) 
-{
-  printf("**** Warning: function AddPhysicalToVirtualMapping is not implemented\n");
+int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner,
+                                                    int virtualPage) {
+  printf(
+      "**** Warning: function AddPhysicalToVirtualMapping is not "
+      "implemented\n");
   exit(-1);
   return (0);
 }
@@ -138,18 +139,17 @@ int PhysicalMemManager::FindFreePage() {
   int64_t page;
 
   // Check that the free list is not empty
-  if (free_page_list.IsEmpty())
-    return -1;
+  if (free_page_list.IsEmpty()) return -1;
 
   // Update statistics
   g_current_thread->GetProcessOwner()->stat->incrMemoryAccess();
-  
+
   // Get a page from the free list
   page = (int64_t)free_page_list.Remove();
-  
+
   // Check that the page is really free
   ASSERT(tpr[page].free);
-  
+
   // Update the physical page table
   tpr[page].free = false;
 
@@ -167,8 +167,8 @@ int PhysicalMemManager::FindFreePage() {
 //-----------------------------------------------------------------
 int PhysicalMemManager::EvictPage() {
   printf("**** Warning: page replacement algorithm is not implemented yet\n");
-    exit(-1);
-    return (0);
+  exit(-1);
+  return (0);
 }
 
 //-----------------------------------------------------------------
@@ -183,15 +183,16 @@ int PhysicalMemManager::EvictPage() {
 void PhysicalMemManager::Print(void) {
   int i;
 
-  printf("Contents of TPR (%d pages)\n",g_cfg->NumPhysPages);
-  for (i=0;i<g_cfg->NumPhysPages;i++) {
-    printf("Page %d free=%d locked=%d virtpage=%d owner=%lx U=%d M=%d\n",
-	   i,
-	   tpr[i].free,
-	   tpr[i].locked,
-	   tpr[i].virtualPage,
-	   (long int)tpr[i].owner,
-	   (tpr[i].owner!=NULL) ? tpr[i].owner->translationTable->getBitU(tpr[i].virtualPage) : 0,
-	   (tpr[i].owner!=NULL) ? tpr[i].owner->translationTable->getBitM(tpr[i].virtualPage) : 0);
+  printf("Contents of TPR (%d pages)\n", g_cfg->NumPhysPages);
+  for (i = 0; i < g_cfg->NumPhysPages; i++) {
+    printf("Page %d free=%d locked=%d virtpage=%d owner=%lx U=%d M=%d\n", i,
+           tpr[i].free, tpr[i].locked, tpr[i].virtualPage,
+           (long int)tpr[i].owner,
+           (tpr[i].owner != NULL)
+               ? tpr[i].owner->translationTable->getBitU(tpr[i].virtualPage)
+               : 0,
+           (tpr[i].owner != NULL)
+               ? tpr[i].owner->translationTable->getBitM(tpr[i].virtualPage)
+               : 0);
   }
 }

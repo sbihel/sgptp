@@ -1,11 +1,11 @@
-/** \file  addrspace.h 
+/** \file  addrspace.h
     \brief Data structures to keep track of the memory resources
            of executing user programs (address spaces).
 
            Don't look at this code in the first assignment.
 
     Copyright (c) 1992-1993 The Regents of the University of California.
-    All rights reserved.  See copyright.h for copyright notice and limitation 
+    All rights reserved.  See copyright.h for copyright notice and limitation
     of liability and disclaimer of warranty provisions.
 */
 
@@ -25,9 +25,9 @@ class Process;
 #define MAX_MAPPED_FILES 10
 //! Information describing a memory-mapped file
 typedef struct {
-        int32_t first_address;
-        int size;
-        OpenFile *file;
+  int32_t first_address;
+  int size;
+  OpenFile *file;
 } s_mapped_file;
 typedef s_mapped_file t_mapped_files[MAX_MAPPED_FILES];
 
@@ -42,8 +42,7 @@ typedef s_mapped_file t_mapped_files[MAX_MAPPED_FILES];
 
 */
 class AddrSpace {
-public:
-  
+ public:
   /** 	Create an address space to run a user program.
    //	Load the program from a file "exec_file", and set everything
    //	up so that we can start executing user instructions.
@@ -60,18 +59,18 @@ public:
    //      Don't look at this code right now. You may get lost. You will
    //      have plenty of time to do so in the virtual memory assignment
    //
-   //	\param exec_file is the file containing the object code 
+   //	\param exec_file is the file containing the object code
    //             to load into memory, or NULL when the address space
    //             should be empty
    //   \param process: process to be executed
-   //   \param err: error code 0 if OK, -1 otherwise 
+   //   \param err: error code 0 if OK, -1 otherwise
    */
-  AddrSpace(OpenFile *exec_file, Process *p, int * err);
- 
+  AddrSpace(OpenFile *exec_file, Process *p, int *err);
+
   /**   Deallocates an address space and in particular frees
    *   all memory it uses (RAM and swap area).
-   */ 
-  ~AddrSpace();	
+   */
+  ~AddrSpace();
 
   /**	Allocates a new stack of size cfg->UserStackSize
    *
@@ -80,17 +79,16 @@ public:
    *
    *      \return stack pointer (at the end of the allocated stack)
    */
-  int StackAllocate();                  
+  int StackAllocate();
 
   /** Returns the address of the first instruction to execute in the process
     found in the ELF file */
-  int32_t getCodeStartAddress()
-  { return CodeStartAddress; }
+  int32_t getCodeStartAddress() { return CodeStartAddress; }
 
   /*! Translation table. This table will be discovered in the virtual
     memory assignement, and is used to know where virtual pages are
     allocated in RAM. */
-  TranslationTable *translationTable;  
+  TranslationTable *translationTable;
 
   /*! Map an open file in memory
    *
@@ -106,16 +104,16 @@ public:
    */
   OpenFile *findMappedFile(int32_t addr);
 
-private:
+ private:
   //* Code start address, found in the ELF file
-  int32_t CodeStartAddress; 
+  int32_t CodeStartAddress;
 
   /**  Allocate numPages virtual pages in the current address space
    //
    //    \param numPages the number of contiguous virtual pages to allocate
    //    \return the virtual page number of the beginning of the allocated
    //      area, or -1 when not enough virtual space is available
-   */ 
+   */
   int Alloc(int numPages);
 
   /** Number of the next virtual page to be allocated.
@@ -123,8 +121,8 @@ private:
     allocation will simply increment this address by
     the size of the allocated object (there are no complex
     malloc/free functions implemented yet) */
-  int freePageId; 
-  
+  int freePageId;
+
   /*! (Heavyweight) process using this address space */
   Process *process;
 
@@ -133,6 +131,4 @@ private:
   t_mapped_files mapped_files;
 };
 
-#endif // ADDRSPACE_H
-
-
+#endif  // ADDRSPACE_H
