@@ -76,8 +76,18 @@ Semaphore::~Semaphore()
 //----------------------------------------------------------------------
 void
 Semaphore::P() {
+#ifndef ETUDIANTS_TP
   printf("**** Warning: method Semaphore::P is not implemented yet\n");
   exit(-1);
+#endif
+#ifdef ETUDIANTS_TP
+  IntStatus oldLevel = g_machine->interrupt->GetStatus();
+  g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+  if ((value--) < 0) {
+    g_current_thread->Sleep();
+  }
+  g_machine->interrupt->SetStatus(oldLevel);
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -90,8 +100,20 @@ Semaphore::P() {
 //----------------------------------------------------------------------
 void
 Semaphore::V() {
-   printf("**** Warning: method Semaphore::V is not implemented yet\n");
-    exit(-1);
+#ifndef ETUDIANTS_TP
+  printf("**** Warning: method Semaphore::V is not implemented yet\n");
+  exit(-1);
+#endif
+#ifdef ETUDIANTS_TP
+  IntStatus oldLevel = g_machine->interrupt->GetStatus();
+  g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+  value++;
+  if (!queue->IsEmpty()) {
+    Thread *t =  (Thread *)queue->Remove();
+    g_scheduler->ReadyToRun(t);
+  }
+  g_machine->interrupt->SetStatus(oldLevel);
+#endif
 }
 
 //----------------------------------------------------------------------
