@@ -617,7 +617,8 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
           }
           DEBUG('e', (char *)"Fin Semaphore");
           break;
-	}
+        }
+
         case SC_V: {
           DEBUG('e', (char *)"Semaphore: verhogen call.\n");
           int32_t sid;
@@ -634,9 +635,30 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
           }
           DEBUG('e', (char *)"Fin Semaphore");
           break;
-	}
-        case SC_SEM_CREATE:
+        }
+
+        case SC_SEM_CREATE: {
+          // The create system call
+          // Create a new semaphore
+          DEBUG('e', (char *)"Semaphore: Create call.\n");
+          int addr;
+          int initialValue;
+          int ret;
+          int sizep;
+          // Get the name and initial value of the new semaphore
+          addr = g_machine->ReadIntRegister(4);
+          initialValue = g_machine->ReadIntRegister(5);
+          sizep = GetLengthParam(addr);
+          char debugName[sizep];
+          GetStringParam(addr, debugName, sizep);
+          // Try to create it
+          new Semaphore(debugName, initialValue);
+          // How could an error be thrown?
+          g_syscall_error->SetMsg((char *)"", NoError);
+          ret = 0;
+          g_machine->WriteIntRegister(2, ret);
           break;
+        }
 
         case SC_SEM_DESTROY:
           break;
