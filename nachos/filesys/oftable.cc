@@ -25,12 +25,12 @@
 */
 //----------------------------------------------------------
 OpenFileTableEntry::OpenFileTableEntry() {
-  name = new char[g_cfg->MaxFileNameSize];
-  numthread = 1;
-  ToBeDeleted = false;
-  lock = new Lock((char *)"File Synchronisation");
-  file = NULL;
-  sector = -1;
+	name = new char[g_cfg->MaxFileNameSize];
+	numthread = 1;
+	ToBeDeleted = false;
+	lock = new Lock((char *)"File Synchronisation");
+	file = NULL;
+	sector = -1;
 }
 
 //----------------------------------------------------------
@@ -41,20 +41,20 @@ OpenFileTableEntry::OpenFileTableEntry() {
 */
 //----------------------------------------------------------
 OpenFileTableEntry::~OpenFileTableEntry() {
-  if (ToBeDeleted) {
-    // Get the freemap from disk
-    BitMap freeMap(NUM_SECTORS);
-    freeMap.FetchFrom(g_file_system->GetFreeMapFile());
+	if (ToBeDeleted) {
+		// Get the freemap from disk
+		BitMap freeMap(NUM_SECTORS);
+		freeMap.FetchFrom(g_file_system->GetFreeMapFile());
 
-    // Indicate that some sectors are freed due to the file deletion
-    file->GetFileHeader()->Deallocate(&freeMap);
-    freeMap.Clear(sector);
-    // Write the freemap back to disk
-    freeMap.WriteBack(g_file_system->GetFreeMapFile());
-  }
-  delete[] name;
-  delete file;
-  delete lock;
+		// Indicate that some sectors are freed due to the file deletion
+		file->GetFileHeader()->Deallocate(&freeMap);
+		freeMap.Clear(sector);
+		// Write the freemap back to disk
+		freeMap.WriteBack(g_file_system->GetFreeMapFile());
+	}
+	delete[] name;
+	delete file;
+	delete lock;
 }
 
 //----------------------------------------------------------
@@ -63,16 +63,18 @@ OpenFileTableEntry::~OpenFileTableEntry() {
 */
 //----------------------------------------------------------
 OpenFileTable::OpenFileTable() {
-  createLock = new Lock((char *)"Creation Synch");
-  for (int i = 0; i < NBOFTENTRY; i++) table[i] = NULL;
-  nbentry = 0;
+	createLock = new Lock((char *)"Creation Synch");
+	for (int i = 0; i < NBOFTENTRY; i++) table[i] = NULL;
+	nbentry = 0;
 }
 //----------------------------------------------------------
 // OpenFileTable::~OpenFileTable()
 /*! initialize the open file table.
 */
 //----------------------------------------------------------
-OpenFileTable::~OpenFileTable() { delete createLock; }
+OpenFileTable::~OpenFileTable() {
+	delete createLock;
+}
 
 //----------------------------------------------------------
 // void OpenFileTable::Open(char *name,Openfile *file)
@@ -86,72 +88,69 @@ OpenFileTable::~OpenFileTable() { delete createLock; }
 */
 //----------------------------------------------------------
 OpenFile *OpenFileTable::Open(char *name) {
-  OpenFile *newfile = NULL;
-  int num, sector, dirsector;
-  char filename[g_cfg->MaxFileNameSize];
+	OpenFile *newfile = NULL;
+	int num, sector, dirsector;
+	char filename[g_cfg->MaxFileNameSize];
 
-  // Find the file in the open file table
-  num = findl(name);
-  DEBUG('f', (char *)"opening file %s\n", name);
-  if (num != -1) {
-    // The file is opened by another thread
-    if (!table[num]->ToBeDeleted) {
-      // Update the reference count and return an OpenFile
-      table[num]->numthread++;
-      newfile = new OpenFile(table[num]->sector);
-      newfile->SetName(name);
-      DEBUG('f', (char *)"File %s was in the table\n", name);
-      return newfile;
-    } else
-      return NULL;
-  } else {
-    if (nbentry != -1)  // there is some place in the table
-    {
-      OpenFileTableEntry *entry = new OpenFileTableEntry;
-      OpenFile *openfile = NULL;
-      Directory directory(g_cfg->NumDirEntries);
+	// Find the file in the open file table
+	num = findl(name);
+	DEBUG('f', (char *)"opening file %s\n", name);
+	if (num != -1) {
+		// The file is opened by another thread
+		if (!table[num]->ToBeDeleted) {
+			// Update the reference count and return an OpenFile
+			table[num]->numthread++;
+			newfile = new OpenFile(table[num]->sector);
+			newfile->SetName(name);
+			DEBUG('f', (char *)"File %s was in the table\n", name);
+			return newfile;
+		} else
+			return NULL;
+	} else {
+		if (nbentry != -1) { // there is some place in the table
+			OpenFileTableEntry *entry = new OpenFileTableEntry;
+			OpenFile *openfile = NULL;
+			Directory directory(g_cfg->NumDirEntries);
 
-      strcpy(entry->name, name);
-      strcpy(filename, name);
+			strcpy(entry->name, name);
+			strcpy(filename, name);
 
-      // Find the directory containing the file and read it from the disk
-      dirsector = FindDir(filename);
-      if (dirsector == -1) return NULL;
-      OpenFile dirfile(dirsector);
-      directory.FetchFrom(&dirfile);
+			// Find the directory containing the file and read it from the disk
+			dirsector = FindDir(filename);
+			if (dirsector == -1) return NULL;
+			OpenFile dirfile(dirsector);
+			directory.FetchFrom(&dirfile);
 
-      // Find the file in the directory
-      sector = directory.Find(filename);
-      if (sector >= 0) {
-        openfile = new OpenFile(sector);  // name was found in directory
-        if (openfile->IsDir())            // name is a directory ...
-        {
-          delete openfile;
-          delete entry;
-          return NULL;
-        }
-      } else  // name isn't in directory
-      {
-        delete entry;
-        return NULL;
-      }
+			// Find the file in the directory
+			sector = directory.Find(filename);
+			if (sector >= 0) {
+				openfile = new OpenFile(sector);  // name was found in directory
+				if (openfile->IsDir()) {          // name is a directory ...
+					delete openfile;
+					delete entry;
+					return NULL;
+				}
+			} else { // name isn't in directory
+				delete entry;
+				return NULL;
+			}
 
-      // We found the file
-      newfile = new OpenFile(sector);  // we fill the new entry
-      newfile->SetName(name);
-      openfile->SetName(name);
-      entry->sector = sector;
-      entry->file = openfile;
-      table[nbentry] = entry;
-      nbentry = next_entry();
+			// We found the file
+			newfile = new OpenFile(sector);  // we fill the new entry
+			newfile->SetName(name);
+			openfile->SetName(name);
+			entry->sector = sector;
+			entry->file = openfile;
+			table[nbentry] = entry;
+			nbentry = next_entry();
 
-      DEBUG('f', (char *)"File %s has been opened successfully\n", name);
-      return newfile;
-    } else {
-      printf("OFT OPEN: File %s cannot be opened ", name);
-      return NULL;
-    }
-  }
+			DEBUG('f', (char *)"File %s has been opened successfully\n", name);
+			return newfile;
+		} else {
+			printf("OFT OPEN: File %s cannot be opened ", name);
+			return NULL;
+		}
+	}
 }
 
 //----------------------------------------------------------
@@ -163,20 +162,18 @@ OpenFile *OpenFileTable::Open(char *name) {
 */
 //----------------------------------------------------------
 void OpenFileTable::Close(char *name) {
-  int num;
-  DEBUG('f', (char *)"Closing File %s \n", name);
-  num = findl(name);
-  if (num != -1)  // the file is in the table
-  {
-    table[num]->numthread--;  // the thread has no longer this file opened
-    if (table[num]->numthread <= 0)  // if no threads has this file opened
-    {
-      DEBUG('f', (char *)"File %s is no more in the table\n", name);
-      delete table[num];  // then remove it from the table
-      table[num] = NULL;
-    }
-    DEBUG('f', (char *)"File %s has been closed successfully\n", name);
-  }
+	int num;
+	DEBUG('f', (char *)"Closing File %s \n", name);
+	num = findl(name);
+	if (num != -1) { // the file is in the table
+		table[num]->numthread--;  // the thread has no longer this file opened
+		if (table[num]->numthread <= 0) { // if no threads has this file opened
+			DEBUG('f', (char *)"File %s is no more in the table\n", name);
+			delete table[num];  // then remove it from the table
+			table[num] = NULL;
+		}
+		DEBUG('f', (char *)"File %s has been closed successfully\n", name);
+	}
 }
 
 //----------------------------------------------------------
@@ -188,12 +185,12 @@ void OpenFileTable::Close(char *name) {
 */
 //----------------------------------------------------------
 void OpenFileTable::FileLock(char *name) {
-  int num;
-  num = findl(name);
-  if (num != -1) {
-    table[num]->lock->Acquire();
-    DEBUG('f', (char *)"File %s has been locked\n", name);
-  }
+	int num;
+	num = findl(name);
+	if (num != -1) {
+		table[num]->lock->Acquire();
+		DEBUG('f', (char *)"File %s has been locked\n", name);
+	}
 }
 
 //----------------------------------------------------------
@@ -204,12 +201,12 @@ void OpenFileTable::FileLock(char *name) {
 */
 //----------------------------------------------------------
 void OpenFileTable::FileRelease(char *name) {
-  int num;
-  num = findl(name);
-  if (num != -1) {
-    table[num]->lock->Release();
-    DEBUG('f', (char *)"File %s has been released\n", name);
-  }
+	int num;
+	num = findl(name);
+	if (num != -1) {
+		table[num]->lock->Release();
+		DEBUG('f', (char *)"File %s has been released\n", name);
+	}
 }
 //----------------------------------------------------------
 // int OpenFileTable::findl(char *name)
@@ -221,13 +218,13 @@ void OpenFileTable::FileRelease(char *name) {
 */
 //----------------------------------------------------------
 int OpenFileTable::findl(char *name) {
-  int i = 0;
-  while (i < NBOFTENTRY) {
-    if (table[i] != NULL)
-      if (strcmp(table[i]->name, name) == 0) return i;
-    i++;
-  }
-  return -1;
+	int i = 0;
+	while (i < NBOFTENTRY) {
+		if (table[i] != NULL)
+			if (strcmp(table[i]->name, name) == 0) return i;
+		i++;
+	}
+	return -1;
 }
 
 //----------------------------------------------------------
@@ -243,35 +240,33 @@ int OpenFileTable::findl(char *name) {
 */
 //----------------------------------------------------------
 int OpenFileTable::Remove(char *name) {
-  Directory directory(g_cfg->NumDirEntries);
-  int num, sector, dirsector;
-  char filename[g_cfg->MaxFileNameSize];
+	Directory directory(g_cfg->NumDirEntries);
+	int num, sector, dirsector;
+	char filename[g_cfg->MaxFileNameSize];
 
-  DEBUG('f', (char *)"Removing file %s\n", name);
-  strcpy(filename, name);
+	DEBUG('f', (char *)"Removing file %s\n", name);
+	strcpy(filename, name);
 
-  // Find the directory containing the file
-  dirsector = FindDir(filename);
-  if (dirsector == -1) return InexistFileError;
+	// Find the directory containing the file
+	dirsector = FindDir(filename);
+	if (dirsector == -1) return InexistFileError;
 
-  // Fetch it from disk
-  OpenFile dirfile(dirsector);
-  directory.FetchFrom(&dirfile);
-  sector = directory.Find(filename);
-  if (sector == -1) return InexistFileError;  // file not found
+	// Fetch it from disk
+	OpenFile dirfile(dirsector);
+	directory.FetchFrom(&dirfile);
+	sector = directory.Find(filename);
+	if (sector == -1) return InexistFileError;  // file not found
 
-  // Scan the open file table
-  num = findl(name);
-  if (num != -1)  // file is opened by a thread
-  {
-    table[num]->ToBeDeleted = true;
-    directory.Remove(filename);
-    directory.WriteBack(&dirfile);
-  } else  // file isn't opened
-  {
-    return (g_file_system->Remove(name));
-  }
-  return NoError;
+	// Scan the open file table
+	num = findl(name);
+	if (num != -1) { // file is opened by a thread
+		table[num]->ToBeDeleted = true;
+		directory.Remove(filename);
+		directory.WriteBack(&dirfile);
+	} else { // file isn't opened
+		return (g_file_system->Remove(name));
+	}
+	return NoError;
 }
 //----------------------------------------------------------
 // int OpenFileTable::next_entry()
@@ -282,10 +277,10 @@ int OpenFileTable::Remove(char *name) {
 */
 //----------------------------------------------------------
 int OpenFileTable::next_entry() {
-  int i = 0;
-  while (i < NBOFTENTRY) {
-    if (table[i] == NULL) return i;
-    i++;
-  }
-  return -1;
+	int i = 0;
+	while (i < NBOFTENTRY) {
+		if (table[i] == NULL) return i;
+		i++;
+	}
+	return -1;
 }

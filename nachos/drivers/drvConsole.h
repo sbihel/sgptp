@@ -27,21 +27,21 @@ class DriverConsole;
 // completed.
 */
 class DriverConsole {
- public:
-  DriverConsole();   // Constructor. Initialize the console driver
-  ~DriverConsole();  // Destructor. Data de-allocation
-  void PutString(char *buffer, int nbcar);
-  // Write a buffer on the console
-  void GetString(char *buffer, int nbcar);
-  // Read characters from the console
+  public:
+	DriverConsole();   // Constructor. Initialize the console driver
+	~DriverConsole();  // Destructor. Data de-allocation
+	void PutString(char *buffer, int nbcar);
+	// Write a buffer on the console
+	void GetString(char *buffer, int nbcar);
+	// Read characters from the console
 
-  void GetAChar();  // Send a char to the console device
-  void PutAChar();  // Receive e char from the console
+	void GetAChar();  // Send a char to the console device
+	void PutAChar();  // Receive e char from the console
 
- private:
-  Lock *mutexget;        //!< Lock on read operations
-  Lock *mutexput;        //!< Lock on write operations
-  Semaphore *get, *put;  //!< Semaphores to wait for interrupts
+  private:
+	Lock *mutexget;        //!< Lock on read operations
+	Lock *mutexput;        //!< Lock on write operations
+	Semaphore *get, *put;  //!< Semaphores to wait for interrupts
 };
 
 void ConsoleGet();

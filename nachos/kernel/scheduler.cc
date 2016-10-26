@@ -27,14 +27,18 @@ thread.
 //      running threads to empty.
 */
 //----------------------------------------------------------------------
-Scheduler::Scheduler() { readyList = new Listint; }
+Scheduler::Scheduler() {
+	readyList = new Listint;
+}
 
 //----------------------------------------------------------------------
 // Scheduler::~Scheduler
 /*! 	Destructor. De-allocate the list of ready threads.
 */
 //----------------------------------------------------------------------
-Scheduler::~Scheduler() { delete readyList; }
+Scheduler::~Scheduler() {
+	delete readyList;
+}
 
 //----------------------------------------------------------------------
 // Scheduler::ReadyToRun
@@ -45,8 +49,8 @@ Scheduler::~Scheduler() { delete readyList; }
 */
 //----------------------------------------------------------------------
 void Scheduler::ReadyToRun(Thread *thread) {
-  DEBUG('t', (char *)"Putting thread %s in ready list.\n", thread->GetName());
-  readyList->Append((void *)thread);
+	DEBUG('t', (char *)"Putting thread %s in ready list.\n", thread->GetName());
+	readyList->Append((void *)thread);
 }
 
 //----------------------------------------------------------------------
@@ -59,8 +63,8 @@ void Scheduler::ReadyToRun(Thread *thread) {
 */
 //----------------------------------------------------------------------
 Thread *Scheduler::FindNextToRun() {
-  Thread *thread = (Thread *)readyList->Remove();
-  return thread;
+	Thread *thread = (Thread *)readyList->Remove();
+	return thread;
 }
 
 //----------------------------------------------------------------------
@@ -77,39 +81,39 @@ Thread *Scheduler::FindNextToRun() {
 */
 //----------------------------------------------------------------------
 void Scheduler::SwitchTo(Thread *nextThread) {
-  Thread *oldThread = g_current_thread;
+	Thread *oldThread = g_current_thread;
 
-  g_current_thread->CheckOverflow();  // check if the old thread
-                                      // had an undetected stack overflow
+	g_current_thread->CheckOverflow();  // check if the old thread
+	// had an undetected stack overflow
 
-  DEBUG('t',
-        (char *)"Switching from thread \"%s\" to thread \"%s\" time %llu\n",
-        g_current_thread->GetName(), nextThread->GetName(),
-        g_stats->getTotalTicks());
+	DEBUG('t',
+		  (char *)"Switching from thread \"%s\" to thread \"%s\" time %llu\n",
+		  g_current_thread->GetName(), nextThread->GetName(),
+		  g_stats->getTotalTicks());
 
-  // Modify the current thread
-  g_current_thread = nextThread;
+	// Modify the current thread
+	g_current_thread = nextThread;
 
-  // Save the context of old thread
-  oldThread->SaveProcessorState();
-  oldThread->SaveSimulatorState();
+	// Save the context of old thread
+	oldThread->SaveProcessorState();
+	oldThread->SaveSimulatorState();
 
-  // Do the context switch if the two threads are different
-  if (oldThread != g_current_thread) {
-    // Restore the state of the operating system from its
-    // kernelContext structure such that it goes on executing when
-    // it was last interrupted
-    nextThread->RestoreProcessorState();
-    nextThread->RestoreSimulatorState();
-  }
+	// Do the context switch if the two threads are different
+	if (oldThread != g_current_thread) {
+		// Restore the state of the operating system from its
+		// kernelContext structure such that it goes on executing when
+		// it was last interrupted
+		nextThread->RestoreProcessorState();
+		nextThread->RestoreSimulatorState();
+	}
 
-  DEBUG('t', (char *)"Now in thread \"%s\" time %llu\n",
-        g_current_thread->GetName(), g_stats->getTotalTicks());
+	DEBUG('t', (char *)"Now in thread \"%s\" time %llu\n",
+		  g_current_thread->GetName(), g_stats->getTotalTicks());
 
-  // If the old thread gave up the processor because it was finishing,
-  // we need to delete its carcass.  Note we cannot delete the thread
-  // before now (for example, in Thread::Finish()), because up to this
-  // point, we were still running on the old thread's stack!
+	// If the old thread gave up the processor because it was finishing,
+	// we need to delete its carcass.  Note we cannot delete the thread
+	// before now (for example, in Thread::Finish()), because up to this
+	// point, we were still running on the old thread's stack!
 }
 
 //----------------------------------------------------------------------
@@ -119,7 +123,7 @@ void Scheduler::SwitchTo(Thread *nextThread) {
 */
 //----------------------------------------------------------------------
 void Scheduler::Print() {
-  printf("Ready list contents: [");
-  readyList->Mapcar((VoidFunctionPtr)ThreadPrint);
-  printf("]\n");
+	printf("Ready list contents: [");
+	readyList->Mapcar((VoidFunctionPtr)ThreadPrint);
+	printf("]\n");
 }

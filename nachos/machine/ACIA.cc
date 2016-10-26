@@ -28,19 +28,19 @@
 */
 //-------------------------------------------------------------------------
 ACIA::ACIA(Machine *m) {
-  // Setup the system dependent part of the simulator
-  sysdep = new ACIA_sysdep(this, m);
+	// Setup the system dependent part of the simulator
+	sysdep = new ACIA_sysdep(this, m);
 
-  // Initialize data registers to '0' (empty char).
-  inputRegister = 0;
-  outputRegister = 0;
+	// Initialize data registers to '0' (empty char).
+	inputRegister = 0;
+	outputRegister = 0;
 
-  // Initialize state registers to empty.
-  inputStateRegister = EMPTY;
-  outputStateRegister = EMPTY;
+	// Initialize state registers to empty.
+	inputStateRegister = EMPTY;
+	outputStateRegister = EMPTY;
 
-  // Initiliaze working mode to BUSY_WAITING mode.
-  mode = BUSY_WAITING;
+	// Initiliaze working mode to BUSY_WAITING mode.
+	mode = BUSY_WAITING;
 };
 
 //-------------------------------------------------------------------------
@@ -48,7 +48,9 @@ ACIA::ACIA(Machine *m) {
 /*! De-allocate the ACIA data structures.
  */
 //-------------------------------------------------------------------------
-ACIA::~ACIA() { delete sysdep; };
+ACIA::~ACIA() {
+	delete sysdep;
+};
 
 // Methodes
 
@@ -62,14 +64,18 @@ ACIA::~ACIA() { delete sysdep; };
    INTERRUPT and BUSY_WAITING).
 */
 //-------------------------------------------------------------------------
-void ACIA::SetWorkingMode(int mod) { mode = mod; };
+void ACIA::SetWorkingMode(int mod) {
+	mode = mod;
+};
 
 //-------------------------------------------------------------------------
 /** Get the current working mode for the ACIA (BUSY_WAITING,
     REC_INTERRUPT, EM_INTERRUPT).
 */
 //-------------------------------------------------------------------------
-int ACIA::GetWorkingMode(void) { return mode; };
+int ACIA::GetWorkingMode(void) {
+	return mode;
+};
 
 //-------------------------------------------------------------------------
 /** Get the state of the input register (used in the BUSY_WAITING
@@ -78,9 +84,9 @@ int ACIA::GetWorkingMode(void) { return mode; };
  */
 //-------------------------------------------------------------------------
 RegStatus ACIA::GetInputStateReg() {
-  // Simulate a clock tick in order to make Nachos able to provide interrupts.
-  g_machine->interrupt->OneTick(SYSTEM_TICK);
-  return inputStateRegister;
+	// Simulate a clock tick in order to make Nachos able to provide interrupts.
+	g_machine->interrupt->OneTick(SYSTEM_TICK);
+	return inputStateRegister;
 };
 
 //-------------------------------------------------------------------------
@@ -90,10 +96,10 @@ RegStatus ACIA::GetInputStateReg() {
 */
 //-------------------------------------------------------------------------
 RegStatus ACIA::GetOutputStateReg() {
-  // Simulate a clock tick in order to make nachos able to provide
-  // interruptions.
-  g_machine->interrupt->OneTick(SYSTEM_TICK);
-  return outputStateRegister;
+	// Simulate a clock tick in order to make nachos able to provide
+	// interruptions.
+	g_machine->interrupt->OneTick(SYSTEM_TICK);
+	return outputStateRegister;
 };
 
 //-------------------------------------------------------------------------
@@ -104,10 +110,10 @@ RegStatus ACIA::GetOutputStateReg() {
  */
 //-------------------------------------------------------------------------
 char ACIA::GetChar() {
-  char temp;
-  temp = inputRegister;
-  sysdep->Drain();
-  return temp;
+	char temp;
+	temp = inputRegister;
+	sysdep->Drain();
+	return temp;
 };
 
 // Emission and reception fonctions for the ACIA
@@ -121,8 +127,8 @@ char ACIA::GetChar() {
 */
 //-------------------------------------------------------------------------
 void ACIA::PutChar(char c) {
-  // Fill the output register.
-  outputRegister = c;
-  // Cause the char forwading.
-  sysdep->SendChar();
+	// Fill the output register.
+	outputRegister = c;
+	// Cause the char forwading.
+	sysdep->SendChar();
 };

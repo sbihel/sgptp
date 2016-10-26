@@ -47,12 +47,12 @@ enum IntStatus { INTERRUPTS_OFF, INTERRUPTS_ON };
  display, a keyboard and an ACIA.
 */
 enum IntType {
-  TIMER_INT,
-  DISK_INT,
-  CONSOLE_WRITE_INT,
-  CONSOLE_READ_INT,
-  ACIA_RECEIVE_INT,
-  ACIA_SEND_INT
+	TIMER_INT,
+	DISK_INT,
+	CONSOLE_WRITE_INT,
+	CONSOLE_READ_INT,
+	ACIA_RECEIVE_INT,
+	ACIA_SEND_INT
 };
 
 /*! \brief  Defines an interrupt that is scheduled
@@ -62,18 +62,18 @@ enum IntType {
 // left public to make it simpler to manipulate.
 */
 class PendingInterrupt {
- public:
-  PendingInterrupt(VoidFunctionPtr func, int64_t param, Time time,
-                   IntType kind);
-  // Initialize an interrupt that will
-  // occur in the future
+  public:
+	PendingInterrupt(VoidFunctionPtr func, int64_t param, Time time,
+					 IntType kind);
+	// Initialize an interrupt that will
+	// occur in the future
 
-  VoidFunctionPtr handler; /*!< The function (in the hardware device
+	VoidFunctionPtr handler; /*!< The function (in the hardware device
      emulator) to call when the interrupt occurs
    */
-  int64_t arg;             //!< The argument to the function.
-  Time when;               //!< When the interrupt is supposed to fire
-  IntType type;            //!< for debugging
+	int64_t arg;             //!< The argument to the function.
+	Time when;               //!< When the interrupt is supposed to fire
+	IntType type;            //!< for debugging
 };
 
 /*! \brief Defines a low level interrupt hardware
@@ -84,57 +84,59 @@ class PendingInterrupt {
 */
 
 class Interrupt {
- public:
-  Interrupt();   //!< initialize the interrupt simulation
-  ~Interrupt();  //!< de-allocate data structures
+  public:
+	Interrupt();   //!< initialize the interrupt simulation
+	~Interrupt();  //!< de-allocate data structures
 
-  IntStatus SetStatus(IntStatus level);  //!< Disable or enable interrupts
-                                         //!< and return previous setting.
+	IntStatus SetStatus(IntStatus level);  //!< Disable or enable interrupts
+	//!< and return previous setting.
 
-  IntStatus GetStatus() { return level; }  //!< Return whether interrupts
-                                           //!< are enabled or disabled
+	IntStatus GetStatus() {
+		return level;    //!< Return whether interrupts
+	}
+	//!< are enabled or disabled
 
-  void Idle();  //!< The ready queue is empty, roll
-                //!< simulated time forward until the
-                //!< next interrupt
+	void Idle();  //!< The ready queue is empty, roll
+	//!< simulated time forward until the
+	//!< next interrupt
 
-  void Halt(int errorcode);  //!< Quit and print out stats
+	void Halt(int errorcode);  //!< Quit and print out stats
 
-  void YieldOnReturn();  //!< Cause a context switch on return
-                         //!< from an interrupt handler
+	void YieldOnReturn();  //!< Cause a context switch on return
+	//!< from an interrupt handler
 
-  void DumpState();  //!< Print interrupt state
+	void DumpState();  //!< Print interrupt state
 
-  // NOTE: the following are internal to the hardware simulation code.
-  // DO NOT call these directly.  I should make them "private",
-  // but they need to be public since they are called by the
-  // hardware device simulators.
+	// NOTE: the following are internal to the hardware simulation code.
+	// DO NOT call these directly.  I should make them "private",
+	// but they need to be public since they are called by the
+	// hardware device simulators.
 
-  void Schedule(VoidFunctionPtr handler,  //!< Schedule an interrupt to occur
-                int64_t arg, int when,
-                IntType type);  //!< at time ``when''.  This is called
-                                //!< by the hardware device simulators.
+	void Schedule(VoidFunctionPtr handler,  //!< Schedule an interrupt to occur
+				  int64_t arg, int when,
+				  IntType type);  //!< at time ``when''.  This is called
+	//!< by the hardware device simulators.
 
-  void OneTick(int nbcy);  // !<Advance simulated time of nbcy cycles
+	void OneTick(int nbcy);  // !<Advance simulated time of nbcy cycles
 
- private:
-  IntStatus level;   //!< are interrupts enabled or disabled?
-  ListTime *pending; /*!< the list of interrupts scheduled
+  private:
+	IntStatus level;   //!< are interrupts enabled or disabled?
+	ListTime *pending; /*!< the list of interrupts scheduled
        to occur in the future
      */
-  bool inHandler;    //!< TRUE if we are running an interrupt handler
+	bool inHandler;    //!< TRUE if we are running an interrupt handler
 
-  bool yieldOnReturn; /*!< TRUE if we are to context switch
+	bool yieldOnReturn; /*!< TRUE if we are to context switch
         on return from the interrupt handler
     */
 
-  // these functions are internal to the interrupt simulation code
+	// these functions are internal to the interrupt simulation code
 
-  bool CheckIfDue(bool advanceClock);  // Check if an interrupt is supposed
-                                       // to occur now
+	bool CheckIfDue(bool advanceClock);  // Check if an interrupt is supposed
+	// to occur now
 
-  void ChangeLevel(IntStatus old,   // setStatus, without advancing the
-                   IntStatus now);  // simulated time
+	void ChangeLevel(IntStatus old,   // setStatus, without advancing the
+					 IntStatus now);  // simulated time
 };
 
 #endif  // INTERRRUPT_H

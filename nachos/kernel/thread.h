@@ -39,96 +39,100 @@ class Process;
 /*! \brief Defines the context of the Nachos simulator
 */
 typedef struct {
-  ucontext_t buf;
-  int8_t *stackBottom;
-  int stackSize;
+	ucontext_t buf;
+	int8_t *stackBottom;
+	int stackSize;
 } simulatorContextT;
 
 /*! \brief Defines the thread context (MIPS virtual machine)
 */
 typedef struct {
-  //! Integer CPU register state (value of
-  //  MIPS registers)
-  int32_t int_registers[NUM_INT_REGS];
+	//! Integer CPU register state (value of
+	//  MIPS registers)
+	int32_t int_registers[NUM_INT_REGS];
 
-  //! Floating point general purpose registers
-  int32_t float_registers[NUM_FP_REGS];
+	//! Floating point general purpose registers
+	int32_t float_registers[NUM_FP_REGS];
 
-  //! Condition code register.
-  int8_t cc;
+	//! Condition code register.
+	int8_t cc;
 } threadContextT;
 
 /*! \brief Data structures for managing threads
  *
  */
 class Thread {
- public:
-  //! Build an empty thread
-  Thread(char *debugName);
+  public:
+	//! Build an empty thread
+	Thread(char *debugName);
 
-  //! Deallocate a Thread.
-  ~Thread();
+	//! Deallocate a Thread.
+	~Thread();
 
-  //! Start a thread, attaching it to a process (return NoError on success)
-  int Start(Process *owner, int32_t func, int arg);
+	//! Start a thread, attaching it to a process (return NoError on success)
+	int Start(Process *owner, int32_t func, int arg);
 
-  //! Wait for another thread to finish its execution
-  void Join(Thread *Idthread);
+	//! Wait for another thread to finish its execution
+	void Join(Thread *Idthread);
 
-  //! Relinquish the CPU if any other thread is runnable.
-  void Yield();
+	//! Relinquish the CPU if any other thread is runnable.
+	void Yield();
 
-  //! Put the thread to sleep and relinquish the processor
-  void Sleep();
+	//! Put the thread to sleep and relinquish the processor
+	void Sleep();
 
-  //! Finish the execution of the thread, and prepare its deallocation
-  void Finish();
+	//! Finish the execution of the thread, and prepare its deallocation
+	void Finish();
 
-  //! Check if a thread has overflowed its stack.
-  void CheckOverflow();
+	//! Check if a thread has overflowed its stack.
+	void CheckOverflow();
 
-  //! Sets-up the thread simulator context : fills it with the appropriate
-  //  values such that the low-level context switch executes function
-  //  StartThreadExecution.
-  void InitSimulatorContext(int8_t *stack_addr, unsigned long int stack_size);
+	//! Sets-up the thread simulator context : fills it with the appropriate
+	//  values such that the low-level context switch executes function
+	//  StartThreadExecution.
+	void InitSimulatorContext(int8_t *stack_addr, unsigned long int stack_size);
 
-  //! Initialize CPU registers,
-  //  before jumping to user code
-  void InitThreadContext(int32_t initialPCREG, int32_t initialSP, int32_t arg);
+	//! Initialize CPU registers,
+	//  before jumping to user code
+	void InitThreadContext(int32_t initialPCREG, int32_t initialSP, int32_t arg);
 
-  //! Save the processor registers.
-  void SaveProcessorState();
+	//! Save the processor registers.
+	void SaveProcessorState();
 
-  //! Restore the processor registers.
-  void RestoreProcessorState();
+	//! Restore the processor registers.
+	void RestoreProcessorState();
 
-  //! Save the state of the Nachos simulator.
-  void SaveSimulatorState();
+	//! Save the state of the Nachos simulator.
+	void SaveSimulatorState();
 
-  //! Restore Nachos simulator state.
-  void RestoreSimulatorState();
+	//! Restore Nachos simulator state.
+	void RestoreSimulatorState();
 
-  char *GetName() { return (name); }
-  Process *GetProcessOwner() { return process; }
+	char *GetName() {
+		return (name);
+	}
+	Process *GetProcessOwner() {
+		return process;
+	}
 
- protected:
-  //! Thread name (for debugging)
-  char *name;
+  protected:
+	//! Thread name (for debugging)
+	char *name;
 
-  //! Main resource container the thread is running in.
-  Process *process;
+	//! Main resource container the thread is running in.
+	Process *process;
 
-  //! MIPS simulator context
-  simulatorContextT simulator_context;
+	//! MIPS simulator context
+	simulatorContextT simulator_context;
 
-  //! Thread context
-  threadContextT thread_context;
+	//! Thread context
+	threadContextT thread_context;
 
- public:
-  //! signature to make sure the thread is in the correct state
-  ObjectTypeId typeId;
+  public:
+	//! signature to make sure the thread is in the correct state
+	ObjectTypeId typeId;
 
-  int stackPointer;
+	int stackPointer;
 };
 
 #endif  // THREAD_H

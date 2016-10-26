@@ -22,28 +22,28 @@
 class Thread;
 
 class Scheduler {
- public:
-  //! Constructor. Initializes list of ready threads.
-  Scheduler();
+  public:
+	//! Constructor. Initializes list of ready threads.
+	Scheduler();
 
-  //! Destructor. De-allocates the ready list.
-  ~Scheduler();
+	//! Destructor. De-allocates the ready list.
+	~Scheduler();
 
-  //! Inserts a thread in the ready list
-  void ReadyToRun(Thread* thread);
+	//! Inserts a thread in the ready list
+	void ReadyToRun(Thread* thread);
 
-  //! Dequeue first thread of the ready list, if any, and return thread.
-  Thread* FindNextToRun();
+	//! Dequeue first thread of the ready list, if any, and return thread.
+	Thread* FindNextToRun();
 
-  //! Causes a context switch to nextThread
-  void SwitchTo(Thread* nextThread);
+	//! Causes a context switch to nextThread
+	void SwitchTo(Thread* nextThread);
 
-  //! Print contents of ready list.
-  void Print();
+	//! Print contents of ready list.
+	void Print();
 
- protected:
-  //! Queue of threads that are ready to run,but not running.
-  Listint* readyList;
+  protected:
+	//! Queue of threads that are ready to run,but not running.
+	Listint* readyList;
 };
 
 #endif  // SCHEDULER_H

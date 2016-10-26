@@ -27,55 +27,55 @@ enum TranslationMode { SingleLevel, DualLevel };
 */
 
 class TranslationTable {
- public:
-  TranslationTable();
-  ~TranslationTable();
+  public:
+	TranslationTable();
+	~TranslationTable();
 
-  int getMaxNumPages();  //!< Get the maximum number of pages
-                         //!< that can be translated by this translation table
+	int getMaxNumPages();  //!< Get the maximum number of pages
+	//!< that can be translated by this translation table
 
-  // Methods to get/set specific fields of a page table
-  // entry corresponding to a particular virtual page
-  void setPhysicalPage(int virtualPage, int physicalPage);
-  int getPhysicalPage(int virtualPage);
+	// Methods to get/set specific fields of a page table
+	// entry corresponding to a particular virtual page
+	void setPhysicalPage(int virtualPage, int physicalPage);
+	int getPhysicalPage(int virtualPage);
 
-  void setAddrDisk(int virtualPage, int addrDisk);
-  int getAddrDisk(int virtualPage);
+	void setAddrDisk(int virtualPage, int addrDisk);
+	int getAddrDisk(int virtualPage);
 
-  void setBitIo(int virtualPage);
-  void clearBitIo(int virtualPage);
-  bool getBitIo(int virtualPage);
+	void setBitIo(int virtualPage);
+	void clearBitIo(int virtualPage);
+	bool getBitIo(int virtualPage);
 
-  void setBitValid(int virtualPage);
-  void clearBitValid(int virtualPage);
-  bool getBitValid(int virtualPage);
+	void setBitValid(int virtualPage);
+	void clearBitValid(int virtualPage);
+	bool getBitValid(int virtualPage);
 
-  void setBitSwap(int virtualPage);
-  void clearBitSwap(int virtualPage);
-  bool getBitSwap(int virtualPage);
+	void setBitSwap(int virtualPage);
+	void clearBitSwap(int virtualPage);
+	bool getBitSwap(int virtualPage);
 
-  void setBitReadAllowed(int virtualPage);
-  void clearBitReadAllowed(int virtualPage);
-  bool getBitReadAllowed(int virtualPage);
+	void setBitReadAllowed(int virtualPage);
+	void clearBitReadAllowed(int virtualPage);
+	bool getBitReadAllowed(int virtualPage);
 
-  void setBitWriteAllowed(int virtualPage);
-  void clearBitWriteAllowed(int virtualPage);
-  bool getBitWriteAllowed(int virtualPage);
+	void setBitWriteAllowed(int virtualPage);
+	void clearBitWriteAllowed(int virtualPage);
+	bool getBitWriteAllowed(int virtualPage);
 
-  void setBitU(int virtualPage);
-  void clearBitU(int virtualPage);
-  bool getBitU(int virtualPage);
+	void setBitU(int virtualPage);
+	void clearBitU(int virtualPage);
+	bool getBitU(int virtualPage);
 
-  void setBitM(int virtualPage);
-  void clearBitM(int virtualPage);
-  bool getBitM(int virtualPage);
+	void setBitM(int virtualPage);
+	void clearBitM(int virtualPage);
+	bool getBitM(int virtualPage);
 
- private:
-  // Maximum number of pages that can be translated
-  int maxNumPages;
+  private:
+	// Maximum number of pages that can be translated
+	int maxNumPages;
 
-  // Page table entries
-  PageTableEntry *pageTable;
+	// Page table entries
+	PageTableEntry *pageTable;
 };
 
 /*! \class PageTableEntry
@@ -87,51 +87,51 @@ class TranslationTable {
 */
 
 class PageTableEntry {
- public:
-  /*! By default, a new page table entry refers
-    to a page not on disk neither in swap or
-    physical mem: page is considered unmapped */
-  PageTableEntry();
+  public:
+	/*! By default, a new page table entry refers
+	  to a page not on disk neither in swap or
+	  physical mem: page is considered unmapped */
+	PageTableEntry();
 
-  /*! If this bit isn't set, then the page is not in physical
-    memory. */
-  bool valid;
+	/*! If this bit isn't set, then the page is not in physical
+	  memory. */
+	bool valid;
 
-  /*! If bit U is set, the page has been referenced recently.
-    This bit is set by hardware (MMU) and reset by software (page replacement)
-    */
-  bool U;
+	/*! If bit U is set, the page has been referenced recently.
+	  This bit is set by hardware (MMU) and reset by software (page replacement)
+	  */
+	bool U;
 
-  /*! If bit M is set, the copy of the page in RAM is modified and should be
-   copied back to disk if evicted. This bit is set by hardware (MMU) and reset
-   by software when the page is copied back to disk */
-  bool M;
+	/*! If bit M is set, the copy of the page in RAM is modified and should be
+	 copied back to disk if evicted. This bit is set by hardware (MMU) and reset
+	 by software when the page is copied back to disk */
+	bool M;
 
-  /*! Access rights to the page. If some of these flags are set, the
-     user is allowed to perform the corresponding operations
-     (read/write) over the whole page. If none of these flags is set,
-     then the page is considered not available at all, and any access
-     to the page leads to an AddressErrorException */
-  bool readAllowed;  /*!< Allows program to read the page contents */
-  bool writeAllowed; /*!< Allows program to modify the page contents */
+	/*! Access rights to the page. If some of these flags are set, the
+	   user is allowed to perform the corresponding operations
+	   (read/write) over the whole page. If none of these flags is set,
+	   then the page is considered not available at all, and any access
+	   to the page leads to an AddressErrorException */
+	bool readAllowed;  /*!< Allows program to read the page contents */
+	bool writeAllowed; /*!< Allows program to modify the page contents */
 
-  /*! The page number in real memory (relative to the
-    start of "mainMemory"). Relevant when valid is true only ! */
-  int physicalPage;
+	/*! The page number in real memory (relative to the
+	  start of "mainMemory"). Relevant when valid is true only ! */
+	int physicalPage;
 
-  /*! If this bit is set, the page must be load from swap.
-    If not, the page must be load from executable file.*/
-  bool swap;
+	/*! If this bit is set, the page must be load from swap.
+	  If not, the page must be load from executable file.*/
+	bool swap;
 
-  /*! Depending on the 'swap' bit:
-    - swap == true : location, in terms of <b>PAGES</b>, in the swap
-    - swap == false: location, in terms of <b>BYTES</b>, from the beginning
-      of the executable file, or -1 for anonymous mapping */
-  int addrDisk;
+	/*! Depending on the 'swap' bit:
+	  - swap == true : location, in terms of <b>PAGES</b>, in the swap
+	  - swap == false: location, in terms of <b>BYTES</b>, from the beginning
+	    of the executable file, or -1 for anonymous mapping */
+	int addrDisk;
 
-  /*! This bit is set by the system every time the
-    page is occupied in a input-output.  */
-  bool io;
+	/*! This bit is set by the system every time the
+	  page is occupied in a input-output.  */
+	bool io;
 };
 
 #endif  // TTABLE_H

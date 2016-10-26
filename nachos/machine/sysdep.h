@@ -53,7 +53,7 @@ extern void CloseSocket(int sockID);
 extern void AssignNameToSocket(char *socketName, int sockID);
 extern int ReadFromSocket(int sockID, char *buffer, int packetSize);
 extern void SendToSocket(int sockID, char *buffer, int packetSize,
-                         char *toName);
+						 char *toName);
 
 // Process control: abort, exit, and sleep
 extern void Abort();

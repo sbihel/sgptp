@@ -26,7 +26,9 @@
 //      because C++ can't handle pointers to member functions.
 */
 //----------------------------------------------------------------------
-void ConsoleGet() { g_console_driver->GetAChar(); }
+void ConsoleGet() {
+	g_console_driver->GetAChar();
+}
 
 //----------------------------------------------------------------------
 // static void ConsolePut
@@ -34,7 +36,9 @@ void ConsoleGet() { g_console_driver->GetAChar(); }
 //      because C++ can't handle pointers to member functions.
 */
 //----------------------------------------------------------------------
-void ConsolePut() { g_console_driver->PutAChar(); }
+void ConsolePut() {
+	g_console_driver->PutAChar();
+}
 
 //-----------------------------------------------------------------
 // DriverConsole::DriverConsole
@@ -43,10 +47,10 @@ void ConsolePut() { g_console_driver->PutAChar(); }
 */
 //-----------------------------------------------------------------
 DriverConsole::DriverConsole() {
-  get = new Semaphore((char *)"get", 0);
-  put = new Semaphore((char *)"put", 0);
-  mutexget = new Lock((char *)"mutex get");
-  mutexput = new Lock((char *)"mutex put");
+	get = new Semaphore((char *)"get", 0);
+	put = new Semaphore((char *)"put", 0);
+	mutexget = new Lock((char *)"mutex get");
+	mutexput = new Lock((char *)"mutex put");
 }
 
 //-----------------------------------------------------------------
@@ -57,10 +61,10 @@ DriverConsole::DriverConsole() {
 */
 //-----------------------------------------------------------------
 DriverConsole::~DriverConsole() {
-  delete mutexget;
-  delete mutexput;
-  delete get;
-  delete put;
+	delete mutexget;
+	delete mutexput;
+	delete get;
+	delete put;
 }
 
 //-----------------------------------------------------------------
@@ -70,9 +74,9 @@ DriverConsole::~DriverConsole() {
 */
 //-----------------------------------------------------------------
 void DriverConsole::PutAChar() {
-  IntStatus oldLevel = g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
-  put->V();
-  (void)g_machine->interrupt->SetStatus(oldLevel);
+	IntStatus oldLevel = g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+	put->V();
+	(void)g_machine->interrupt->SetStatus(oldLevel);
 }
 
 //-----------------------------------------------------------------
@@ -86,15 +90,15 @@ void DriverConsole::PutAChar() {
 */
 //-----------------------------------------------------------------
 void DriverConsole::PutString(char *buffer, int nbcar) {
-  mutexput->Acquire();
+	mutexput->Acquire();
 
-  for (int i = 0; i < nbcar; i++) {
-    g_current_thread->GetProcessOwner()->stat->incrNumCharWritten();
-    g_machine->console->PutChar(buffer[i]);
-    put->P();
-  }
+	for (int i = 0; i < nbcar; i++) {
+		g_current_thread->GetProcessOwner()->stat->incrNumCharWritten();
+		g_machine->console->PutChar(buffer[i]);
+		put->P();
+	}
 
-  mutexput->Release();
+	mutexput->Release();
 }
 
 //-----------------------------------------------------------------
@@ -104,9 +108,9 @@ void DriverConsole::PutString(char *buffer, int nbcar) {
 */
 //-----------------------------------------------------------------
 void DriverConsole::GetAChar() {
-  IntStatus oldLevel = g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
-  get->V();
-  (void)g_machine->interrupt->SetStatus(oldLevel);
+	IntStatus oldLevel = g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+	get->V();
+	(void)g_machine->interrupt->SetStatus(oldLevel);
 }
 
 //-----------------------------------------------------------------
@@ -120,20 +124,20 @@ void DriverConsole::GetAChar() {
 */
 //-----------------------------------------------------------------
 void DriverConsole::GetString(char *buffer, int nbcar) {
-  char c = 0;
-  int i;
+	char c = 0;
+	int i;
 
-  mutexget->Acquire();
-  g_machine->console->EnableInterrupt();
+	mutexget->Acquire();
+	g_machine->console->EnableInterrupt();
 
-  for (i = 0; ((i < nbcar) && (c != '\n')); i++) {
-    g_current_thread->GetProcessOwner()->stat->incrNumCharRead();
-    get->P();
-    c = g_machine->console->GetChar();
-    buffer[i] = c;
-  }
-  buffer[i] = 0;
+	for (i = 0; ((i < nbcar) && (c != '\n')); i++) {
+		g_current_thread->GetProcessOwner()->stat->incrNumCharRead();
+		get->P();
+		c = g_machine->console->GetChar();
+		buffer[i] = c;
+	}
+	buffer[i] = 0;
 
-  g_machine->console->DisableInterrupt();
-  mutexget->Release();
+	g_machine->console->DisableInterrupt();
+	mutexget->Release();
 }

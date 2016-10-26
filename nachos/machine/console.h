@@ -40,82 +40,82 @@
 // has been "put", so that the next character can be written.
 */
 class Console {
- public:
-  /** 	Constructor. Initialize the simulation of a hardware console device.
-   //
-   //	\param readFile UNIX file simulating the keyboard (NULL -> use stdin)
-   //	\param writeFile UNIX file simulating the display (NULL -> use stdout)
-   // 	\param readAvail is the interrupt handler called when a character
-   //              arrives from the keyboard
-   // 	\param writeDone is the interrupt handler called when a character has
-   //		been output, so that it is ok to request the next char be
-   //		output
-   */
-  Console(char *readFile, char *writeFile, VoidNoArgFunctionPtr readAvail,
-          VoidNoArgFunctionPtr writeDone);
+  public:
+	/** 	Constructor. Initialize the simulation of a hardware console device.
+	 //
+	 //	\param readFile UNIX file simulating the keyboard (NULL -> use stdin)
+	 //	\param writeFile UNIX file simulating the display (NULL -> use stdout)
+	 // 	\param readAvail is the interrupt handler called when a character
+	 //              arrives from the keyboard
+	 // 	\param writeDone is the interrupt handler called when a character has
+	 //		been output, so that it is ok to request the next char be
+	 //		output
+	 */
+	Console(char *readFile, char *writeFile, VoidNoArgFunctionPtr readAvail,
+			VoidNoArgFunctionPtr writeDone);
 
-  //! Destructor. Clean up console emulation
-  ~Console();
+	//! Destructor. Clean up console emulation
+	~Console();
 
-  // External interface -- Nachos kernel code can call these
+	// External interface -- Nachos kernel code can call these
 
-  /*!
-  // Write a character to the simulated display, schedule an interrupt
-  // to occur in the future, and return.
-  */
-  void PutChar(char ch);
+	/*!
+	// Write a character to the simulated display, schedule an interrupt
+	// to occur in the future, and return.
+	*/
+	void PutChar(char ch);
 
-  /*!
-  // Read a character from the input buffer, if there is any there.
-  // Either return the character, or EOF if none buffered.
-  // \return read character
-  */
-  char GetChar();
+	/*!
+	// Read a character from the input buffer, if there is any there.
+	// Either return the character, or EOF if none buffered.
+	// \return read character
+	*/
+	char GetChar();
 
-  /*! Enable the console interrupt
-   */
-  void EnableInterrupt();
+	/*! Enable the console interrupt
+	 */
+	void EnableInterrupt();
 
-  /*! Disable the console interrupt
-   */
-  void DisableInterrupt();
+	/*! Disable the console interrupt
+	 */
+	void DisableInterrupt();
 
-  // Internal emulation routines -- DO NOT call these.
+	// Internal emulation routines -- DO NOT call these.
 
-  /*! Internal routine called when it is time to invoke the interrupt
-  //	handler to tell the Nachos kernel that the output character has
-  //	completed.
-  */
-  void WriteDone();
+	/*! Internal routine called when it is time to invoke the interrupt
+	//	handler to tell the Nachos kernel that the output character has
+	//	completed.
+	*/
+	void WriteDone();
 
-  /*!
-  // Periodically called to check if a character is available for
-  // input from the simulated keyboard (eg, has it been typed?).
-  //
-  // Only read it in if there is buffer space for it (if the previous
-  // character has been grabbed out of the buffer by the Nachos kernel).
-  // Invoke the "read" interrupt handler, once the character has been
-  // put into the buffer.
-  */
-  void CheckCharAvail();
+	/*!
+	// Periodically called to check if a character is available for
+	// input from the simulated keyboard (eg, has it been typed?).
+	//
+	// Only read it in if there is buffer space for it (if the previous
+	// character has been grabbed out of the buffer by the Nachos kernel).
+	// Invoke the "read" interrupt handler, once the character has been
+	// put into the buffer.
+	*/
+	void CheckCharAvail();
 
- private:
-  bool intState;  //!< Interrupt status
+  private:
+	bool intState;  //!< Interrupt status
 
-  int readFileNo;                    //!< UNIX file emulating the keyboard
-  int writeFileNo;                   //!< UNIX file emulating the display
-  VoidNoArgFunctionPtr writeHandler; /*!< Interrupt handler to call when the
+	int readFileNo;                    //!< UNIX file emulating the keyboard
+	int writeFileNo;                   //!< UNIX file emulating the display
+	VoidNoArgFunctionPtr writeHandler; /*!< Interrupt handler to call when the
                                       * PutChar I/O completes
        */
 
-  VoidNoArgFunctionPtr readHandler; /*!< Interrupt handler to call when a
+	VoidNoArgFunctionPtr readHandler; /*!< Interrupt handler to call when a
                                      * character arrives from the keyboard
       */
 
-  bool putBusy;  /*!< Is a PutChar operation in progress? If so, you can't do
+	bool putBusy;  /*!< Is a PutChar operation in progress? If so, you can't do
                   * another one!
  */
-  char incoming; /*!< Contains the character to be read,
+	char incoming; /*!< Contains the character to be read,
  if there is one available. Otherwise contains EOF.
 */
 };

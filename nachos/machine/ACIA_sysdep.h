@@ -31,46 +31,46 @@ class ACIA;
     parallel (full duplex).
  */
 class ACIA_sysdep {
- public:
-  /** Initializes a system dependent part of the ACIA.
-   * \param interface: the non-system dependent part of the Acia simulation
-   * (ACIA)
-   * \param machine: the MIPS machine
-  */
-  ACIA_sysdep(ACIA *interface, Machine *m);
+  public:
+	/** Initializes a system dependent part of the ACIA.
+	 * \param interface: the non-system dependent part of the Acia simulation
+	 * (ACIA)
+	 * \param machine: the MIPS machine
+	*/
+	ACIA_sysdep(ACIA *interface, Machine *m);
 
-  /** Deallocates it and close the socket. */
-  ~ACIA_sysdep();
+	/** Deallocates it and close the socket. */
+	~ACIA_sysdep();
 
-  /** Check if there is an incoming char.
-   * Schedule the interrupt to execute itself again in a while.
-   * Check if a char had came through the socket. If there is one,
-   * input register's value and state are modified and
-   * in Interrupt mode, execute the reception handler.
-   * The data reception register of the ACIA object is overwritten
-   * in all the cases.
-   */
-  void InterruptRec();
+	/** Check if there is an incoming char.
+	 * Schedule the interrupt to execute itself again in a while.
+	 * Check if a char had came through the socket. If there is one,
+	 * input register's value and state are modified and
+	 * in Interrupt mode, execute the reception handler.
+	 * The data reception register of the ACIA object is overwritten
+	 * in all the cases.
+	 */
+	void InterruptRec();
 
-  /**  Send a char through the socket and drain the output register.  In
-   * Interrupt mode, execute the emission handler.
-   */
-  void InterruptEm();
+	/**  Send a char through the socket and drain the output register.  In
+	 * Interrupt mode, execute the emission handler.
+	 */
+	void InterruptEm();
 
-  /** Schedules an interrupt to simulate
-   * the output register dumping.
-   */
-  void SendChar();
+	/** Schedules an interrupt to simulate
+	 * the output register dumping.
+	 */
+	void SendChar();
 
-  /** Simulate the input register draining because it must be clear just after
-   * a read operation.
-   */
-  void Drain();
+	/** Simulate the input register draining because it must be clear just after
+	 * a read operation.
+	 */
+	void Drain();
 
- private:
-  ACIA *interface;    //!< ACIA
-  int sock;           //!< UNIX socket number for incoming/outgoing packets.
-  char sockName[32];  //!< File name corresponding to UNIX socket.
+  private:
+	ACIA *interface;    //!< ACIA
+	int sock;           //!< UNIX socket number for incoming/outgoing packets.
+	char sockName[32];  //!< File name corresponding to UNIX socket.
 };
 
 #endif  // _ACIA_SIM

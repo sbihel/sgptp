@@ -17,12 +17,12 @@
    for the Nachos kernel.
 */
 class PageFaultManager {
- public:
-  PageFaultManager();
+  public:
+	PageFaultManager();
 
-  ~PageFaultManager();
+	~PageFaultManager();
 
-  ExceptionType PageFault(int virtualPage);  //!< Page faut handler
+	ExceptionType PageFault(int virtualPage);  //!< Page faut handler
 };
 
 #endif  // PFM_H

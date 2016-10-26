@@ -32,36 +32,44 @@ using namespace std;
 // calls.
 */
 class ObjId {
- private:
-  int last_id;
-  map<const int32_t, void *> ids;
+  private:
+	int last_id;
+	map<const int32_t, void *> ids;
 
- public:
-  //----------------------------------------------------------------------
-  // ObjId::ObjId
-  /*!      Insert an "item" into a list, so that the list elements are
-  //	sorted in increasing order by "sortKey".
-  //
-  //	Allocate a ListElement to keep track of the item.
-  //      If the list is empty, then this will be the only element.
-  //	Otherwise, walk through the list, one element at a time,
-  //	to find where the new item should be placed.
-  //
-  //	\param item is the thing to put on the list, it can be a pointer to
-  //		anything.
-  //	\param sortKey is the priority of the item.
-  //    \
-  */
-  //----------------------------------------------------------------------
-  ObjId() { last_id = 3; /* 0, 1 and 2 used for file descriptors */ }
-  ~ObjId() { ids.clear(); };
-  int32_t AddObject(void *ptr) {
-    int32_t res = last_id++;
-    ids[res] = ptr;
-    return res;
-  }
-  void *SearchObject(int32_t id) { return ids[id]; }
-  void RemoveObject(int32_t id) { ids.erase(id); }
+  public:
+	//----------------------------------------------------------------------
+	// ObjId::ObjId
+	/*!      Insert an "item" into a list, so that the list elements are
+	//	sorted in increasing order by "sortKey".
+	//
+	//	Allocate a ListElement to keep track of the item.
+	//      If the list is empty, then this will be the only element.
+	//	Otherwise, walk through the list, one element at a time,
+	//	to find where the new item should be placed.
+	//
+	//	\param item is the thing to put on the list, it can be a pointer to
+	//		anything.
+	//	\param sortKey is the priority of the item.
+	//    \
+	*/
+	//----------------------------------------------------------------------
+	ObjId() {
+		last_id = 3; /* 0, 1 and 2 used for file descriptors */
+	}
+	~ObjId() {
+		ids.clear();
+	};
+	int32_t AddObject(void *ptr) {
+		int32_t res = last_id++;
+		ids[res] = ptr;
+		return res;
+	}
+	void *SearchObject(int32_t id) {
+		return ids[id];
+	}
+	void RemoveObject(int32_t id) {
+		ids.erase(id);
+	}
 };
 
 #endif  // OBJID_H

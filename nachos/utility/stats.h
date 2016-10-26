@@ -24,27 +24,35 @@
 class ProcessStat;
 
 class Statistics {
- private:
-  Listint *allStatistics;  //!< enables to keep  statistics of all processes
-  // when they are finished.
-  Time totalTicks;  //!< Total time spent running Nachos
-  Time idleTicks;   //!< Time spent idle (no thread to run)
+  private:
+	Listint *allStatistics;  //!< enables to keep  statistics of all processes
+	// when they are finished.
+	Time totalTicks;  //!< Total time spent running Nachos
+	Time idleTicks;   //!< Time spent idle (no thread to run)
 
- public:
-  Statistics();   // initialyses everything to zero
-  ~Statistics();  // de-allocate the list
-  ProcessStat *NewProcStat(
-      char *name); /* create a new ProcessStat, link it to allStatistics
+  public:
+	Statistics();   // initialyses everything to zero
+	~Statistics();  // de-allocate the list
+	ProcessStat *NewProcStat(
+		char *name); /* create a new ProcessStat, link it to allStatistics
 and return a pointer on it. It is called by the
 method which create a new process */
 
-  void Print(); /* prints collected statistics, including
+	void Print(); /* prints collected statistics, including
                     process statistics
                 */
-  void incrTotalTicks(Time val) { totalTicks += val; }
-  void setTotalTicks(Time val) { totalTicks = val; }
-  Time getTotalTicks(void) { return totalTicks; }
-  void incrIdleTicks(Time val) { idleTicks += val; }
+	void incrTotalTicks(Time val) {
+		totalTicks += val;
+	}
+	void setTotalTicks(Time val) {
+		totalTicks = val;
+	}
+	Time getTotalTicks(void) {
+		return totalTicks;
+	}
+	void incrIdleTicks(Time val) {
+		idleTicks += val;
+	}
 };
 
 /*! \brief Defines statistics that concern a particular process
@@ -55,34 +63,52 @@ method which create a new process */
 */
 
 class ProcessStat {
- private:
-  char name[MAXSTRLEN];  //!< name of the process
-  Time systemTicks;      //!< Time spent executing system code
-  Time userTicks;  //!< Time spent executing user code including memory accesses
-  int numInstruction;
-  int numDiskReads;            //!< number of disk read requests
-  int numDiskWrites;           //!< number of disk write requests
-  int numConsoleCharsRead;     //!< number of characters read from the keyboard
-  int numConsoleCharsWritten;  //!< number of characters written to the display
+  private:
+	char name[MAXSTRLEN];  //!< name of the process
+	Time systemTicks;      //!< Time spent executing system code
+	Time userTicks;  //!< Time spent executing user code including memory accesses
+	int numInstruction;
+	int numDiskReads;            //!< number of disk read requests
+	int numDiskWrites;           //!< number of disk write requests
+	int numConsoleCharsRead;     //!< number of characters read from the keyboard
+	int numConsoleCharsWritten;  //!< number of characters written to the display
 
-  int numMemoryAccess;  //!< number of Memory accesses
-  int numPageFaults;    //!< number of virtual memory page faults
- public:
-  ProcessStat(char *name); /* initialises everything to zero and
+	int numMemoryAccess;  //!< number of Memory accesses
+	int numPageFaults;    //!< number of virtual memory page faults
+  public:
+	ProcessStat(char *name); /* initialises everything to zero and
                                 initialises the name of the process */
-  void incrSystemTicks(Time val);
-  void incrUserTicks(Time val);
-  Time getUserTime(void) { return userTicks; }
-  Time getSystemTime(void) { return systemTicks; }
-  void incrMemoryAccess(void);
-  void incrPageFault(void) { numPageFaults++; }
-  void incrNumCharWritten(void) { numConsoleCharsWritten++; }
-  void incrNumCharRead(void) { numConsoleCharsRead++; }
-  void incrNumDiskReads(void) { numDiskReads++; }
-  void incrNumDiskWrites(void) { numDiskWrites++; }
-  void incrNumInstruction(void) { numInstruction++; }
-  int getNumInstruction(void) { return numInstruction; }
-  void Print(void);
+	void incrSystemTicks(Time val);
+	void incrUserTicks(Time val);
+	Time getUserTime(void) {
+		return userTicks;
+	}
+	Time getSystemTime(void) {
+		return systemTicks;
+	}
+	void incrMemoryAccess(void);
+	void incrPageFault(void) {
+		numPageFaults++;
+	}
+	void incrNumCharWritten(void) {
+		numConsoleCharsWritten++;
+	}
+	void incrNumCharRead(void) {
+		numConsoleCharsRead++;
+	}
+	void incrNumDiskReads(void) {
+		numDiskReads++;
+	}
+	void incrNumDiskWrites(void) {
+		numDiskWrites++;
+	}
+	void incrNumInstruction(void) {
+		numInstruction++;
+	}
+	int getNumInstruction(void) {
+		return numInstruction;
+	}
+	void Print(void);
 };
 
 // Constants used to reflect the relative time an operation would

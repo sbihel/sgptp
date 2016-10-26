@@ -17,10 +17,11 @@
  execution, for debugging purpose.
 */
 static char* exceptionNames[] = {
-    (char*)"no exception", (char*) "syscall",
-    (char*) "page fault",  (char*) "page read only",
-    (char*) "bus error",   (char*) "address error",
-    (char*) "overflow",    (char*) "illegal instruction"};
+	(char*)"no exception", (char*) "syscall",
+	(char*) "page fault",  (char*) "page read only",
+	(char*) "bus error",   (char*) "address error",
+	(char*) "overflow",    (char*) "illegal instruction"
+};
 #define EXCEPTION_NUMBER 7  //!< Size of exceptionNames, used for sanity checks
 
 //----------------------------------------------------------------------
@@ -30,47 +31,51 @@ static char* exceptionNames[] = {
 */
 //----------------------------------------------------------------------
 static void CheckEndian() {
-  // Declare an array of bytes and fills it with 1 2 3 4
-  union checkit {
-    int8_t charword[4];
-    uint32_t intword;
-  } check;
-  check.charword[0] = 1;
-  check.charword[1] = 2;
-  check.charword[2] = 3;
-  check.charword[3] = 4;
+	// Declare an array of bytes and fills it with 1 2 3 4
+	union checkit {
+		int8_t charword[4];
+		uint32_t intword;
+	} check;
+	check.charword[0] = 1;
+	check.charword[1] = 2;
+	check.charword[2] = 3;
+	check.charword[3] = 4;
 
-  // Check the byte ordering according to the expected host endianess
-  if (check.intword == 0x01020304)
-    host_endianess = IS_BIG_ENDIAN;
-  else if (check.intword == 0x04030201)
-    host_endianess = IS_LITTLE_ENDIAN;
+	// Check the byte ordering according to the expected host endianess
+	if (check.intword == 0x01020304)
+		host_endianess = IS_BIG_ENDIAN;
+	else if (check.intword == 0x04030201)
+		host_endianess = IS_LITTLE_ENDIAN;
 }
 
 // Routines for converting Words and Short Words to and from the
 // simulated machine's format of little endian.  These end up
 // being NOPs when the host machine is also little endian (DEC and Intel).
 uint32_t WordToHost(uint32_t word) {
-  if (host_endianess == mips_endianess) return word;
-  register uint32_t result;
-  result = (word >> 24) & 0x000000ff;
-  result |= (word >> 8) & 0x0000ff00;
-  result |= (word << 8) & 0x00ff0000;
-  result |= (word << 24) & 0xff000000;
-  return result;
+	if (host_endianess == mips_endianess) return word;
+	register uint32_t result;
+	result = (word >> 24) & 0x000000ff;
+	result |= (word >> 8) & 0x0000ff00;
+	result |= (word << 8) & 0x00ff0000;
+	result |= (word << 24) & 0xff000000;
+	return result;
 }
 
 uint16_t ShortToHost(uint16_t shortword) {
-  if (host_endianess == mips_endianess) return shortword;
-  register uint16_t result;
-  result = (shortword << 8) & 0xff00;
-  result |= (shortword >> 8) & 0x00ff;
-  return result;
+	if (host_endianess == mips_endianess) return shortword;
+	register uint16_t result;
+	result = (shortword << 8) & 0xff00;
+	result |= (shortword >> 8) & 0x00ff;
+	return result;
 }
 
-uint16_t ShortToMachine(uint16_t shortword) { return ShortToHost(shortword); }
+uint16_t ShortToMachine(uint16_t shortword) {
+	return ShortToHost(shortword);
+}
 
-uint32_t WordToMachine(uint32_t word) { return WordToHost(word); }
+uint32_t WordToMachine(uint32_t word) {
+	return WordToHost(word);
+}
 
 //----------------------------------------------------------------------
 // Machine::Machine
@@ -81,36 +86,36 @@ uint32_t WordToMachine(uint32_t word) { return WordToHost(word); }
 */
 //----------------------------------------------------------------------
 Machine::Machine(bool debug) {
-  int i;
+	int i;
 
-  // Set initial values for the integer and floating point registers
-  for (i = 0; i < NUM_INT_REGS; i++) int_registers[i] = 0;
-  for (i = 0; i < NUM_FP_REGS; i++) float_registers[i] = 0;
+	// Set initial values for the integer and floating point registers
+	for (i = 0; i < NUM_INT_REGS; i++) int_registers[i] = 0;
+	for (i = 0; i < NUM_FP_REGS; i++) float_registers[i] = 0;
 
-  // Allocate the main memory of the machine and fills it up with zeroes
-  int memSize = g_cfg->NumPhysPages * g_cfg->PageSize;
-  mainMemory = new int8_t[memSize];
-  for (i = 0; i < memSize; i++) mainMemory[i] = 0;
+	// Allocate the main memory of the machine and fills it up with zeroes
+	int memSize = g_cfg->NumPhysPages * g_cfg->PageSize;
+	mainMemory = new int8_t[memSize];
+	for (i = 0; i < memSize; i++) mainMemory[i] = 0;
 
-  // Check the endianess of the host machine
-  CheckEndian();
+	// Check the endianess of the host machine
+	CheckEndian();
 
-  // Sets the debug mode of the machine according to the debug flag
-  singleStep = debug;
+	// Sets the debug mode of the machine according to the debug flag
+	singleStep = debug;
 
-  // Create the machine sub-components
-  this->mmu = new MMU();
-  this->interrupt = new Interrupt();
-  this->disk = new Disk(DISK_FILE_NAME, DiskRequestDone);
-  this->diskSwap = new Disk(DISK_SWAP_NAME, DiskSwapRequestDone);
-  this->console = new Console(NULL, NULL, ConsoleGet, ConsolePut);
-  if (g_cfg->ACIA)
-    this->acia = new ACIA(this);
-  else
-    this->acia = NULL;
+	// Create the machine sub-components
+	this->mmu = new MMU();
+	this->interrupt = new Interrupt();
+	this->disk = new Disk(DISK_FILE_NAME, DiskRequestDone);
+	this->diskSwap = new Disk(DISK_SWAP_NAME, DiskSwapRequestDone);
+	this->console = new Console(NULL, NULL, ConsoleGet, ConsolePut);
+	if (g_cfg->ACIA)
+		this->acia = new ACIA(this);
+	else
+		this->acia = NULL;
 
-  // Set the machine status
-  status = SYSTEM_MODE;
+	// Set the machine status
+	status = SYSTEM_MODE;
 }
 
 //----------------------------------------------------------------------
@@ -119,16 +124,16 @@ Machine::Machine(bool debug) {
 //      simulated MIPS machine.
 //----------------------------------------------------------------------
 Machine::~Machine() {
-  // Deallocate the main memory
-  delete[] mainMemory;
+	// Deallocate the main memory
+	delete[] mainMemory;
 
-  // Deallocate the machine components
-  delete this->mmu;
-  delete this->interrupt;
-  if (this->acia != NULL) delete this->acia;
-  delete this->disk;
-  delete this->diskSwap;
-  delete this->console;
+	// Deallocate the machine components
+	delete this->mmu;
+	delete this->interrupt;
+	if (this->acia != NULL) delete this->acia;
+	delete this->disk;
+	delete this->diskSwap;
+	delete this->console;
 }
 
 //----------------------------------------------------------------------
@@ -142,20 +147,20 @@ Machine::~Machine() {
 */
 //----------------------------------------------------------------------
 void Machine::RaiseException(ExceptionType which, int badVAddr) {
-  // Sanity check of the exception number
-  if (which <= EXCEPTION_NUMBER) {
-    DEBUG('m', (char*)"Exception: %s\n", exceptionNames[which]);
+	// Sanity check of the exception number
+	if (which <= EXCEPTION_NUMBER) {
+		DEBUG('m', (char*)"Exception: %s\n", exceptionNames[which]);
 
-    // Call of the exception handler
-    int_registers[BADVADDR_REG] = badVAddr;
-    DelayedLoad(0, 0);  // finish anything in progress
-    this->status = SYSTEM_MODE;
-    ExceptionHandler(which, badVAddr);  // call the exception handler
-    this->status = USER_MODE;           // interrupts are enabled at this point
-  } else {
-    printf("Nachos internal error: bad exception number %d, exiting\n", which);
-    interrupt->Halt(-1);
-  }
+		// Call of the exception handler
+		int_registers[BADVADDR_REG] = badVAddr;
+		DelayedLoad(0, 0);  // finish anything in progress
+		this->status = SYSTEM_MODE;
+		ExceptionHandler(which, badVAddr);  // call the exception handler
+		this->status = USER_MODE;           // interrupts are enabled at this point
+	} else {
+		printf("Nachos internal error: bad exception number %d, exiting\n", which);
+		interrupt->Halt(-1);
+	}
 }
 
 //----------------------------------------------------------------------
@@ -169,42 +174,42 @@ void Machine::RaiseException(ExceptionType which, int badVAddr) {
 //----------------------------------------------------------------------
 
 void Machine::Debugger() {
-  char buf[MAXSTRLEN];
-  int num;
+	char buf[MAXSTRLEN];
+	int num;
 
-  // Print the list of pending interrupts
-  interrupt->DumpState();
+	// Print the list of pending interrupts
+	interrupt->DumpState();
 
-  // Dump the CPU state (essentially prints the CPU general resgisters)
-  DumpState();
+	// Dump the CPU state (essentially prints the CPU general resgisters)
+	DumpState();
 
-  // Print the current clock tick
-  printf("At cycle %llu\n", g_stats->getTotalTicks());
-  fflush(stdout);
+	// Print the current clock tick
+	printf("At cycle %llu\n", g_stats->getTotalTicks());
+	fflush(stdout);
 
-  // Gets of command of the basic debugger on stdin
-  fgets(buf, MAXSTRLEN, stdin);
-  if (sscanf(buf, "%d", &num) == 1)
-    runUntilTime = num;
-  else {
-    runUntilTime = 0;
-    switch (*buf) {
-      case '\n':
-        break;
+	// Gets of command of the basic debugger on stdin
+	fgets(buf, MAXSTRLEN, stdin);
+	if (sscanf(buf, "%d", &num) == 1)
+		runUntilTime = num;
+	else {
+		runUntilTime = 0;
+		switch (*buf) {
+		case '\n':
+			break;
 
-      case 'c':
-        singleStep = false;
-        break;
+		case 'c':
+			singleStep = false;
+			break;
 
-      case '?':
-        printf("Machine commands:\n");
-        printf("    <return>  execute one instruction\n");
-        printf("    <number>  run until the given clock cycle number\n");
-        printf("    c         run until completion\n");
-        printf("    ?         print help message\n");
-        break;
-    }
-  }
+		case '?':
+			printf("Machine commands:\n");
+			printf("    <return>  execute one instruction\n");
+			printf("    <number>  run until the given clock cycle number\n");
+			printf("    c         run until completion\n");
+			printf("    ?         print help message\n");
+			break;
+		}
+	}
 }
 
 //----------------------------------------------------------------------
@@ -216,36 +221,36 @@ void Machine::Debugger() {
 //----------------------------------------------------------------------
 
 void Machine::DumpState() {
-  int i;
+	int i;
 
-  // Print of the general CPU registers
-  printf("Machine registers:\n");
-  for (i = 0; i < NUM_GP_REGS; i++) switch (i) {
-      case STACK_REG:
-        printf("\tSP(%d):\t0x%x%s", i, int_registers[i],
-               ((i % 4) == 3) ? "\n" : "");
-        break;
+	// Print of the general CPU registers
+	printf("Machine registers:\n");
+	for (i = 0; i < NUM_GP_REGS; i++) switch (i) {
+		case STACK_REG:
+			printf("\tSP(%d):\t0x%x%s", i, int_registers[i],
+				   ((i % 4) == 3) ? "\n" : "");
+			break;
 
-      case RETADDR_REG:
-        printf("\tRA(%d):\t0x%x%s", i, int_registers[i],
-               ((i % 4) == 3) ? "\n" : "");
-        break;
+		case RETADDR_REG:
+			printf("\tRA(%d):\t0x%x%s", i, int_registers[i],
+				   ((i % 4) == 3) ? "\n" : "");
+			break;
 
-      default:
-        printf("\t%d:\t0x%x%s", i, int_registers[i],
-               ((i % 4) == 3) ? "\n" : "");
-        break;
-    }
+		default:
+			printf("\t%d:\t0x%x%s", i, int_registers[i],
+				   ((i % 4) == 3) ? "\n" : "");
+			break;
+		}
 
-  // Print the contents of the special CPU registers
-  printf("\tHi:\t0x%x", int_registers[HI_REG]);
-  printf("\tLo:\t0x%x\n", int_registers[LO_REG]);
-  printf("\tPC:\t0x%x", int_registers[PC_REG]);
-  printf("\tNextPC:\t0x%x", int_registers[NEXTPC_REG]);
-  printf("\tPrevPC:\t0x%x\n", int_registers[PREVPC_REG]);
-  printf("\tLoad:\t0x%x", int_registers[LOAD_REG]);
-  printf("\tLoadV:\t0x%x\n", int_registers[LOADVALUE_REG]);
-  printf("\n");
+	// Print the contents of the special CPU registers
+	printf("\tHi:\t0x%x", int_registers[HI_REG]);
+	printf("\tLo:\t0x%x\n", int_registers[LO_REG]);
+	printf("\tPC:\t0x%x", int_registers[PC_REG]);
+	printf("\tNextPC:\t0x%x", int_registers[NEXTPC_REG]);
+	printf("\tPrevPC:\t0x%x\n", int_registers[PREVPC_REG]);
+	printf("\tLoad:\t0x%x", int_registers[LOAD_REG]);
+	printf("\tLoadV:\t0x%x\n", int_registers[LOADVALUE_REG]);
+	printf("\n");
 }
 
 //----------------------------------------------------------------------
@@ -255,25 +260,29 @@ void Machine::DumpState() {
 
 // read the contents of an integer register
 int32_t Machine::ReadIntRegister(int num) {
-  ASSERT((num >= 0) && (num < NUM_INT_REGS));
-  return int_registers[num];
+	ASSERT((num >= 0) && (num < NUM_INT_REGS));
+	return int_registers[num];
 }
 // write the contents of an integer register
 void Machine::WriteIntRegister(int num, int32_t value) {
-  ASSERT((num >= 0) && (num < NUM_INT_REGS));
-  int_registers[num] = value;
+	ASSERT((num >= 0) && (num < NUM_INT_REGS));
+	int_registers[num] = value;
 }
 // read the contents of a FP register
 int32_t Machine::ReadFPRegister(int num) {
-  ASSERT((num >= 0) && (num < NUM_FP_REGS));
-  return float_registers[num];
+	ASSERT((num >= 0) && (num < NUM_FP_REGS));
+	return float_registers[num];
 }
 // store a value into a FP register
 void Machine::WriteFPRegister(int num, int32_t value) {
-  ASSERT((num >= 0) && (num < NUM_FP_REGS));
-  float_registers[num] = value;
+	ASSERT((num >= 0) && (num < NUM_FP_REGS));
+	float_registers[num] = value;
 }
 // read the contents of the condition code register
-int8_t Machine::ReadCC(void) { return cc; }
+int8_t Machine::ReadCC(void) {
+	return cc;
+}
 // write the contents of the condition code register
-void Machine::WriteCC(int8_t val) { cc = val; }
+void Machine::WriteCC(int8_t val) {
+	cc = val;
+}

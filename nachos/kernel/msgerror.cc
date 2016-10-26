@@ -16,35 +16,35 @@
 */
 //-----------------------------------------------------------------
 SyscallError::SyscallError() {
-  lastError = NoError;
-  errorAbout = NULL;
+	lastError = NoError;
+	errorAbout = NULL;
 
-  msgs[NoError] = (char *)"no error %s \n";
-  msgs[IncError] = (char *)"incorrect error type %s \n";
+	msgs[NoError] = (char *)"no error %s \n";
+	msgs[IncError] = (char *)"incorrect error type %s \n";
 
-  msgs[OpenFileError] = (char *)"unable to open file %s \n";
-  msgs[ExecFileFormatError] =
-      (char *)"file %s is not a valid executable file (not in ELF format)\n";
-  msgs[OutOfMemory] = (char *)"out of memory %s\n";
+	msgs[OpenFileError] = (char *)"unable to open file %s \n";
+	msgs[ExecFileFormatError] =
+		(char *)"file %s is not a valid executable file (not in ELF format)\n";
+	msgs[OutOfMemory] = (char *)"out of memory %s\n";
 
-  msgs[OutOfDisk] = (char *)"out of disk space %s\n";
-  msgs[AlreadyInDirectory] = (char *)"file or directory %s already exists\n";
-  msgs[InexistFileError] = (char *)"file %s does not exist or is a directory\n";
-  msgs[InexistDirectoryError] =
-      (char *)"directory %s does not exist or is a file\n";
-  msgs[NoSpaceInDirectory] =
-      (char *)"maximum number of entries in directory %s reached\n";
-  msgs[NotAFile] = (char *)"%s is not a file\n";
-  msgs[NotADirectory] = (char *)"%s is not a directory\n";
-  msgs[DirectoryNotEmpty] = (char *)"directory %s is not empty\n";
+	msgs[OutOfDisk] = (char *)"out of disk space %s\n";
+	msgs[AlreadyInDirectory] = (char *)"file or directory %s already exists\n";
+	msgs[InexistFileError] = (char *)"file %s does not exist or is a directory\n";
+	msgs[InexistDirectoryError] =
+		(char *)"directory %s does not exist or is a file\n";
+	msgs[NoSpaceInDirectory] =
+		(char *)"maximum number of entries in directory %s reached\n";
+	msgs[NotAFile] = (char *)"%s is not a file\n";
+	msgs[NotADirectory] = (char *)"%s is not a directory\n";
+	msgs[DirectoryNotEmpty] = (char *)"directory %s is not empty\n";
 
-  msgs[InvalidSemaphoreId] = (char *)"invalid semaphore identifier %s\n";
-  msgs[InvalidLockId] = (char *)"invalid lock identifier %s\n";
-  msgs[InvalidConditionId] = (char *)"invalid condition identifier %s\n";
-  msgs[InvalidFileId] = (char *)"invalid file identifier %s\n";
-  msgs[InvalidThreadId] = (char *)"invalid thread identifier %s\n";
+	msgs[InvalidSemaphoreId] = (char *)"invalid semaphore identifier %s\n";
+	msgs[InvalidLockId] = (char *)"invalid lock identifier %s\n";
+	msgs[InvalidConditionId] = (char *)"invalid condition identifier %s\n";
+	msgs[InvalidFileId] = (char *)"invalid file identifier %s\n";
+	msgs[InvalidThreadId] = (char *)"invalid thread identifier %s\n";
 
-  msgs[NoACIA] = (char *)"no ACIA driver installed %s\n";
+	msgs[NoACIA] = (char *)"no ACIA driver installed %s\n";
 }
 
 //-----------------------------------------------------------------
@@ -53,7 +53,7 @@ SyscallError::SyscallError() {
 */
 //-----------------------------------------------------------------
 SyscallError::~SyscallError() {
-  if (errorAbout != NULL) delete[] errorAbout;
+	if (errorAbout != NULL) delete[] errorAbout;
 }
 
 //-----------------------------------------------------------------
@@ -66,23 +66,23 @@ SyscallError::~SyscallError() {
 */
 //-----------------------------------------------------------------
 void SyscallError::SetMsg(char *about, int num) {
-  // Delete old "about" string
-  if (errorAbout != NULL) delete errorAbout;
+	// Delete old "about" string
+	if (errorAbout != NULL) delete errorAbout;
 
-  // Allocate a new one if the argument is not NULL
-  if (about != NULL) {
-    int size = strlen(about) + 1;
-    errorAbout = new char[size];
-    strcpy(errorAbout, about);
-  } else
-    errorAbout = NULL;
+	// Allocate a new one if the argument is not NULL
+	if (about != NULL) {
+		int size = strlen(about) + 1;
+		errorAbout = new char[size];
+		strcpy(errorAbout, about);
+	} else
+		errorAbout = NULL;
 
-  // Remember the error code of the last system call
-  if ((num < 0) || (num >= NUMMSGERROR)) lastError = IncError;
-  if (msgs[num] == NULL)
-    lastError = IncError;
-  else
-    lastError = num;
+	// Remember the error code of the last system call
+	if ((num < 0) || (num >= NUMMSGERROR)) lastError = IncError;
+	if (msgs[num] == NULL)
+		lastError = IncError;
+	else
+		lastError = num;
 }
 
 //-----------------------------------------------------------------
@@ -95,9 +95,9 @@ void SyscallError::SetMsg(char *about, int num) {
 */
 //-----------------------------------------------------------------
 const char *SyscallError::GetFormat(int num) {
-  if ((num < 0) || (num >= NUMMSGERROR)) num = IncError;
-  if (msgs[num] == NULL) num = IncError;
-  return msgs[num];
+	if ((num < 0) || (num >= NUMMSGERROR)) num = IncError;
+	if (msgs[num] == NULL) num = IncError;
+	return msgs[num];
 }
 
 //-----------------------------------------------------------------
@@ -110,11 +110,11 @@ const char *SyscallError::GetFormat(int num) {
 */
 //-----------------------------------------------------------------
 void SyscallError::PrintLastMsg(DriverConsole *cons, char *ch) {
-  int size = strlen(msgs[lastError]) + strlen(errorAbout) + 1;
-  char *msg = new char[size];
-  sprintf(msg, msgs[lastError], errorAbout);
+	int size = strlen(msgs[lastError]) + strlen(errorAbout) + 1;
+	char *msg = new char[size];
+	sprintf(msg, msgs[lastError], errorAbout);
 
-  cons->PutString(ch, strlen(ch));
-  cons->PutString((char *)" : ", 3);
-  cons->PutString(msg, strlen(msg));
+	cons->PutString(ch, strlen(ch));
+	cons->PutString((char *)" : ", 3);
+	cons->PutString(msg, strlen(msg));
 }

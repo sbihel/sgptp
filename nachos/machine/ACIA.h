@@ -51,75 +51,75 @@ enum RegStatus { EMPTY, FULL };
       different interrupt levels for emission and reception.
  */
 class ACIA {
- public:
-  /** Initialize the ACIA device.
-  */
-  ACIA(Machine *m);
+  public:
+	/** Initialize the ACIA device.
+	*/
+	ACIA(Machine *m);
 
-  /** Deallocates the data structures used by the ACIA device.
-   */
-  ~ACIA();
+	/** Deallocates the data structures used by the ACIA device.
+	 */
+	~ACIA();
 
-  /**  Change the working mode for the ACIA. The parameter is a
-    bitwise OR of flags defining its working mode (BUSY_WAITING,
-    REC_INTERRUPT, EM_INTERRUPT).  It must be used to enable/disable
-    reception and emission interrupts in the Interrupt mode.
+	/**  Change the working mode for the ACIA. The parameter is a
+	  bitwise OR of flags defining its working mode (BUSY_WAITING,
+	  REC_INTERRUPT, EM_INTERRUPT).  It must be used to enable/disable
+	  reception and emission interrupts in the Interrupt mode.
 
-    \param mod: the new mode (a bitwise OR between flags REC_INTERRUPT,
-    EM_INTERRUPT and BUSY_WAITING)
-  */
-  void SetWorkingMode(int mod);
+	  \param mod: the new mode (a bitwise OR between flags REC_INTERRUPT,
+	  EM_INTERRUPT and BUSY_WAITING)
+	*/
+	void SetWorkingMode(int mod);
 
-  /** Get the current working mode for the ACIA (BUSY_WAITING,
-    REC_INTERRUPT, EM_INTERRUPT).
-  */
-  int GetWorkingMode(void);
+	/** Get the current working mode for the ACIA (BUSY_WAITING,
+	  REC_INTERRUPT, EM_INTERRUPT).
+	*/
+	int GetWorkingMode(void);
 
-  /** Get the state of the output register (used in the BUSY_WAITING
-      mode).
-      \return status of output register (EMPTY/FULL)
-  */
-  RegStatus GetOutputStateReg();
+	/** Get the state of the output register (used in the BUSY_WAITING
+	    mode).
+	    \return status of output register (EMPTY/FULL)
+	*/
+	RegStatus GetOutputStateReg();
 
-  /** Get the state of the input register (used in the BUSY_WAITING
-      mode).
-      \return status of input register (EMPTY/FULL)
-  */
-  RegStatus GetInputStateReg();
+	/** Get the state of the input register (used in the BUSY_WAITING
+	    mode).
+	    \return status of input register (EMPTY/FULL)
+	*/
+	RegStatus GetInputStateReg();
 
-  /** Get the input data register value. This method does not include
-   * any synchronization. When calling this method one must be sure
-   * that there is a character available
-   \return Byte received
-  */
-  char GetChar();
+	/** Get the input data register value. This method does not include
+	 * any synchronization. When calling this method one must be sure
+	 * that there is a character available
+	 \return Byte received
+	*/
+	char GetChar();
 
-  /** Write a character into the ACIA output register. This method does
-   * not include any synchronization. When calling this method one must
-   * be sure that the ACIA is ready to send a character.
-   \param c: The character to be sent.
-  */
-  void PutChar(char);
+	/** Write a character into the ACIA output register. This method does
+	 * not include any synchronization. When calling this method one must
+	 * be sure that the ACIA is ready to send a character.
+	 \param c: The character to be sent.
+	*/
+	void PutChar(char);
 
- private:
-  //! Output data register (filled-in by method PutChar)
-  char outputRegister;
-  //! Input data register (read by method GetChar)
-  char inputRegister;
+  private:
+	//! Output data register (filled-in by method PutChar)
+	char outputRegister;
+	//! Input data register (read by method GetChar)
+	char inputRegister;
 
-  //! Emission state register.
-  RegStatus inputStateRegister;
-  //! Reception state register.
-  RegStatus outputStateRegister;
+	//! Emission state register.
+	RegStatus inputStateRegister;
+	//! Reception state register.
+	RegStatus outputStateRegister;
 
-  //! Working mode : Interrupt or Busy Waiting mode.
-  int mode;
+	//! Working mode : Interrupt or Busy Waiting mode.
+	int mode;
 
-  /*! The class ACIA_sysdep is in charge of the system dependent parts
-    of the ACIA, using UDP sockets.  It will be able to write on
-    the registers of an object from the class ACIA.  */
-  friend class ACIA_sysdep;
-  ACIA_sysdep *sysdep;
+	/*! The class ACIA_sysdep is in charge of the system dependent parts
+	  of the ACIA, using UDP sockets.  It will be able to write on
+	  the registers of an object from the class ACIA.  */
+	friend class ACIA_sysdep;
+	ACIA_sysdep *sysdep;
 };
 
 #endif  // _ACIA

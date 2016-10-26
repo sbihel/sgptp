@@ -38,27 +38,29 @@
 // now be different.
 */
 class Semaphore {
- public:
-  //! Create and set initial value
-  Semaphore(char* debugName, int initialValue);
+  public:
+	//! Create and set initial value
+	Semaphore(char* debugName, int initialValue);
 
-  //! Delete semaphore
-  ~Semaphore();
+	//! Delete semaphore
+	~Semaphore();
 
-  //! debugging assist
-  char* getName() { return name; }
+	//! debugging assist
+	char* getName() {
+		return name;
+	}
 
-  void P();  // these are the only operations on a semaphore
-  void V();  // they are both *atomic*
+	void P();  // these are the only operations on a semaphore
+	void V();  // they are both *atomic*
 
- private:
-  char* name;      //!< useful for debugging
-  int value;       //!< semaphore value
-  Listint* queue;  //!< threads waiting in P() for the value to be > 0
+  private:
+	char* name;      //!< useful for debugging
+	int value;       //!< semaphore value
+	Listint* queue;  //!< threads waiting in P() for the value to be > 0
 
- public:
-  //! signature to make sure the semaphore is in the correct state
-  ObjectTypeId typeId;
+  public:
+	//! signature to make sure the semaphore is in the correct state
+	ObjectTypeId typeId;
 };
 
 /*! \brief Defines the "lock" synchronization tool
@@ -76,35 +78,37 @@ class Semaphore {
 // (because the value might change immediately after you read it).
 */
 class Lock {
- public:
-  //! Lock creation
-  Lock(char* debugName);
+  public:
+	//! Lock creation
+	Lock(char* debugName);
 
-  //! Delete a lock
-  ~Lock();
+	//! Delete a lock
+	~Lock();
 
-  //! For debugging
-  char* getName() { return name; }
+	//! For debugging
+	char* getName() {
+		return name;
+	}
 
-  //! Acquire a lock (atomic operation)
-  void Acquire();
+	//! Acquire a lock (atomic operation)
+	void Acquire();
 
-  //! Release a lock (atomic operation)
-  void Release();
+	//! Release a lock (atomic operation)
+	void Release();
 
-  //! true if the current thread holds this lock.  Useful for checking
-  //! in Release, and in Condition variable operations below.
-  bool isHeldByCurrentThread();
+	//! true if the current thread holds this lock.  Useful for checking
+	//! in Release, and in Condition variable operations below.
+	bool isHeldByCurrentThread();
 
- private:
-  char* name;           //!< for debugging
-  Listint* sleepqueue;  //!< threads waiting to acquire the lock
-  bool free;            //!< to know if the lock is free
-  Thread* owner;        //!< Thread who has acquired the lock
+  private:
+	char* name;           //!< for debugging
+	Listint* sleepqueue;  //!< threads waiting to acquire the lock
+	bool free;            //!< to know if the lock is free
+	Thread* owner;        //!< Thread who has acquired the lock
 
- public:
-  //! signature to make sure the lock is in the correct state
-  ObjectTypeId typeId;
+  public:
+	//! signature to make sure the lock is in the correct state
+	ObjectTypeId typeId;
 };
 
 /*! \class Condition
@@ -123,27 +127,29 @@ class Lock {
 //
 */
 class Condition {
- public:
-  //! Create a condition and initialize it to "no one waiting"
-  Condition(char* debugName);
+  public:
+	//! Create a condition and initialize it to "no one waiting"
+	Condition(char* debugName);
 
-  //! Deallocate the condition
-  ~Condition();
+	//! Deallocate the condition
+	~Condition();
 
-  //! For debugging
-  char* getName() { return (name); }
+	//! For debugging
+	char* getName() {
+		return (name);
+	}
 
-  void Wait();       // Wait until the condition is signalled
-  void Signal();     // Wake up one of the thread waiting on the condition
-  void Broadcast();  // Wake up all threads waiting on the condition
+	void Wait();       // Wait until the condition is signalled
+	void Signal();     // Wake up one of the thread waiting on the condition
+	void Broadcast();  // Wake up all threads waiting on the condition
 
- private:
-  char* name;          //!< For debbuging
-  Listint* waitqueue;  //!< Threads asked to wait
+  private:
+	char* name;          //!< For debbuging
+	Listint* waitqueue;  //!< Threads asked to wait
 
- public:
-  //! Signature to make sure the condition is in the correct state
-  ObjectTypeId typeId;
+  public:
+	//! Signature to make sure the condition is in the correct state
+	ObjectTypeId typeId;
 };
 
 #endif  // SYNCH_H

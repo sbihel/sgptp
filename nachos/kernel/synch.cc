@@ -34,11 +34,11 @@
 */
 //----------------------------------------------------------------------
 Semaphore::Semaphore(char *debugName, int initialValue) {
-  name = new char[strlen(debugName) + 1];
-  strcpy(name, debugName);
-  value = initialValue;
-  queue = new Listint;
-  typeId = SEMAPHORE_TYPE_ID;
+	name = new char[strlen(debugName) + 1];
+	strcpy(name, debugName);
+	value = initialValue;
+	queue = new Listint;
+	typeId = SEMAPHORE_TYPE_ID;
 }
 
 //----------------------------------------------------------------------
@@ -48,17 +48,17 @@ Semaphore::Semaphore(char *debugName, int initialValue) {
 */
 //----------------------------------------------------------------------
 Semaphore::~Semaphore() {
-  typeId = INVALID_TYPE_ID;
-  if (!queue->IsEmpty()) {
-    DEBUG('s', (char *)"Destructor of semaphore \"%s\", queue is not empty!!\n",
-          name);
-    Thread *t = (Thread *)queue->Remove();
-    DEBUG('s', (char *)"Queue contents %s\n", t->GetName());
-    queue->Append((void *)t);
-  }
-  ASSERT(queue->IsEmpty());
-  delete[] name;
-  delete queue;
+	typeId = INVALID_TYPE_ID;
+	if (!queue->IsEmpty()) {
+		DEBUG('s', (char *)"Destructor of semaphore \"%s\", queue is not empty!!\n",
+			  name);
+		Thread *t = (Thread *)queue->Remove();
+		DEBUG('s', (char *)"Queue contents %s\n", t->GetName());
+		queue->Append((void *)t);
+	}
+	ASSERT(queue->IsEmpty());
+	delete[] name;
+	delete queue;
 }
 
 //----------------------------------------------------------------------
@@ -74,16 +74,16 @@ Semaphore::~Semaphore() {
 //----------------------------------------------------------------------
 void Semaphore::P() {
 #ifndef ETUDIANTS_TP
-  printf("**** Warning: method Semaphore::P is not implemented yet\n");
-  exit(-1);
+	printf("**** Warning: method Semaphore::P is not implemented yet\n");
+	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-  IntStatus oldLevel = g_machine->interrupt->GetStatus();
-  g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
-  if ((value--) < 0) {
-    g_current_thread->Sleep();
-  }
-  g_machine->interrupt->SetStatus(oldLevel);
+	IntStatus oldLevel = g_machine->interrupt->GetStatus();
+	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+	if ((value--) < 0) {
+		g_current_thread->Sleep();
+	}
+	g_machine->interrupt->SetStatus(oldLevel);
 #endif
 }
 
@@ -97,18 +97,18 @@ void Semaphore::P() {
 //----------------------------------------------------------------------
 void Semaphore::V() {
 #ifndef ETUDIANTS_TP
-  printf("**** Warning: method Semaphore::V is not implemented yet\n");
-  exit(-1);
+	printf("**** Warning: method Semaphore::V is not implemented yet\n");
+	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-  IntStatus oldLevel = g_machine->interrupt->GetStatus();
-  g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
-  value++;
-  if (!queue->IsEmpty()) {
-    Thread *t = (Thread *)queue->Remove();
-    g_scheduler->ReadyToRun(t);
-  }
-  g_machine->interrupt->SetStatus(oldLevel);
+	IntStatus oldLevel = g_machine->interrupt->GetStatus();
+	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+	value++;
+	if (!queue->IsEmpty()) {
+		Thread *t = (Thread *)queue->Remove();
+		g_scheduler->ReadyToRun(t);
+	}
+	g_machine->interrupt->SetStatus(oldLevel);
 #endif
 }
 
@@ -120,12 +120,12 @@ void Semaphore::V() {
 */
 //----------------------------------------------------------------------
 Lock::Lock(char *debugName) {
-  name = new char[strlen(debugName) + 1];
-  strcpy(name, debugName);
-  sleepqueue = new Listint;
-  free = true;
-  owner = NULL;
-  typeId = LOCK_TYPE_ID;
+	name = new char[strlen(debugName) + 1];
+	strcpy(name, debugName);
+	sleepqueue = new Listint;
+	free = true;
+	owner = NULL;
+	typeId = LOCK_TYPE_ID;
 }
 
 //----------------------------------------------------------------------
@@ -135,10 +135,10 @@ Lock::Lock(char *debugName) {
 */
 //----------------------------------------------------------------------
 Lock::~Lock() {
-  typeId = INVALID_TYPE_ID;
-  ASSERT(sleepqueue->IsEmpty());
-  delete[] name;
-  delete sleepqueue;
+	typeId = INVALID_TYPE_ID;
+	ASSERT(sleepqueue->IsEmpty());
+	delete[] name;
+	delete sleepqueue;
 }
 
 //----------------------------------------------------------------------
@@ -154,16 +154,16 @@ Lock::~Lock() {
 //----------------------------------------------------------------------
 void Lock::Acquire() {
 #ifndef ETUDIANTS_TP
-  printf("**** Warning: method Lock::Acquire is not implemented yet\n");
-  exit(-1);
+	printf("**** Warning: method Lock::Acquire is not implemented yet\n");
+	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-  IntStatus oldLevel = g_machine->interrupt->GetStatus();
-  g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
-  if (!free) {
-    g_current_thread->Sleep();
-  }
-  g_machine->interrupt->SetStatus(oldLevel);
+	IntStatus oldLevel = g_machine->interrupt->GetStatus();
+	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+	if (!free) {
+		g_current_thread->Sleep();
+	}
+	g_machine->interrupt->SetStatus(oldLevel);
 #endif
 }
 
@@ -178,20 +178,20 @@ void Lock::Acquire() {
 //----------------------------------------------------------------------
 void Lock::Release() {
 #ifndef ETUDIANTS_TP
-  printf("**** Warning: method Lock::Release is not implemented yet\n");
-  exit(-1);
+	printf("**** Warning: method Lock::Release is not implemented yet\n");
+	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-  IntStatus oldLevel = g_machine->interrupt->GetStatus();
-  g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
-  ASSERT(isHeldByCurrentThread());
-  if (!sleepqueue->IsEmpty()) {
-    Thread *t = (Thread *)sleepqueue->Remove();
-    g_scheduler->ReadyToRun(t);
-  } else {
-    free = true;
-  }
-  g_machine->interrupt->SetStatus(oldLevel);
+	IntStatus oldLevel = g_machine->interrupt->GetStatus();
+	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+	ASSERT(isHeldByCurrentThread());
+	if (!sleepqueue->IsEmpty()) {
+		Thread *t = (Thread *)sleepqueue->Remove();
+		g_scheduler->ReadyToRun(t);
+	} else {
+		free = true;
+	}
+	g_machine->interrupt->SetStatus(oldLevel);
 #endif
 }
 
@@ -200,7 +200,9 @@ void Lock::Release() {
 /*! To check if current thread hold the lock
 */
 //----------------------------------------------------------------------
-bool Lock::isHeldByCurrentThread() { return (g_current_thread == owner); }
+bool Lock::isHeldByCurrentThread() {
+	return (g_current_thread == owner);
+}
 
 //----------------------------------------------------------------------
 // Condition::Condition
@@ -210,10 +212,10 @@ bool Lock::isHeldByCurrentThread() { return (g_current_thread == owner); }
 */
 //----------------------------------------------------------------------
 Condition::Condition(char *debugName) {
-  name = new char[strlen(debugName) + 1];
-  strcpy(name, debugName);
-  waitqueue = new Listint;
-  typeId = CONDITION_TYPE_ID;
+	name = new char[strlen(debugName) + 1];
+	strcpy(name, debugName);
+	waitqueue = new Listint;
+	typeId = CONDITION_TYPE_ID;
 }
 
 //----------------------------------------------------------------------
@@ -223,10 +225,10 @@ Condition::Condition(char *debugName) {
 */
 //----------------------------------------------------------------------
 Condition::~Condition() {
-  typeId = INVALID_TYPE_ID;
-  ASSERT(waitqueue->IsEmpty());
-  delete[] name;
-  delete waitqueue;
+	typeId = INVALID_TYPE_ID;
+	ASSERT(waitqueue->IsEmpty());
+	delete[] name;
+	delete waitqueue;
 }
 
 //----------------------------------------------------------------------
@@ -236,8 +238,8 @@ Condition::~Condition() {
 */
 //----------------------------------------------------------------------
 void Condition::Wait() {
-  printf("**** Warning: method Condition::Wait is not implemented yet\n");
-  exit(-1);
+	printf("**** Warning: method Condition::Wait is not implemented yet\n");
+	exit(-1);
 }
 
 //----------------------------------------------------------------------
@@ -248,8 +250,8 @@ void Condition::Wait() {
 */
 //----------------------------------------------------------------------
 void Condition::Signal() {
-  printf("**** Warning: method Condition::Signal is not implemented yet\n");
-  exit(-1);
+	printf("**** Warning: method Condition::Signal is not implemented yet\n");
+	exit(-1);
 }
 
 //----------------------------------------------------------------------
@@ -259,6 +261,6 @@ void Condition::Signal() {
 */
 //----------------------------------------------------------------------
 void Condition::Broadcast() {
-  printf("**** Warning: method Condition::Broadcast is not implemented yet\n");
-  exit(-1);
+	printf("**** Warning: method Condition::Broadcast is not implemented yet\n");
+	exit(-1);
 }

@@ -19,8 +19,8 @@
 //
 //----------------------------------------------------------------------
 Statistics::Statistics() {
-  allStatistics = new Listint;
-  idleTicks = totalTicks = 0;
+	allStatistics = new Listint;
+	idleTicks = totalTicks = 0;
 }
 
 //----------------------------------------------------------------------
@@ -31,38 +31,38 @@ Statistics::Statistics() {
 */
 //----------------------------------------------------------------------
 void Statistics::Print() {
-  ProcessStat *s;
-  int tmp;
-  Listint *list = new Listint;
+	ProcessStat *s;
+	int tmp;
+	Listint *list = new Listint;
 
-  printf("\n");
+	printf("\n");
 
-  while (!(allStatistics->IsEmpty())) {
-    s = ((ProcessStat *)allStatistics->SortedRemove(&tmp));
-    s->Print();
-    printf("\n");
-    list->Append((void *)s);
-  }
+	while (!(allStatistics->IsEmpty())) {
+		s = ((ProcessStat *)allStatistics->SortedRemove(&tmp));
+		s->Print();
+		printf("\n");
+		list->Append((void *)s);
+	}
 
-  delete allStatistics;
-  allStatistics = list;
-  printf("\nConcerning Nachos : \n");
-  printf(
-      "   Idle time : %llu cycles on %dMz processor (%llu sec, %llu nanos)\n",
-      idleTicks, g_cfg->ProcessorFrequency,
-      cycle_to_sec(idleTicks, g_cfg->ProcessorFrequency),
-      cycle_to_nano(idleTicks, g_cfg->ProcessorFrequency));
-  printf(
-      "   Total time : %llu cycles on %dMz processor (%llu sec, %llu nanos) \n",
-      totalTicks, g_cfg->ProcessorFrequency,
-      cycle_to_sec(totalTicks, g_cfg->ProcessorFrequency),
-      cycle_to_nano(totalTicks, g_cfg->ProcessorFrequency));
+	delete allStatistics;
+	allStatistics = list;
+	printf("\nConcerning Nachos : \n");
+	printf(
+		"   Idle time : %llu cycles on %dMz processor (%llu sec, %llu nanos)\n",
+		idleTicks, g_cfg->ProcessorFrequency,
+		cycle_to_sec(idleTicks, g_cfg->ProcessorFrequency),
+		cycle_to_nano(idleTicks, g_cfg->ProcessorFrequency));
+	printf(
+		"   Total time : %llu cycles on %dMz processor (%llu sec, %llu nanos) \n",
+		totalTicks, g_cfg->ProcessorFrequency,
+		cycle_to_sec(totalTicks, g_cfg->ProcessorFrequency),
+		cycle_to_nano(totalTicks, g_cfg->ProcessorFrequency));
 }
 
 ProcessStat *Statistics::NewProcStat(char *name) {
-  ProcessStat *procstat = new ProcessStat(name);
-  allStatistics->Append((void *)procstat);
-  return procstat;
+	ProcessStat *procstat = new ProcessStat(name);
+	allStatistics->Append((void *)procstat);
+	return procstat;
 }
 
 //----------------------------------------------------------------------
@@ -72,14 +72,14 @@ ProcessStat *Statistics::NewProcStat(char *name) {
 //----------------------------------------------------------------------
 
 Statistics::~Statistics() {
-  ProcessStat *s;
-  int tmp;
+	ProcessStat *s;
+	int tmp;
 
-  while (!(allStatistics->IsEmpty())) {
-    s = ((ProcessStat *)allStatistics->SortedRemove(&tmp));
-    delete s;
-  }
-  delete allStatistics;
+	while (!(allStatistics->IsEmpty())) {
+		s = ((ProcessStat *)allStatistics->SortedRemove(&tmp));
+		delete s;
+	}
+	delete allStatistics;
 }
 
 //----------------------------------------------------------------------
@@ -90,11 +90,11 @@ Statistics::~Statistics() {
 */
 //----------------------------------------------------------------------
 ProcessStat::ProcessStat(char *processName) {
-  strcpy(name, processName);
-  numInstruction = numDiskReads = numDiskWrites = 0;
-  numConsoleCharsRead = numConsoleCharsWritten = 0;
-  numMemoryAccess = numPageFaults = 0;
-  systemTicks = userTicks = 0;
+	strcpy(name, processName);
+	numInstruction = numDiskReads = numDiskWrites = 0;
+	numConsoleCharsRead = numConsoleCharsWritten = 0;
+	numMemoryAccess = numPageFaults = 0;
+	systemTicks = userTicks = 0;
 }
 
 //----------------------------------------------------------------------
@@ -106,8 +106,8 @@ system level
 */
 //----------------------------------------------------------------------
 void ProcessStat::incrSystemTicks(Time val) {
-  systemTicks += val;            // Process level
-  g_stats->incrTotalTicks(val);  // System level
+	systemTicks += val;            // Process level
+	g_stats->incrTotalTicks(val);  // System level
 }
 
 //----------------------------------------------------------------------
@@ -118,8 +118,8 @@ void ProcessStat::incrSystemTicks(Time val) {
 */
 //----------------------------------------------------------------------
 void ProcessStat::incrUserTicks(Time val) {
-  userTicks += val;              // Process level
-  g_stats->incrTotalTicks(val);  // System level
+	userTicks += val;              // Process level
+	g_stats->incrTotalTicks(val);  // System level
 }
 
 //----------------------------------------------------------------------
@@ -129,12 +129,12 @@ void ProcessStat::incrUserTicks(Time val) {
 */
 //----------------------------------------------------------------------
 void ProcessStat::incrMemoryAccess(void) {
-  // Process level
-  numMemoryAccess++;
-  userTicks += MEMORY_TICKS;
+	// Process level
+	numMemoryAccess++;
+	userTicks += MEMORY_TICKS;
 
-  // System level
-  g_stats->incrTotalTicks(MEMORY_TICKS);
+	// System level
+	g_stats->incrTotalTicks(MEMORY_TICKS);
 }
 
 //----------------------------------------------------------------------
@@ -145,25 +145,25 @@ void ProcessStat::incrMemoryAccess(void) {
 */
 //----------------------------------------------------------------------
 void ProcessStat::Print(void) {
-  printf("------------------------------------------------------------\n");
-  printf("Statistics for process : %s \n", name);
-  printf("   Number of instructions executed : %d\n", numInstruction);
-  printf(
-      "   System time : %llu cycles on %dMz processor (%llu sec,%llu nanos)\n",
-      systemTicks, g_cfg->ProcessorFrequency,
-      cycle_to_sec(systemTicks, g_cfg->ProcessorFrequency),
-      cycle_to_nano(systemTicks, g_cfg->ProcessorFrequency));
-  printf(
-      "   User time   : %llu cycles on %dMz processor (%llu sec,%llu nanos)\n",
-      userTicks, g_cfg->ProcessorFrequency,
-      cycle_to_sec(userTicks, g_cfg->ProcessorFrequency),
-      cycle_to_nano(userTicks, g_cfg->ProcessorFrequency));
-  printf("   Disk Input/Output : reads %d , writes %d \n", numDiskReads,
-         numDiskWrites);
-  printf("   Console Input Output : reads %d , writes %d \n",
-         numConsoleCharsRead, numConsoleCharsWritten);
-  printf("   Memory Management : %d accesses, %d page faults\n",
-         numMemoryAccess, numPageFaults);
+	printf("------------------------------------------------------------\n");
+	printf("Statistics for process : %s \n", name);
+	printf("   Number of instructions executed : %d\n", numInstruction);
+	printf(
+		"   System time : %llu cycles on %dMz processor (%llu sec,%llu nanos)\n",
+		systemTicks, g_cfg->ProcessorFrequency,
+		cycle_to_sec(systemTicks, g_cfg->ProcessorFrequency),
+		cycle_to_nano(systemTicks, g_cfg->ProcessorFrequency));
+	printf(
+		"   User time   : %llu cycles on %dMz processor (%llu sec,%llu nanos)\n",
+		userTicks, g_cfg->ProcessorFrequency,
+		cycle_to_sec(userTicks, g_cfg->ProcessorFrequency),
+		cycle_to_nano(userTicks, g_cfg->ProcessorFrequency));
+	printf("   Disk Input/Output : reads %d , writes %d \n", numDiskReads,
+		   numDiskWrites);
+	printf("   Console Input Output : reads %d , writes %d \n",
+		   numConsoleCharsRead, numConsoleCharsWritten);
+	printf("   Memory Management : %d accesses, %d page faults\n",
+		   numMemoryAccess, numPageFaults);
 
-  printf("------------------------------------------------------------\n");
+	printf("------------------------------------------------------------\n");
 }

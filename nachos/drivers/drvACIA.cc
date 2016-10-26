@@ -36,8 +36,8 @@
 //-------------------------------------------------------------------------
 
 DriverACIA::DriverACIA() {
-  printf("**** Warning: contructor of the ACIA driver not implemented yet\n");
-  exit(-1);
+	printf("**** Warning: contructor of the ACIA driver not implemented yet\n");
+	exit(-1);
 }
 
 //-------------------------------------------------------------------------
@@ -47,10 +47,10 @@ DriverACIA::DriverACIA() {
 //-------------------------------------------------------------------------
 
 int DriverACIA::TtySend(char* buff) {
-  printf(
-      "**** Warning: method Tty_Send of the ACIA driver not implemented yet\n");
-  exit(-1);
-  return 0;
+	printf(
+		"**** Warning: method Tty_Send of the ACIA driver not implemented yet\n");
+	exit(-1);
+	return 0;
 }
 
 //-------------------------------------------------------------------------
@@ -61,11 +61,11 @@ int DriverACIA::TtySend(char* buff) {
 //-------------------------------------------------------------------------
 
 int DriverACIA::TtyReceive(char* buff, int lg) {
-  printf(
-      "**** Warning: method Tty_Receive of the ACIA driver not implemented "
-      "yet\n");
-  exit(-1);
-  return 0;
+	printf(
+		"**** Warning: method Tty_Receive of the ACIA driver not implemented "
+		"yet\n");
+	exit(-1);
+	return 0;
 }
 
 //-------------------------------------------------------------------------
@@ -78,8 +78,8 @@ int DriverACIA::TtyReceive(char* buff, int lg) {
 //-------------------------------------------------------------------------
 
 void DriverACIA::InterruptSend() {
-  printf("**** Warning: send interrupt handler not implemented yet\n");
-  exit(-1);
+	printf("**** Warning: send interrupt handler not implemented yet\n");
+	exit(-1);
 }
 
 //-------------------------------------------------------------------------
@@ -93,6 +93,6 @@ void DriverACIA::InterruptSend() {
 //-------------------------------------------------------------------------
 
 void DriverACIA::InterruptReceive() {
-  printf("**** Warning: receive interrupt handler not implemented yet\n");
-  exit(-1);
+	printf("**** Warning: receive interrupt handler not implemented yet\n");
+	exit(-1);
 }

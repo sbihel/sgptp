@@ -25,40 +25,40 @@
 //----------------------------------------------------------------------
 
 void Copy(char *from, char *to) {
-  FILE *fp;
-  OpenFile *openFile = NULL;
-  int amountRead, fileLength;
-  // Open UNIX file
-  if ((fp = fopen(from, "r")) == NULL) {
-    printf("Copy: couldn't open Unix file %s\n", from);
-    exit(-1);
-    return;
-  }
+	FILE *fp;
+	OpenFile *openFile = NULL;
+	int amountRead, fileLength;
+	// Open UNIX file
+	if ((fp = fopen(from, "r")) == NULL) {
+		printf("Copy: couldn't open Unix file %s\n", from);
+		exit(-1);
+		return;
+	}
 
-  // Figure out length of UNIX file
-  fseek(fp, 0, 2);
-  fileLength = ftell(fp);
-  fseek(fp, 0, 0);
+	// Figure out length of UNIX file
+	fseek(fp, 0, 2);
+	fileLength = ftell(fp);
+	fseek(fp, 0, 0);
 
-  // Create a Nachos file of the same length
-  printf("Copying Unix file %s to Nachos file %s\n", from, to);
-  if (g_file_system->Create(to, fileLength) != NoError) {  // Create Nachos file
-    printf("Copy: couldn't create Nachos file %s\n", to);
-    fclose(fp);
-    exit(-1);
-    return;
-  }
-  openFile = g_file_system->Open(to);
-  ASSERT(openFile != NULL);
+	// Create a Nachos file of the same length
+	printf("Copying Unix file %s to Nachos file %s\n", from, to);
+	if (g_file_system->Create(to, fileLength) != NoError) {  // Create Nachos file
+		printf("Copy: couldn't create Nachos file %s\n", to);
+		fclose(fp);
+		exit(-1);
+		return;
+	}
+	openFile = g_file_system->Open(to);
+	ASSERT(openFile != NULL);
 
-  // Copy the data in TransferSize chunks
-  char buffer[TransferSize];
-  while ((amountRead = fread(buffer, sizeof(char), TransferSize, fp)) > 0)
-    openFile->Write(buffer, amountRead);
+	// Copy the data in TransferSize chunks
+	char buffer[TransferSize];
+	while ((amountRead = fread(buffer, sizeof(char), TransferSize, fp)) > 0)
+		openFile->Write(buffer, amountRead);
 
-  // Close the UNIX and the Nachos files
-  delete openFile;
-  fclose(fp);
+	// Close the UNIX and the Nachos files
+	delete openFile;
+	fclose(fp);
 }
 
 //----------------------------------------------------------------------
@@ -67,18 +67,18 @@ void Copy(char *from, char *to) {
 //----------------------------------------------------------------------
 
 void Print(char *name) {
-  OpenFile *openFile;
-  int i, amountRead;
+	OpenFile *openFile;
+	int i, amountRead;
 
-  if ((openFile = g_file_system->Open(name)) == NULL) {
-    printf("Print: unable to open Nachos file %s\n", name);
-    return;
-  }
+	if ((openFile = g_file_system->Open(name)) == NULL) {
+		printf("Print: unable to open Nachos file %s\n", name);
+		return;
+	}
 
-  char buffer[TransferSize];
-  while ((amountRead = openFile->Read(buffer, TransferSize)) > 0)
-    for (i = 0; i < amountRead; i++) printf("%1x ", buffer[i]);
+	char buffer[TransferSize];
+	while ((amountRead = openFile->Read(buffer, TransferSize)) > 0)
+		for (i = 0; i < amountRead; i++) printf("%1x ", buffer[i]);
 
-  delete openFile;  // close the Nachos file
-  return;
+	delete openFile;  // close the Nachos file
+	return;
 }

@@ -78,8 +78,8 @@ void Halt();
 
 /*! \brief Defines the Nachos basic time unit */
 typedef struct {
-  long seconds;
-  long nanos;
+	long seconds;
+	long nanos;
 } Nachos_Time;
 void SysTime(Nachos_Time *t);
 

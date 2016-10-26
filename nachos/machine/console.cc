@@ -20,12 +20,12 @@
 
 //! Dummy function because C++ is weird about pointers to member functions
 static void ConsoleReadPoll(int64_t c) {
-  Console *console = (Console *)c;
-  console->CheckCharAvail();
+	Console *console = (Console *)c;
+	console->CheckCharAvail();
 }
 static void ConsoleWriteDone(int64_t c) {
-  Console *console = (Console *)c;
-  console->WriteDone();
+	Console *console = (Console *)c;
+	console->WriteDone();
 }
 
 //----------------------------------------------------------------------
@@ -41,24 +41,24 @@ static void ConsoleWriteDone(int64_t c) {
 */
 //----------------------------------------------------------------------
 Console::Console(char *readFile, char *writeFile,
-                 VoidNoArgFunctionPtr readAvail,
-                 VoidNoArgFunctionPtr writeDone) {
-  if (readFile == NULL)
-    readFileNo = 0;  // keyboard = stdin
-  else
-    readFileNo = OpenForReadWrite(readFile, true);  // should be read-only
-  if (writeFile == NULL)
-    writeFileNo = 1;  // display = stdout
-  else
-    writeFileNo = OpenForWrite(writeFile);
+				 VoidNoArgFunctionPtr readAvail,
+				 VoidNoArgFunctionPtr writeDone) {
+	if (readFile == NULL)
+		readFileNo = 0;  // keyboard = stdin
+	else
+		readFileNo = OpenForReadWrite(readFile, true);  // should be read-only
+	if (writeFile == NULL)
+		writeFileNo = 1;  // display = stdout
+	else
+		writeFileNo = OpenForWrite(writeFile);
 
-  // set up the stuff to emulate asynchronous interrupts
-  writeHandler = writeDone;
-  readHandler = readAvail;
-  putBusy = false;
-  incoming = EOF;
+	// set up the stuff to emulate asynchronous interrupts
+	writeHandler = writeDone;
+	readHandler = readAvail;
+	putBusy = false;
+	incoming = EOF;
 
-  intState = false;
+	intState = false;
 }
 
 //----------------------------------------------------------------------
@@ -66,8 +66,8 @@ Console::Console(char *readFile, char *writeFile,
 //----------------------------------------------------------------------
 
 Console::~Console() {
-  if (readFileNo != 0) Close(readFileNo);
-  if (writeFileNo != 1) Close(writeFileNo);
+	if (readFileNo != 0) Close(readFileNo);
+	if (writeFileNo != 1) Close(writeFileNo);
 }
 
 //----------------------------------------------------------------------
@@ -82,22 +82,22 @@ Console::~Console() {
 //----------------------------------------------------------------------
 
 void Console::CheckCharAvail() {
-  char c;
+	char c;
 
-  // schedule the next time to poll for a packet
-  if (intState)
-    g_machine->interrupt->Schedule(
-        ConsoleReadPoll, (int64_t) this,
-        nano_to_cycles(CONSOLE_TIME, g_cfg->ProcessorFrequency),
-        CONSOLE_READ_INT);
+	// schedule the next time to poll for a packet
+	if (intState)
+		g_machine->interrupt->Schedule(
+			ConsoleReadPoll, (int64_t) this,
+			nano_to_cycles(CONSOLE_TIME, g_cfg->ProcessorFrequency),
+			CONSOLE_READ_INT);
 
-  // do nothing if character is already buffered, or none to be read
-  if ((incoming != EOF) || !PollFile(readFileNo)) return;
+	// do nothing if character is already buffered, or none to be read
+	if ((incoming != EOF) || !PollFile(readFileNo)) return;
 
-  // otherwise, read character and tell user about it
-  Read(readFileNo, &c, sizeof(char));
-  incoming = c;
-  (*readHandler)();
+	// otherwise, read character and tell user about it
+	Read(readFileNo, &c, sizeof(char));
+	incoming = c;
+	(*readHandler)();
 }
 
 //----------------------------------------------------------------------
@@ -108,8 +108,8 @@ void Console::CheckCharAvail() {
 //----------------------------------------------------------------------
 
 void Console::WriteDone() {
-  putBusy = false;
-  (*writeHandler)();
+	putBusy = false;
+	(*writeHandler)();
 }
 
 //----------------------------------------------------------------------
@@ -120,10 +120,10 @@ void Console::WriteDone() {
 //----------------------------------------------------------------------
 
 char Console::GetChar() {
-  char ch = incoming;
+	char ch = incoming;
 
-  incoming = EOF;
-  return ch;
+	incoming = EOF;
+	return ch;
 }
 
 //----------------------------------------------------------------------
@@ -133,13 +133,13 @@ char Console::GetChar() {
 //----------------------------------------------------------------------
 
 void Console::PutChar(char ch) {
-  ASSERT(putBusy == false);
-  WriteFile(writeFileNo, &ch, sizeof(char));
-  putBusy = true;
-  g_machine->interrupt->Schedule(
-      ConsoleWriteDone, (int64_t) this,
-      nano_to_cycles(CONSOLE_TIME, g_cfg->ProcessorFrequency),
-      CONSOLE_WRITE_INT);
+	ASSERT(putBusy == false);
+	WriteFile(writeFileNo, &ch, sizeof(char));
+	putBusy = true;
+	g_machine->interrupt->Schedule(
+		ConsoleWriteDone, (int64_t) this,
+		nano_to_cycles(CONSOLE_TIME, g_cfg->ProcessorFrequency),
+		CONSOLE_WRITE_INT);
 }
 
 //----------------------------------------------------------------------
@@ -147,15 +147,17 @@ void Console::PutChar(char ch) {
 */
 //----------------------------------------------------------------------
 void Console::EnableInterrupt() {
-  intState = true;
-  g_machine->interrupt->Schedule(
-      ConsoleReadPoll, (int64_t) this,
-      nano_to_cycles(CONSOLE_TIME, g_cfg->ProcessorFrequency),
-      CONSOLE_READ_INT);
+	intState = true;
+	g_machine->interrupt->Schedule(
+		ConsoleReadPoll, (int64_t) this,
+		nano_to_cycles(CONSOLE_TIME, g_cfg->ProcessorFrequency),
+		CONSOLE_READ_INT);
 }
 
 //----------------------------------------------------------------------
 /*! 	Disable the console interrupt
 */
 //----------------------------------------------------------------------
-void Console::DisableInterrupt() { intState = false; }
+void Console::DisableInterrupt() {
+	intState = false;
+}

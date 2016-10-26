@@ -36,19 +36,19 @@ void DumpMem(char *addr, int len) {
     __x;                      \
   })
 
-  int i;
-  for (i = 0; i < len; i++) {
-    char s[3];
-    if ((i % 16) == 0)
-      printf("%08lx  ", (unsigned long)&addr[i]);
-    else if ((i % 8) == 0)
-      printf("   ");
-    s[0] = TOHEX((addr[i] >> 4) & 0xf);
-    s[1] = TOHEX(addr[i] & 0xf);
-    s[2] = '\0';
-    printf("%s ", s);
-    if ((((i + 1) % 16) == 0) || (i == len - 1)) printf("\n");
-  }
+	int i;
+	for (i = 0; i < len; i++) {
+		char s[3];
+		if ((i % 16) == 0)
+			printf("%08lx  ", (unsigned long)&addr[i]);
+		else if ((i % 8) == 0)
+			printf("   ");
+		s[0] = TOHEX((addr[i] >> 4) & 0xf);
+		s[1] = TOHEX(addr[i] & 0xf);
+		s[2] = '\0';
+		printf("%s ", s);
+		if ((((i + 1) % 16) == 0) || (i == len - 1)) printf("\n");
+	}
 }
 
 //----------------------------------------------------------------------
@@ -62,7 +62,9 @@ void DumpMem(char *addr, int len) {
 //		to be enabled.
 */
 //----------------------------------------------------------------------
-void DebugInit(char *flagList) { enableFlags = flagList; }
+void DebugInit(char *flagList) {
+	enableFlags = flagList;
+}
 
 //----------------------------------------------------------------------
 // DebugIsEnabled
@@ -71,10 +73,10 @@ void DebugInit(char *flagList) { enableFlags = flagList; }
 //----------------------------------------------------------------------
 
 bool DebugIsEnabled(char flag) {
-  if (enableFlags != NULL)
-    return (strchr(enableFlags, flag) != 0) || (strchr(enableFlags, '+') != 0);
-  else
-    return false;
+	if (enableFlags != NULL)
+		return (strchr(enableFlags, flag) != 0) || (strchr(enableFlags, '+') != 0);
+	else
+		return false;
 }
 
 //----------------------------------------------------------------------
@@ -85,14 +87,14 @@ bool DebugIsEnabled(char flag) {
 //----------------------------------------------------------------------
 
 void DEBUG(char flag, char *format, ...) {
-  va_list ap;
-  va_start(ap, format);
+	va_list ap;
+	va_start(ap, format);
 
-  if (DebugIsEnabled(flag)) {
-    // You will get an unused variable message here -- ignore it.
-    vfprintf(stdout, format, ap);
-    fflush(stdout);
-  }
+	if (DebugIsEnabled(flag)) {
+		// You will get an unused variable message here -- ignore it.
+		vfprintf(stdout, format, ap);
+		fflush(stdout);
+	}
 
-  va_end(ap);
+	va_end(ap);
 }

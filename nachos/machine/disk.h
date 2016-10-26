@@ -56,41 +56,41 @@
 // The track buffer simulation can be disabled by compiling with -DNOTRACKBUF
 */
 class Disk {
- public:
-  Disk(char* name, VoidNoArgFunctionPtr callWhenDone);
-  /*!< Create a simulated disk.
-   Invoke (*callWhenDone)
-   every time a request completes. */
-  ~Disk(); /*!< Deallocate the disk. */
+  public:
+	Disk(char* name, VoidNoArgFunctionPtr callWhenDone);
+	/*!< Create a simulated disk.
+	 Invoke (*callWhenDone)
+	 every time a request completes. */
+	~Disk(); /*!< Deallocate the disk. */
 
-  void ReadRequest(int sectorNumber, char* data);
-  /*!< Read/write an single disk sector.
-   These routines send a request to
-       the disk and return immediately.
-       Only one request allowed at a time! */
-  void WriteRequest(int sectorNumber, char* data);
+	void ReadRequest(int sectorNumber, char* data);
+	/*!< Read/write an single disk sector.
+	 These routines send a request to
+	     the disk and return immediately.
+	     Only one request allowed at a time! */
+	void WriteRequest(int sectorNumber, char* data);
 
-  void HandleInterrupt(); /*!< Interrupt handler, invoked when
+	void HandleInterrupt(); /*!< Interrupt handler, invoked when
            disk request finishes. */
 
-  int ComputeLatency(int newSector, bool writing);
-  /*!< Return how long a request to
-newSector will take:
-(seek + rotational delay + transfer) */
+	int ComputeLatency(int newSector, bool writing);
+	/*!< Return how long a request to
+	newSector will take:
+	(seek + rotational delay + transfer) */
 
- private:
-  int fileno;                   //!< UNIX file number for simulated disk
-  VoidNoArgFunctionPtr handler; /*!< Interrupt handler, to be invoked
+  private:
+	int fileno;                   //!< UNIX file number for simulated disk
+	VoidNoArgFunctionPtr handler; /*!< Interrupt handler, to be invoked
           when any disk request finishes
         */
-  bool active;                  //!< Is a disk operation in progress?
-  int lastSector;               //!< The previous disk request
-  Time bufferInit;              //!< When the track buffer started
-                                //!< being loaded
+	bool active;                  //!< Is a disk operation in progress?
+	int lastSector;               //!< The previous disk request
+	Time bufferInit;              //!< When the track buffer started
+	//!< being loaded
 
-  int TimeToSeek(int newSector, int* rotate);  // time to get to the new track
-  int ModuloDiff(int to, Time from);           // # sectors between to and from
-  void UpdateLast(int newSector);
+	int TimeToSeek(int newSector, int* rotate);  // time to get to the new track
+	int ModuloDiff(int to, Time from);           // # sectors between to and from
+	void UpdateLast(int newSector);
 };
 
 #endif  // DISK_H

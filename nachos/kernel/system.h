@@ -22,12 +22,12 @@ using namespace std;
  * these identifiers
  */
 typedef enum {
-  SEMAPHORE_TYPE_ID = 0xdeefeaea,
-  LOCK_TYPE_ID = 0xdeefcccc,
-  CONDITION_TYPE_ID = 0xdeefcdcd,
-  FILE_TYPE_ID = 0xdeadbeef,
-  THREAD_TYPE_ID = 0xbadcafe,
-  INVALID_TYPE_ID = 0xf0f0f0f
+	SEMAPHORE_TYPE_ID = 0xdeefeaea,
+	LOCK_TYPE_ID = 0xdeefcccc,
+	CONDITION_TYPE_ID = 0xdeefcdcd,
+	FILE_TYPE_ID = 0xdeadbeef,
+	THREAD_TYPE_ID = 0xbadcafe,
+	INVALID_TYPE_ID = 0xf0f0f0f
 } ObjectTypeId;
 
 // Forward declarations (ie in other files)
@@ -48,9 +48,9 @@ class Machine;
 
 // Initialization and cleanup routines
 extern void Initialize(int argc, char **argv);  //!< Initialization,
-                                                //!< called before anything else
+//!< called before anything else
 extern void Cleanup();                          //!< Cleanup, called when
-                                                //!< Nachos is done.
+//!< Nachos is done.
 // Global variables per type
 // By convention, all globals are in lower case and start by g_
 // ------------------------------------------------------------
@@ -75,7 +75,7 @@ extern FileSystem *g_file_system;         //!< File system
 extern OpenFileTable *g_open_file_table;  //!< Open File Table
 extern SwapManager *g_swap_manager;       //!< Management of swap area
 extern PageFaultManager *
-    g_page_fault_manager;  //!< Page fault handler (used in VMM)
+g_page_fault_manager;  //!< Page fault handler (used in VMM)
 extern PhysicalMemManager *g_physical_mem_manager;  //!< Physical memory manager
 extern SyscallError *g_syscall_error;               //!< Error management
 extern ObjId *g_object_ids;  //!< list of system objects (used in exception.cc

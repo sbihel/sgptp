@@ -25,7 +25,9 @@
 */
 //----------------------------------------------------------------------
 
-void DiskRequestDone() { g_disk_driver->RequestDone(); }
+void DiskRequestDone() {
+	g_disk_driver->RequestDone();
+}
 
 //----------------------------------------------------------------------
 // DiskSwapRequestDone
@@ -34,7 +36,9 @@ void DiskRequestDone() { g_disk_driver->RequestDone(); }
 */
 //----------------------------------------------------------------------
 
-void DiskSwapRequestDone() { g_swap_disk_driver->RequestDone(); }
+void DiskSwapRequestDone() {
+	g_swap_disk_driver->RequestDone();
+}
 
 //----------------------------------------------------------------------
 // DriverDisk::DriverDisk
@@ -45,9 +49,9 @@ void DiskSwapRequestDone() { g_swap_disk_driver->RequestDone(); }
 //----------------------------------------------------------------------
 
 DriverDisk::DriverDisk(char* sem_name, char* lock_name, Disk* theDisk) {
-  semaphore = new Semaphore((char*)sem_name, 0);
-  lock = new Lock((char*)lock_name);
-  disk = theDisk;
+	semaphore = new Semaphore((char*)sem_name, 0);
+	lock = new Lock((char*)lock_name);
+	disk = theDisk;
 }
 
 //----------------------------------------------------------------------
@@ -58,8 +62,8 @@ DriverDisk::DriverDisk(char* sem_name, char* lock_name, Disk* theDisk) {
 //----------------------------------------------------------------------
 
 DriverDisk::~DriverDisk() {
-  delete lock;
-  delete semaphore;
+	delete lock;
+	delete semaphore;
 }
 
 //----------------------------------------------------------------------
@@ -73,13 +77,13 @@ DriverDisk::~DriverDisk() {
 //----------------------------------------------------------------------
 
 void DriverDisk::ReadSector(int sectorNumber, char* data) {
-  DEBUG('d', (char*)"[sdisk] rd req\n");
-  lock->Acquire();  // only one disk I/O at a time
-  disk->ReadRequest(sectorNumber, data);
-  DEBUG('d', (char*)"[sdisk] rd req: wait irq\n");
-  semaphore->P();  // wait for interrupt
-  DEBUG('d', (char*)"[sdisk] rd req: wait irq OK\n");
-  lock->Release();
+	DEBUG('d', (char*)"[sdisk] rd req\n");
+	lock->Acquire();  // only one disk I/O at a time
+	disk->ReadRequest(sectorNumber, data);
+	DEBUG('d', (char*)"[sdisk] rd req: wait irq\n");
+	semaphore->P();  // wait for interrupt
+	DEBUG('d', (char*)"[sdisk] rd req: wait irq OK\n");
+	lock->Release();
 }
 
 //----------------------------------------------------------------------
@@ -93,13 +97,13 @@ void DriverDisk::ReadSector(int sectorNumber, char* data) {
 //----------------------------------------------------------------------
 
 void DriverDisk::WriteSector(int sectorNumber, char* data) {
-  DEBUG('d', (char*)"[sdisk] wr req\n");
-  lock->Acquire();  // only one disk I/O at a time
-  disk->WriteRequest(sectorNumber, data);
-  DEBUG('d', (char*)"[sdisk] wr req: wait irq...\n");
-  semaphore->P();  // wait for interrupt
-  DEBUG('d', (char*)"[sdisk] wr req: wait irq OK\n");
-  lock->Release();
+	DEBUG('d', (char*)"[sdisk] wr req\n");
+	lock->Acquire();  // only one disk I/O at a time
+	disk->WriteRequest(sectorNumber, data);
+	DEBUG('d', (char*)"[sdisk] wr req: wait irq...\n");
+	semaphore->P();  // wait for interrupt
+	DEBUG('d', (char*)"[sdisk] wr req: wait irq OK\n");
+	lock->Release();
 }
 
 //----------------------------------------------------------------------
@@ -110,6 +114,6 @@ void DriverDisk::WriteSector(int sectorNumber, char* data) {
 //----------------------------------------------------------------------
 
 void DriverDisk::RequestDone() {
-  DEBUG('d', (char*)"[sdisk] req done\n");
-  semaphore->V();
+	DEBUG('d', (char*)"[sdisk] req done\n");
+	semaphore->V();
 }

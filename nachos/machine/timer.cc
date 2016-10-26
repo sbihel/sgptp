@@ -27,8 +27,8 @@
 
 //! dummy function because C++ does not allow pointers to member functions
 static void TimerHandler(int64_t arg) {
-  Timer *p = (Timer *)arg;
-  p->TimerExpired();
+	Timer *p = (Timer *)arg;
+	p->TimerExpired();
 }
 
 //----------------------------------------------------------------------
@@ -47,13 +47,13 @@ static void TimerHandler(int64_t arg) {
 //----------------------------------------------------------------------
 
 Timer::Timer(VoidFunctionPtr timerHandler, int callArg, bool doRandom) {
-  randomize = doRandom;
-  handler = timerHandler;
-  arg = callArg;
+	randomize = doRandom;
+	handler = timerHandler;
+	arg = callArg;
 
-  // schedule the first interrupt from the timer device
-  g_machine->interrupt->Schedule(TimerHandler, (int64_t) this,
-                                 TimeOfNextInterrupt(), TIMER_INT);
+	// schedule the first interrupt from the timer device
+	g_machine->interrupt->Schedule(TimerHandler, (int64_t) this,
+								   TimeOfNextInterrupt(), TIMER_INT);
 }
 
 //----------------------------------------------------------------------
@@ -64,12 +64,12 @@ Timer::Timer(VoidFunctionPtr timerHandler, int callArg, bool doRandom) {
 */
 //----------------------------------------------------------------------
 void Timer::TimerExpired() {
-  // schedule the next timer device interrupt
-  g_machine->interrupt->Schedule(TimerHandler, (int64_t) this,
-                                 TimeOfNextInterrupt(), TIMER_INT);
+	// schedule the next timer device interrupt
+	g_machine->interrupt->Schedule(TimerHandler, (int64_t) this,
+								   TimeOfNextInterrupt(), TIMER_INT);
 
-  // invoke the Nachos interrupt handler for this device
-  (*handler)(arg);
+	// invoke the Nachos interrupt handler for this device
+	(*handler)(arg);
 }
 
 //----------------------------------------------------------------------
@@ -79,9 +79,9 @@ void Timer::TimerExpired() {
 */
 //----------------------------------------------------------------------
 int Timer::TimeOfNextInterrupt() {
-  if (randomize)
-    return 1 + (Random() %
-                (nano_to_cycles(TIMER_TIME, g_cfg->ProcessorFrequency) * 2));
-  else
-    return nano_to_cycles(TIMER_TIME, g_cfg->ProcessorFrequency);
+	if (randomize)
+		return 1 + (Random() %
+					(nano_to_cycles(TIMER_TIME, g_cfg->ProcessorFrequency) * 2));
+	else
+		return nano_to_cycles(TIMER_TIME, g_cfg->ProcessorFrequency);
 }

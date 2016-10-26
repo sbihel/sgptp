@@ -98,48 +98,48 @@ extern Config *g_cfg;
 /*! \brief Defines a file header in the Nachos file system
  */
 class FileHeader {
- public:
-  FileHeader(void);   // Initialize the header (made empty)
-  ~FileHeader(void);  // Deallocate the file header
+  public:
+	FileHeader(void);   // Initialize the header (made empty)
+	~FileHeader(void);  // Deallocate the file header
 
-  bool Allocate(BitMap *bitMap, int fileSize);  //!< Initialize a file header,
-                                                //!< including allocating space
-                                                //!< on disk for the file data
+	bool Allocate(BitMap *bitMap, int fileSize);  //!< Initialize a file header,
+	//!< including allocating space
+	//!< on disk for the file data
 
-  bool reAllocate(BitMap *, int, int);  //!< add new data blocks needed
-                                        //!< and new header blocks if necessary
+	bool reAllocate(BitMap *, int, int);  //!< add new data blocks needed
+	//!< and new header blocks if necessary
 
-  void Deallocate(BitMap *bitMap);  //!< De-allocate this file's
-                                    //<! data blocks
+	void Deallocate(BitMap *bitMap);  //!< De-allocate this file's
+	//<! data blocks
 
-  void FetchFrom(int sectorNumber);  //!< Initialize file header from disk
-  void WriteBack(int sectorNumber);  //!< Write modifications to file header
-                                     //!< back to disk
+	void FetchFrom(int sectorNumber);  //!< Initialize file header from disk
+	void WriteBack(int sectorNumber);  //!< Write modifications to file header
+	//!< back to disk
 
-  int ByteToSector(int offset);  //!< Convert a byte offset into the file
-                                 //!< to the disk sector containing
-                                 //!< the byte
+	int ByteToSector(int offset);  //!< Convert a byte offset into the file
+	//!< to the disk sector containing
+	//!< the byte
 
-  int FileLength();            //!< Return the length of the file
-                               //!< in bytes
-  void ChangeFileLength(int);  //!< sets the length of the file
-                               //!< in bytes
-  int MaxFileLength();         //!< Return the maximum length of the file
-                               //!< without reallocating data blocks
-  void Print();                //!< Print the contents of the file.
-  bool IsDir();                //!< return true if the file header is marked
-                               //!< as a directory.
-  void SetFile();              //!< Mark this header as a file header
-  void SetDir();               //!< Mark this header as a directory header
- private:
-  int isdir;
-  int numBytes;          //!< Number of bytes in the file
-  int numSectors;        //!< Number of data sectors in the file
-  int *dataSectors;      /*!< Disk sector numbers for each data
+	int FileLength();            //!< Return the length of the file
+	//!< in bytes
+	void ChangeFileLength(int);  //!< sets the length of the file
+	//!< in bytes
+	int MaxFileLength();         //!< Return the maximum length of the file
+	//!< without reallocating data blocks
+	void Print();                //!< Print the contents of the file.
+	bool IsDir();                //!< return true if the file header is marked
+	//!< as a directory.
+	void SetFile();              //!< Mark this header as a file header
+	void SetDir();               //!< Mark this header as a directory header
+  private:
+	int isdir;
+	int numBytes;          //!< Number of bytes in the file
+	int numSectors;        //!< Number of data sectors in the file
+	int *dataSectors;      /*!< Disk sector numbers for each data
 block in the file
 */
-  int numHeaderSectors;  //!< number of sectors used for the header
-  int headerSectors[MAX_HEADER_SECTORS]; /*!< Disk sectors numbers for each
+	int numHeaderSectors;  //!< number of sectors used for the header
+	int headerSectors[MAX_HEADER_SECTORS]; /*!< Disk sectors numbers for each
            header
            block of the file
           */

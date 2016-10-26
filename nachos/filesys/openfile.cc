@@ -30,18 +30,18 @@
 */
 //----------------------------------------------------------------------
 OpenFile::OpenFile(int sector) {
-  // Allocate the file header and file name
-  hdr = new FileHeader;
-  name = new char[g_cfg->MaxFileNameSize];
-  ASSERT(hdr != 0);
+	// Allocate the file header and file name
+	hdr = new FileHeader;
+	name = new char[g_cfg->MaxFileNameSize];
+	ASSERT(hdr != 0);
 
-  // Fetch the file header from disk
-  hdr->FetchFrom(sector);
+	// Fetch the file header from disk
+	hdr->FetchFrom(sector);
 
-  // Set OpenFile parameters
-  fSector = sector;
-  seekPosition = 0;
-  typeId = FILE_TYPE_ID;
+	// Set OpenFile parameters
+	fSector = sector;
+	seekPosition = 0;
+	typeId = FILE_TYPE_ID;
 }
 
 //----------------------------------------------------------------------
@@ -49,9 +49,9 @@ OpenFile::OpenFile(int sector) {
 //! 	Close a Nachos file, de-allocating any in-memory data structures.
 //----------------------------------------------------------------------
 OpenFile::~OpenFile() {
-  typeId = INVALID_TYPE_ID;
-  delete hdr;
-  delete[] name;
+	typeId = INVALID_TYPE_ID;
+	delete hdr;
+	delete[] name;
 }
 
 //----------------------------------------------------------------------
@@ -63,7 +63,9 @@ OpenFile::~OpenFile() {
 */
 //----------------------------------------------------------------------
 
-void OpenFile::Seek(int position) { seekPosition = position; }
+void OpenFile::Seek(int position) {
+	seekPosition = position;
+}
 
 //----------------------------------------------------------------------
 // OpenFile::Read
@@ -78,9 +80,9 @@ void OpenFile::Seek(int position) { seekPosition = position; }
 */
 //----------------------------------------------------------------------
 int OpenFile::Read(char *into, int numBytes) {
-  int result = ReadAt(into, numBytes, seekPosition);
-  seekPosition += result;
-  return result;
+	int result = ReadAt(into, numBytes, seekPosition);
+	seekPosition += result;
+	return result;
 }
 
 //----------------------------------------------------------------------
@@ -96,9 +98,9 @@ int OpenFile::Read(char *into, int numBytes) {
 */
 //----------------------------------------------------------------------
 int OpenFile::Write(char *into, int numBytes) {
-  int result = WriteAt(into, numBytes, seekPosition);
-  seekPosition += result;
-  return result;
+	int result = WriteAt(into, numBytes, seekPosition);
+	seekPosition += result;
+	return result;
 }
 
 //----------------------------------------------------------------------
@@ -122,30 +124,30 @@ int OpenFile::Write(char *into, int numBytes) {
 */
 //----------------------------------------------------------------------
 int OpenFile::ReadAt(char *into, int numBytes, int position) {
-  int fileLength = hdr->FileLength();
-  int i, firstSector, lastSector, numSectors;
+	int fileLength = hdr->FileLength();
+	int i, firstSector, lastSector, numSectors;
 
-  // Check if the location in the file is valid
-  if ((numBytes <= 0) || (position >= fileLength)) return 0;
+	// Check if the location in the file is valid
+	if ((numBytes <= 0) || (position >= fileLength)) return 0;
 
-  if ((position + numBytes) > fileLength) numBytes = fileLength - position;
-  DEBUG('f', (char *)"Reading %d bytes at %d, from file of length %d.\n",
-        numBytes, position, fileLength);
+	if ((position + numBytes) > fileLength) numBytes = fileLength - position;
+	DEBUG('f', (char *)"Reading %d bytes at %d, from file of length %d.\n",
+		  numBytes, position, fileLength);
 
-  // Compute the list of sectors to be read
-  firstSector = divRoundDown(position, g_cfg->SectorSize);
-  lastSector = divRoundDown(position + numBytes - 1, g_cfg->SectorSize);
-  numSectors = 1 + lastSector - firstSector;
+	// Compute the list of sectors to be read
+	firstSector = divRoundDown(position, g_cfg->SectorSize);
+	lastSector = divRoundDown(position + numBytes - 1, g_cfg->SectorSize);
+	numSectors = 1 + lastSector - firstSector;
 
-  // read in all the full and partial sectors that we need
-  char buf[numSectors * g_cfg->SectorSize];
-  for (i = firstSector; i <= lastSector; i++)
-    g_disk_driver->ReadSector(hdr->ByteToSector(i * g_cfg->SectorSize),
-                              &buf[(i - firstSector) * g_cfg->SectorSize]);
+	// read in all the full and partial sectors that we need
+	char buf[numSectors * g_cfg->SectorSize];
+	for (i = firstSector; i <= lastSector; i++)
+		g_disk_driver->ReadSector(hdr->ByteToSector(i * g_cfg->SectorSize),
+								  &buf[(i - firstSector) * g_cfg->SectorSize]);
 
-  // copy the part we want
-  bcopy(&buf[position - (firstSector * g_cfg->SectorSize)], into, numBytes);
-  return numBytes;
+	// copy the part we want
+	bcopy(&buf[position - (firstSector * g_cfg->SectorSize)], into, numBytes);
+	return numBytes;
 }
 
 //----------------------------------------------------------------------
@@ -171,85 +173,95 @@ int OpenFile::ReadAt(char *into, int numBytes, int position) {
 */
 //----------------------------------------------------------------------
 int OpenFile::WriteAt(char *from, int numBytes, int position) {
-  int fileLength = hdr->FileLength();
-  int maxFileLength = hdr->MaxFileLength();
-  int i, firstSector, lastSector, numSectors;
-  bool firstAligned, lastAligned;
+	int fileLength = hdr->FileLength();
+	int maxFileLength = hdr->MaxFileLength();
+	int i, firstSector, lastSector, numSectors;
+	bool firstAligned, lastAligned;
 
-  // Check the location in the file is valid
-  if ((numBytes <= 0) || (position > fileLength)) return 0;  // check request
+	// Check the location in the file is valid
+	if ((numBytes <= 0) || (position > fileLength)) return 0;  // check request
 
-  // Allocate new sectors if the file is not big enough
-  if ((position + numBytes) > maxFileLength) {  // there isn't enough place
-    // Fetch the freemap from disk
-    BitMap freeMap(NUM_SECTORS);
-    freeMap.FetchFrom(g_file_system->GetFreeMapFile());
-    // Reallocate room for the new sectors in the file header
-    if (!hdr->reAllocate(&freeMap, fileLength, position + numBytes))
-      numBytes = fileLength - position;
-    else {
-      // Write back the header and freemap to disk
-      hdr->WriteBack(fSector);
-      freeMap.WriteBack(g_file_system->GetFreeMapFile());
-    }
-  } else if ((position + numBytes) > fileLength)
-    hdr->ChangeFileLength(position + numBytes);
+	// Allocate new sectors if the file is not big enough
+	if ((position + numBytes) > maxFileLength) {  // there isn't enough place
+		// Fetch the freemap from disk
+		BitMap freeMap(NUM_SECTORS);
+		freeMap.FetchFrom(g_file_system->GetFreeMapFile());
+		// Reallocate room for the new sectors in the file header
+		if (!hdr->reAllocate(&freeMap, fileLength, position + numBytes))
+			numBytes = fileLength - position;
+		else {
+			// Write back the header and freemap to disk
+			hdr->WriteBack(fSector);
+			freeMap.WriteBack(g_file_system->GetFreeMapFile());
+		}
+	} else if ((position + numBytes) > fileLength)
+		hdr->ChangeFileLength(position + numBytes);
 
-  DEBUG('f', (char *)"Writing %d bytes at %d, to file of length %d.\n",
-        numBytes, position, fileLength);
+	DEBUG('f', (char *)"Writing %d bytes at %d, to file of length %d.\n",
+		  numBytes, position, fileLength);
 
-  // Compute the list of sectors to be written
-  firstSector = divRoundDown(position, g_cfg->SectorSize);
-  lastSector = divRoundDown(position + numBytes - 1, g_cfg->SectorSize);
-  numSectors = 1 + lastSector - firstSector;
+	// Compute the list of sectors to be written
+	firstSector = divRoundDown(position, g_cfg->SectorSize);
+	lastSector = divRoundDown(position + numBytes - 1, g_cfg->SectorSize);
+	numSectors = 1 + lastSector - firstSector;
 
-  char buf[numSectors * g_cfg->SectorSize];
+	char buf[numSectors * g_cfg->SectorSize];
 
-  firstAligned = (position == (firstSector * g_cfg->SectorSize));
-  lastAligned =
-      ((position + numBytes) == ((lastSector + 1) * g_cfg->SectorSize));
+	firstAligned = (position == (firstSector * g_cfg->SectorSize));
+	lastAligned =
+		((position + numBytes) == ((lastSector + 1) * g_cfg->SectorSize));
 
-  // read in first and last sector, if they are to be partially modified
-  if (!firstAligned)
-    ReadAt(buf, g_cfg->SectorSize, firstSector * g_cfg->SectorSize);
-  if (!lastAligned && ((firstSector != lastSector) || firstAligned))
-    ReadAt(&buf[(lastSector - firstSector) * g_cfg->SectorSize],
-           g_cfg->SectorSize, lastSector * g_cfg->SectorSize);
+	// read in first and last sector, if they are to be partially modified
+	if (!firstAligned)
+		ReadAt(buf, g_cfg->SectorSize, firstSector * g_cfg->SectorSize);
+	if (!lastAligned && ((firstSector != lastSector) || firstAligned))
+		ReadAt(&buf[(lastSector - firstSector) * g_cfg->SectorSize],
+			   g_cfg->SectorSize, lastSector * g_cfg->SectorSize);
 
-  // copy in the bytes we want to change
-  bcopy(from, &buf[position - (firstSector * g_cfg->SectorSize)], numBytes);
+	// copy in the bytes we want to change
+	bcopy(from, &buf[position - (firstSector * g_cfg->SectorSize)], numBytes);
 
-  // write modified sectors back
-  for (i = firstSector; i <= lastSector; i++)
-    g_disk_driver->WriteSector(hdr->ByteToSector(i * g_cfg->SectorSize),
-                               &buf[(i - firstSector) * g_cfg->SectorSize]);
-  return numBytes;
+	// write modified sectors back
+	for (i = firstSector; i <= lastSector; i++)
+		g_disk_driver->WriteSector(hdr->ByteToSector(i * g_cfg->SectorSize),
+								   &buf[(i - firstSector) * g_cfg->SectorSize]);
+	return numBytes;
 }
 
 //----------------------------------------------------------------------
 // OpenFile::Length
 //! 	Return the number of bytes in the file.
 //----------------------------------------------------------------------
-int OpenFile::Length() { return hdr->FileLength(); }
+int OpenFile::Length() {
+	return hdr->FileLength();
+}
 //----------------------------------------------------------------------
 // OpenFile::GetFileHeader
 //! 	Return the file's FileHeader.
 //----------------------------------------------------------------------
-FileHeader *OpenFile::GetFileHeader() { return hdr; }
+FileHeader *OpenFile::GetFileHeader() {
+	return hdr;
+}
 //----------------------------------------------------------------------
 // OpenFile::IsDir
 //! 	Return true if the file is a directory.
 //----------------------------------------------------------------------
-bool OpenFile::IsDir() { return hdr->IsDir(); }
+bool OpenFile::IsDir() {
+	return hdr->IsDir();
+}
 //----------------------------------------------------------------------
 // OpenFile::GetName
 //! 	Return the name of the file.
 //----------------------------------------------------------------------
-char *OpenFile::GetName() { return name; }
+char *OpenFile::GetName() {
+	return name;
+}
 //----------------------------------------------------------------------
 // OpenFile::SetName
 //! 	Set the name of the file.
 //
 //      \param the name of the file
 //----------------------------------------------------------------------
-void OpenFile::SetName(char *newname) { strcpy(name, newname); }
+void OpenFile::SetName(char *newname) {
+	strcpy(name, newname);
+}

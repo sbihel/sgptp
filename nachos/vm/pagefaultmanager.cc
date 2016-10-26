@@ -38,7 +38,7 @@ PageFaultManager::~PageFaultManager() {}
 //	\return the exception (generally the NO_EXCEPTION constant)
 */
 ExceptionType PageFaultManager::PageFault(int virtualPage) {
-  printf("**** Warning: page fault manager is not implemented yet\n");
-  exit(-1);
-  return ((ExceptionType)0);
+	printf("**** Warning: page fault manager is not implemented yet\n");
+	exit(-1);
+	return ((ExceptionType)0);
 }

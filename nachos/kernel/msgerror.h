@@ -18,32 +18,32 @@ class DriverConsole;
 //! List of error message numbers
 //! (see their meaning in msgerror.cc)
 enum {
-  NoError = 0,
-  IncError,
+	NoError = 0,
+	IncError,
 
-  OpenFileError,
-  ExecFileFormatError,
-  OutOfMemory,
+	OpenFileError,
+	ExecFileFormatError,
+	OutOfMemory,
 
-  OutOfDisk,
-  AlreadyInDirectory,
-  InexistFileError,
-  InexistDirectoryError,
-  NoSpaceInDirectory,
-  NotAFile,
-  NotADirectory,
-  DirectoryNotEmpty,
+	OutOfDisk,
+	AlreadyInDirectory,
+	InexistFileError,
+	InexistDirectoryError,
+	NoSpaceInDirectory,
+	NotAFile,
+	NotADirectory,
+	DirectoryNotEmpty,
 
-  /* Invalid typeId fields: */
-  InvalidSemaphoreId,
-  InvalidLockId,
-  InvalidConditionId,
-  InvalidFileId,
-  InvalidThreadId,
+	/* Invalid typeId fields: */
+	InvalidSemaphoreId,
+	InvalidLockId,
+	InvalidConditionId,
+	InvalidFileId,
+	InvalidThreadId,
 
-  NoACIA,
+	NoACIA,
 
-  NUMMSGERROR /* Must always be last */
+	NUMMSGERROR /* Must always be last */
 };
 
 /*! \brief Defines a structure to store syscall error messages
@@ -56,24 +56,24 @@ enum {
 //  string (eg. the name of an unknow file).
 */
 class SyscallError {
- public:
-  SyscallError();   // Initialize the structure
-  ~SyscallError();  // De-allocate the structure
+  public:
+	SyscallError();   // Initialize the structure
+	~SyscallError();  // De-allocate the structure
 
-  void SetMsg(char *about, int num);
-  //!< Set the current error message
+	void SetMsg(char *about, int num);
+	//!< Set the current error message
 
-  void PrintLastMsg(DriverConsole *cons, char *ch);
-  //!< Print the error message with a user defined
-  //!< string
+	void PrintLastMsg(DriverConsole *cons, char *ch);
+	//!< Print the error message with a user defined
+	//!< string
 
-  //! Get the error format string (with a %s) associated with error num
-  const char *GetFormat(int num);
+	//! Get the error format string (with a %s) associated with error num
+	const char *GetFormat(int num);
 
- private:
-  int lastError;            //!< last error's ident
-  char *errorAbout;         //!< context string
-  char *msgs[NUMMSGERROR];  //!< The array of strings for the error messages
+  private:
+	int lastError;            //!< last error's ident
+	char *errorAbout;         //!< context string
+	char *msgs[NUMMSGERROR];  //!< The array of strings for the error messages
 };
 
 #endif  // MSGERROR_H

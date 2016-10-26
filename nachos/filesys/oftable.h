@@ -28,17 +28,17 @@
 /*! \brief defines the structure of a record in the open file table
 */
 class OpenFileTableEntry {
- public:
-  char *name;       //!< the name of the file
-  OpenFile *file;   //!< open file descriptor
-  int numthread;    //!< number of thread that has this file open
-  Lock *lock;       //!< used to synchronize file access
-  bool ToBeDeleted; /*!< true if the file has to be deleted
+  public:
+	char *name;       //!< the name of the file
+	OpenFile *file;   //!< open file descriptor
+	int numthread;    //!< number of thread that has this file open
+	Lock *lock;       //!< used to synchronize file access
+	bool ToBeDeleted; /*!< true if the file has to be deleted
                       when every thread will close it.
                     */
-  int sector;       //!< the disc sector where is located the fileheader
-  OpenFileTableEntry();
-  ~OpenFileTableEntry();  // delete the file if necessary
+	int sector;       //!< the disc sector where is located the fileheader
+	OpenFileTableEntry();
+	~OpenFileTableEntry();  // delete the file if necessary
 };
 
 /*! \brief Defines a list of all opened files
@@ -47,32 +47,32 @@ class OpenFileTableEntry {
 //  threads wich use the same file.
 */
 class OpenFileTable {
- public:
-  OpenFileTable();  // initialize the open file table
-  ~OpenFileTable();
+  public:
+	OpenFileTable();  // initialize the open file table
+	~OpenFileTable();
 
-  OpenFile *Open(char *name);    /*!< check if the file is already open
+	OpenFile *Open(char *name);    /*!< check if the file is already open
                                       and if not creates a new entry in
                                       the table
                                   */
-  void Close(char *name);        /*!< decrease numthread and if numthread
+	void Close(char *name);        /*!< decrease numthread and if numthread
                  is 0 then remove the file from
            the open file table
                */
-  void FileLock(char *name);     /*!< lock the file name to implement
+	void FileLock(char *name);     /*!< lock the file name to implement
                                   atomic write
                                 */
-  void FileRelease(char *name);  //!< release the lock after the disk operation.
+	void FileRelease(char *name);  //!< release the lock after the disk operation.
 
-  int Remove(char *name);  //!< remove the file from the file system
+	int Remove(char *name);  //!< remove the file from the file system
 
-  int next_entry();  //!< this function give the next valid entry in the table
-  Lock *createLock;
+	int next_entry();  //!< this function give the next valid entry in the table
+	Lock *createLock;
 
- private:
-  OpenFileTableEntry *table[NBOFTENTRY];  //!< the list of open files
-  int nbentry;            //!< the number of the next valid entry in the table
-  int findl(char *name);  // find a file in the table
+  private:
+	OpenFileTableEntry *table[NBOFTENTRY];  //!< the list of open files
+	int nbentry;            //!< the number of the next valid entry in the table
+	int findl(char *name);  // find a file in the table
 };
 
 #endif  // FS_OFT

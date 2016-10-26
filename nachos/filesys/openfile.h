@@ -28,55 +28,55 @@ class FileHeader;
 //	by different threads -- this is part of the assignment.
 */
 class OpenFile {
- public:
-  /*! Open a file whose header is located
-     at "sector" on the disk
-  */
-  OpenFile(int sector);
+  public:
+	/*! Open a file whose header is located
+	   at "sector" on the disk
+	*/
+	OpenFile(int sector);
 
-  //! Close the file
-  ~OpenFile();
+	//! Close the file
+	~OpenFile();
 
-  /*! Set the position from which to
-     start reading/writing -- UNIX lseek
-  */
-  void Seek(int position);
+	/*! Set the position from which to
+	   start reading/writing -- UNIX lseek
+	*/
+	void Seek(int position);
 
-  /*! Read/write bytes from the file,
-     starting at the implicit position.
-     Return the # actually read/written,
-     and increment position in file.
-  */
-  int Read(char *into, int numBytes);
-  int Write(char *from, int numBytes);
+	/*! Read/write bytes from the file,
+	   starting at the implicit position.
+	   Return the # actually read/written,
+	   and increment position in file.
+	*/
+	int Read(char *into, int numBytes);
+	int Write(char *from, int numBytes);
 
-  /*! Read/write bytes from the file,
-     bypassing the implicit position.
-  */
-  int ReadAt(char *into, int numBytes, int position);
-  int WriteAt(char *from, int numBytes, int position);
+	/*! Read/write bytes from the file,
+	   bypassing the implicit position.
+	*/
+	int ReadAt(char *into, int numBytes, int position);
+	int WriteAt(char *from, int numBytes, int position);
 
-  int Length();                 /*!< Return the number of bytes in the
+	int Length();                 /*!< Return the number of bytes in the
                        file (this interface is simpler
                        than the UNIX idiom -- lseek to
                        end of file, tell, lseek back
                           */
-  FileHeader *GetFileHeader();  //!< return the file's header
+	FileHeader *GetFileHeader();  //!< return the file's header
 
-  char *GetName();  //!< return the file's name
+	char *GetName();  //!< return the file's name
 
-  void SetName(char *);  //!< Set the file's name
+	void SetName(char *);  //!< Set the file's name
 
-  bool IsDir();  //!< return true if the file is a directory
- private:
-  char *name;        //!< the file's name.
-  FileHeader *hdr;   //!< Header for this file
-  int seekPosition;  //!< Current position within the file
-  int fSector;       //!< The file's first sector
+	bool IsDir();  //!< return true if the file is a directory
+  private:
+	char *name;        //!< the file's name.
+	FileHeader *hdr;   //!< Header for this file
+	int seekPosition;  //!< Current position within the file
+	int fSector;       //!< The file's first sector
 
- public:
-  //! signature to make sure the file is in the correct state
-  ObjectTypeId typeId;
+  public:
+	//! signature to make sure the file is in the correct state
+	ObjectTypeId typeId;
 };
 
 #endif  // OPENFILE_H
