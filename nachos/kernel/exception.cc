@@ -662,7 +662,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 
 		case SC_SEM_DESTROY: {
 			// The destroy system call
-			// Destroy a new semaphore
+			// Destroy a semaphore
 			DEBUG('e', (char *)"Semaphore: Destroy call.\n");
 			int32_t sid;
 			Semaphore *ptSem;
@@ -679,17 +679,81 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			break;
 		 }
 
-		case SC_LOCK_CREATE:
+		case SC_LOCK_CREATE: {
+			// The create system call
+			// Create a new lock
+			DEBUG('e', (char *)"Lock: Create call.\n");
+			int addr;
+			int ret;
+			int sizep;
+			// Get the name and initial value of the new semaphore
+			addr = g_machine->ReadIntRegister(4);
+			sizep = GetLengthParam(addr);
+			char debugName[sizep];
+			GetStringParam(addr, debugName, sizep);
+			// Try to create it
+			new Lock(debugName);
+			// How could an error be thrown?
+			g_syscall_error->SetMsg((char *)"", NoError);
+			ret = 0;
+			g_machine->WriteIntRegister(2, ret);
 			break;
+		 }
 
-		case SC_LOCK_DESTROY:
+		case SC_LOCK_DESTROY: {
+			// The destroy system call
+			// Destroy a lock
+			DEBUG('e', (char *)"Lock: Destroy call.\n");
+			int32_t sid;
+			Lock *ptLock;
+			sid = g_machine->ReadIntRegister(4);
+			ptLock = (Lock *)g_object_ids->SearchObject(sid);
+			if (ptLock && ptLock->typeId == LOCK_TYPE_ID) {
+				delete ptLock;
+				g_syscall_error->SetMsg((char *)"", NoError);
+				g_machine->WriteIntRegister(2, 0);
+			} else {
+				g_syscall_error->SetMsg((char *)"Error", NoError);
+				g_machine->WriteIntRegister(2, -1);
+			}
 			break;
+		}
 
-		case SC_LOCK_ACQUIRE:
+		case SC_LOCK_ACQUIRE: {
+			DEBUG('e', (char *)"Lock: acquire call.\n");
+			int32_t sid;
+			Lock *ptLock;
+			sid = g_machine->ReadIntRegister(4);
+			ptLock = (Lock *)g_object_ids->SearchObject(sid);
+			if (ptLock && ptLock->typeId == LOCK_TYPE_ID) {
+				ptLock->Acquire();
+				g_syscall_error->SetMsg((char *)"", NoError);
+				g_machine->WriteIntRegister(2, 0);
+			} else {
+				g_syscall_error->SetMsg((char *)"Error", NoError);
+				g_machine->WriteIntRegister(2, -1);
+			}
+			DEBUG('e', (char *)"Fin Lock");
 			break;
+		}
 
-		case SC_LOCK_RELEASE:
+		case SC_LOCK_RELEASE: {
+			DEBUG('e', (char *)"Lock: release call.\n");
+			int32_t sid;
+			Lock *ptLock;
+			sid = g_machine->ReadIntRegister(4);
+			ptLock = (Lock *)g_object_ids->SearchObject(sid);
+			if (ptLock && ptLock->typeId == LOCK_TYPE_ID) {
+				ptLock->Release();
+				g_syscall_error->SetMsg((char *)"", NoError);
+				g_machine->WriteIntRegister(2, 0);
+			} else {
+				g_syscall_error->SetMsg((char *)"Error", NoError);
+				g_machine->WriteIntRegister(2, -1);
+			}
+			DEBUG('e', (char *)"Fin Lock");
 			break;
+		}
 
 		case SC_COND_CREATE:
 			break;
