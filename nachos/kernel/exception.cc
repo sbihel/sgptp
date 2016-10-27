@@ -755,21 +755,98 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			break;
 		}
 
-		case SC_COND_CREATE:
+		case SC_COND_CREATE: {
+			// The create system call
+			// Create a new condition
+			DEBUG('e', (char *)"Condition: Create call.\n");
+			int addr;
+			int ret;
+			int sizep;
+			// Get the name and initial value of the new semaphore
+			addr = g_machine->ReadIntRegister(4);
+			sizep = GetLengthParam(addr);
+			char debugName[sizep];
+			GetStringParam(addr, debugName, sizep);
+			// Try to create it
+			new Condition(debugName);
+			// How could an error be thrown?
+			g_syscall_error->SetMsg((char *)"", NoError);
+			ret = 0;
+			g_machine->WriteIntRegister(2, ret);
 			break;
+		 }
 
-		case SC_COND_DESTROY:
+		case SC_COND_DESTROY: {
+			// The destroy system call
+			// Destroy a condition
+			DEBUG('e', (char *)"Condition: Destroy call.\n");
+			int32_t sid;
+			Condition *ptCond;
+			sid = g_machine->ReadIntRegister(4);
+			ptCond = (Condition *)g_object_ids->SearchObject(sid);
+			if (ptCond && ptCond->typeId == CONDITION_TYPE_ID) {
+				delete ptCond;
+				g_syscall_error->SetMsg((char *)"", NoError);
+				g_machine->WriteIntRegister(2, 0);
+			} else {
+				g_syscall_error->SetMsg((char *)"Error", NoError);
+				g_machine->WriteIntRegister(2, -1);
+			}
 			break;
+		}
 
-		case SC_COND_WAIT:
+		case SC_COND_WAIT: {
+			DEBUG('e', (char *)"Condition: Wait call.\n");
+			int32_t sid;
+			Condition *ptCond;
+			sid = g_machine->ReadIntRegister(4);
+			ptCond = (Condition *)g_object_ids->SearchObject(sid);
+			if (ptCond && ptCond->typeId == CONDITION_TYPE_ID) {
+				ptCond->Wait();
+				g_syscall_error->SetMsg((char *)"", NoError);
+				g_machine->WriteIntRegister(2, 0);
+			} else {
+				g_syscall_error->SetMsg((char *)"Error", NoError);
+				g_machine->WriteIntRegister(2, -1);
+			}
 			break;
+		}
 
-		case SC_COND_SIGNAL:
+		case SC_COND_SIGNAL: {
+			DEBUG('e', (char *)"Condition: Signal call.\n");
+			int32_t sid;
+			Condition *ptCond;
+			sid = g_machine->ReadIntRegister(4);
+			ptCond = (Condition *)g_object_ids->SearchObject(sid);
+			if (ptCond && ptCond->typeId == CONDITION_TYPE_ID) {
+				ptCond->Signal();
+				g_syscall_error->SetMsg((char *)"", NoError);
+				g_machine->WriteIntRegister(2, 0);
+			} else {
+				g_syscall_error->SetMsg((char *)"Error", NoError);
+				g_machine->WriteIntRegister(2, -1);
+			}
 			break;
+		}
 
-		case SC_COND_BROADCAST:
+		case SC_COND_BROADCAST: {
+			DEBUG('e', (char *)"Condition: Broadcast call.\n");
+			int32_t sid;
+			Condition *ptCond;
+			sid = g_machine->ReadIntRegister(4);
+			ptCond = (Condition *)g_object_ids->SearchObject(sid);
+			if (ptCond && ptCond->typeId == CONDITION_TYPE_ID) {
+				ptCond->Broadcast();
+				g_syscall_error->SetMsg((char *)"", NoError);
+				g_machine->WriteIntRegister(2, 0);
+			} else {
+				g_syscall_error->SetMsg((char *)"Error", NoError);
+				g_machine->WriteIntRegister(2, -1);
+			}
 			break;
+		}
 #endif
+
 		default:
 			printf("Invalid system call number : %d\n", type);
 			exit(-1);
