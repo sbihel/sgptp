@@ -238,8 +238,16 @@ Condition::~Condition() {
 */
 //----------------------------------------------------------------------
 void Condition::Wait() {
+#ifndef ETUDIANTS_TP
 	printf("**** Warning: method Condition::Wait is not implemented yet\n");
 	exit(-1);
+#endif
+#ifdef ETUDIANTS_TP
+	IntStatus oldLevel = g_machine->interrupt->GetStatus();
+	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+	g_current_thread->Sleep();
+	g_machine->interrupt->SetStatus(oldLevel);
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -250,8 +258,19 @@ void Condition::Wait() {
 */
 //----------------------------------------------------------------------
 void Condition::Signal() {
+#ifndef ETUDIANTS_TP
 	printf("**** Warning: method Condition::Signal is not implemented yet\n");
 	exit(-1);
+#endif
+#ifdef ETUDIANTS_TP
+	IntStatus oldLevel = g_machine->interrupt->GetStatus();
+	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+	if (!waitqueue->IsEmpty()) {
+	  Thread *t = (Thread *)waitqueue->Remove();
+	  g_scheduler->ReadyToRun(t);
+	}
+	g_machine->interrupt->SetStatus(oldLevel);
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -261,6 +280,17 @@ void Condition::Signal() {
 */
 //----------------------------------------------------------------------
 void Condition::Broadcast() {
+#ifndef ETUDIANTS_TP
 	printf("**** Warning: method Condition::Broadcast is not implemented yet\n");
 	exit(-1);
+#endif
+#ifdef ETUDIANTS_TP
+	IntStatus oldLevel = g_machine->interrupt->GetStatus();
+	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+	while (!waitqueue->IsEmpty()) {
+	  Thread *t = (Thread *)waitqueue->Remove();
+	  g_scheduler->ReadyToRun(t);
+	}
+	g_machine->interrupt->SetStatus(oldLevel);
+#endif
 }
