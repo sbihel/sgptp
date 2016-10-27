@@ -422,7 +422,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			DEBUG('e', (char *)"Filesystem: Seek call.\n");
 			int offset;
 			int32_t f;
-			int error;
+			int error = 0;
 
 			// Get the offset into the file
 			offset = g_machine->ReadIntRegister(4);
@@ -613,7 +613,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 				g_machine->WriteIntRegister(2, 0);
 			} else {
 				g_syscall_error->SetMsg((char *)"Error", NoError);
-				g_machine->WriteIntRegister(2, 0);
+				g_machine->WriteIntRegister(2, -1);
 			}
 			DEBUG('e', (char *)"Fin Semaphore");
 			break;
@@ -631,7 +631,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 				g_machine->WriteIntRegister(2, 0);
 			} else {
 				g_syscall_error->SetMsg((char *)"Error", NoError);
-				g_machine->WriteIntRegister(2, 0);
+				g_machine->WriteIntRegister(2, -1);
 			}
 			DEBUG('e', (char *)"Fin Semaphore");
 			break;
@@ -660,8 +660,24 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			break;
 		}
 
-		case SC_SEM_DESTROY:
+		case SC_SEM_DESTROY: {
+			// The destroy system call
+			// Destroy a new semaphore
+			DEBUG('e', (char *)"Semaphore: Destroy call.\n");
+			int32_t sid;
+			Semaphore *ptSem;
+			sid = g_machine->ReadIntRegister(4);
+			ptSem = (Semaphore *)g_object_ids->SearchObject(sid);
+			if (ptSem && ptSem->typeId == SEMAPHORE_TYPE_ID) {
+				delete ptSem;
+				g_syscall_error->SetMsg((char *)"", NoError);
+				g_machine->WriteIntRegister(2, 0);
+			} else {
+				g_syscall_error->SetMsg((char *)"Error", NoError);
+				g_machine->WriteIntRegister(2, -1);
+			}
 			break;
+		 }
 
 		case SC_LOCK_CREATE:
 			break;
