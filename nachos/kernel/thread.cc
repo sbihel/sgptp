@@ -98,9 +98,24 @@ Thread::~Thread() {
 */
 //----------------------------------------------------------------------
 int Thread::Start(Process *owner, int32_t func, int arg) {
+#ifndef ETUDIANTS_TP
 	ASSERT(process == NULL);
 	printf("**** Warning: method Thread::Start is not implemented yet\n");
 	exit(-1);
+#endif
+#ifdef ETUDIANTS_TP
+	ASSERT(process == NULL);
+	// Nothing returns an error code
+	process = owner;
+	int user_stack = owner->addrspace->StackAllocate();
+	int8_t *kernel_stack = AllocBoundedArray(SIMULATORSTACKSIZE);
+	InitThreadContext(func, user_stack, arg);
+	InitSimulatorContext(kernel_stack, SIMULATORSTACKSIZE);
+	owner->numThreads++;
+	g_alive->Append(this);
+	g_scheduler->ReadyToRun(this);
+	return NoError;
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -241,9 +256,17 @@ void Thread::CheckOverflow() {
 */
 //----------------------------------------------------------------------
 void Thread::Finish() {
+#ifndef ETUDIANTS_TP
 	DEBUG('t', (char *)"Finishing thread \"%s\"\n", GetName());
 
 	printf("**** Warning: method Thread::Finish is not fully implemented yet\n");
+#endif
+
+#ifdef ETUDIANTS_TP
+	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+	process->numThreads--;
+	g_thread_to_be_destroyed = this;
+#endif
 
 	// Go to sleep
 	Sleep();  // invokes SWITCH
@@ -331,10 +354,20 @@ void Thread::Sleep() {
 */
 //----------------------------------------------------------------------
 void Thread::SaveProcessorState() {
+#ifndef ETUDIANTS_TP
 	printf(
 		"**** Warning: method Thread::SaveProcessorState is not implemented "
 		"yet\n");
 	exit(-1);
+#endif
+#ifdef ETUDIANTS_TP
+	// TODO, should we use getter methods?
+	for(int i = 0; i < NUM_INT_REGS; i++)
+		thread_context.int_registers[i] = g_machine->int_registers[i];
+	for(int i = 0; i < NUM_FP_REGS; i++)
+		thread_context.float_registers[i] = g_machine->float_registers[i];
+	thread_context.cc = g_machine->cc;
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -344,10 +377,20 @@ void Thread::SaveProcessorState() {
 //----------------------------------------------------------------------
 
 void Thread::RestoreProcessorState() {
+#ifndef ETUDIANTS_TP
 	printf(
 		"**** Warning: method Thread::RestoreProcessorState is not implemented "
 		"yet\n");
 	exit(-1);
+#endif
+#ifdef ETUDIANTS_TP
+	// TODO, should we use setter methods?
+	for(int i = 0; i < NUM_INT_REGS; i++)
+		g_machine->int_registers[i] = thread_context.int_registers[i];
+	for(int i = 0; i < NUM_FP_REGS; i++)
+		g_machine->float_registers[i] = thread_context.float_registers[i];
+	g_machine->cc = thread_context.cc;
+#endif
 }
 
 //----------------------------------------------------------------------
