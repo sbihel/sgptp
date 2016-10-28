@@ -162,6 +162,8 @@ void Lock::Acquire() {
 	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
 	if (!free) {
 		g_current_thread->Sleep();
+	} else {
+		owner = g_current_thread;
 	}
 	g_machine->interrupt->SetStatus(oldLevel);
 #endif
