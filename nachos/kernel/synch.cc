@@ -80,7 +80,8 @@ void Semaphore::P() {
 #ifdef ETUDIANTS_TP
 	IntStatus oldLevel = g_machine->interrupt->GetStatus();
 	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
-	if ((value--) < 0) {
+	value--;
+	if (value < 0) {
 		g_current_thread->Sleep();
 	}
 	g_machine->interrupt->SetStatus(oldLevel);
