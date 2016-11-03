@@ -640,7 +640,6 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		case SC_SEM_CREATE: {
 			// The create system call
 			// Create a new semaphore
-			DEBUG('s', (char *)"Semaphore: Create call.\n");
 			int addr;
 			int initialValue;
 			int ret;
@@ -652,6 +651,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			char debugName[sizep];
 			GetStringParam(addr, debugName, sizep);
 			// Try to create it
+			DEBUG('s', (char *)"Semaphore: Create call [%s].\n", debugName);
 			new Semaphore(debugName, initialValue);
 			// How could an error be thrown?
 			g_syscall_error->SetMsg((char *)"", NoError);

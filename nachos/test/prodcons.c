@@ -1,8 +1,8 @@
 #include "userlib/syscall.h"
 #include "userlib/libnachos.h"
 
-#define BSIZE 4
-#define THNUM 1
+#define BSIZE 1
+#define THNUM 100
 
 char buf[BSIZE];
 SemId occupied;
@@ -11,6 +11,8 @@ int nextin;
 int nextout;
 LockId pmut;
 LockId cmut;
+
+int balance;
 
 void producer();
 void consumer();
@@ -21,6 +23,8 @@ int main() {
   pmut = LockCreate("pmut");
   cmut = LockCreate("cmut");
   nextin = nextout = 0;
+
+  balance = 0;
 
   ThreadId prod[THNUM], cons[THNUM];
 
@@ -39,14 +43,17 @@ int main() {
   LockDestroy(pmut);
   LockDestroy(cmut);
   
+  n_printf("> %d\n", balance);
+  
   return 0;
 }
 
 
 void producer() {
   char item = 1;
-
-  while(1) {    
+  
+  int i;
+  for (i=0; i<100; i++) {    
     P(empty);
   
     LockAcquire(pmut);
@@ -54,16 +61,22 @@ void producer() {
     buf[nextin] = item;
     nextin++;
     nextin %= BSIZE;
-  
+
+    balance++;
+    n_printf("%d\n", balance);
+
     LockRelease(pmut);
     P(occupied);
   }
+
+  Exit(0);
 }
 
 void consumer() {
   char item;
 
-  while(1) {
+  int i;
+  for (i=0; i<100; i++) {
     P(occupied);
     
     LockAcquire(cmut);
@@ -72,8 +85,13 @@ void consumer() {
     nextout++;
     nextout %= BSIZE;
 
+    balance--;
+    n_printf("%d\n", balance);
+
     LockRelease(cmut);
     
     V(empty);
   }
+
+  Exit(0);
 }
