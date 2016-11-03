@@ -602,7 +602,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		}
 #ifdef ETUDIANTS_TP
 		case SC_P: {
-			DEBUG('e', (char *)"Semaphore: proberen call.\n");
+			DEBUG('s', (char *)"Semaphore: proberen call.\n");
 			int32_t sid;
 			Semaphore *ptSem;
 			sid = g_machine->ReadIntRegister(4);
@@ -620,7 +620,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		}
 
 		case SC_V: {
-			DEBUG('e', (char *)"Semaphore: verhogen call.\n");
+			DEBUG('s', (char *)"Semaphore: verhogen call.\n");
 			int32_t sid;
 			Semaphore *ptSem;
 			sid = g_machine->ReadIntRegister(4);
@@ -640,7 +640,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		case SC_SEM_CREATE: {
 			// The create system call
 			// Create a new semaphore
-			DEBUG('e', (char *)"Semaphore: Create call.\n");
+			DEBUG('s', (char *)"Semaphore: Create call.\n");
 			int addr;
 			int initialValue;
 			int ret;
@@ -663,7 +663,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		case SC_SEM_DESTROY: {
 			// The destroy system call
 			// Destroy a semaphore
-			DEBUG('e', (char *)"Semaphore: Destroy call.\n");
+			DEBUG('s', (char *)"Semaphore: Destroy call.\n");
 			int32_t sid;
 			Semaphore *ptSem;
 			sid = g_machine->ReadIntRegister(4);
@@ -682,7 +682,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		case SC_LOCK_CREATE: {
 			// The create system call
 			// Create a new lock
-			DEBUG('e', (char *)"Lock: Create call.\n");
+			DEBUG('s', (char *)"Lock: Create call.\n");
 			int addr;
 			int ret;
 			int sizep;
@@ -703,7 +703,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		case SC_LOCK_DESTROY: {
 			// The destroy system call
 			// Destroy a lock
-			DEBUG('e', (char *)"Lock: Destroy call.\n");
+			DEBUG('s', (char *)"Lock: Destroy call.\n");
 			int32_t sid;
 			Lock *ptLock;
 			sid = g_machine->ReadIntRegister(4);
@@ -720,7 +720,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		}
 
 		case SC_LOCK_ACQUIRE: {
-			DEBUG('e', (char *)"Lock: acquire call.\n");
+			DEBUG('s', (char *)"Lock: acquire call.\n");
 			int32_t sid;
 			Lock *ptLock;
 			sid = g_machine->ReadIntRegister(4);
@@ -738,7 +738,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		}
 
 		case SC_LOCK_RELEASE: {
-			DEBUG('e', (char *)"Lock: release call.\n");
+			DEBUG('s', (char *)"Lock: release call.\n");
 			int32_t sid;
 			Lock *ptLock;
 			sid = g_machine->ReadIntRegister(4);
@@ -758,7 +758,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		case SC_COND_CREATE: {
 			// The create system call
 			// Create a new condition
-			DEBUG('e', (char *)"Condition: Create call.\n");
+			DEBUG('s', (char *)"Condition: Create call.\n");
 			int addr;
 			int ret;
 			int sizep;
@@ -779,7 +779,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		case SC_COND_DESTROY: {
 			// The destroy system call
 			// Destroy a condition
-			DEBUG('e', (char *)"Condition: Destroy call.\n");
+			DEBUG('s', (char *)"Condition: Destroy call.\n");
 			int32_t sid;
 			Condition *ptCond;
 			sid = g_machine->ReadIntRegister(4);
@@ -796,7 +796,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		}
 
 		case SC_COND_WAIT: {
-			DEBUG('e', (char *)"Condition: Wait call.\n");
+			DEBUG('s', (char *)"Condition: Wait call.\n");
 			int32_t sid;
 			Condition *ptCond;
 			sid = g_machine->ReadIntRegister(4);
@@ -813,7 +813,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		}
 
 		case SC_COND_SIGNAL: {
-			DEBUG('e', (char *)"Condition: Signal call.\n");
+			DEBUG('s', (char *)"Condition: Signal call.\n");
 			int32_t sid;
 			Condition *ptCond;
 			sid = g_machine->ReadIntRegister(4);
@@ -830,7 +830,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		}
 
 		case SC_COND_BROADCAST: {
-			DEBUG('e', (char *)"Condition: Broadcast call.\n");
+			DEBUG('s', (char *)"Condition: Broadcast call.\n");
 			int32_t sid;
 			Condition *ptCond;
 			sid = g_machine->ReadIntRegister(4);
