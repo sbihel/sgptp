@@ -78,17 +78,16 @@ void Semaphore::P() {
 	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-	DEBUG('s', (char*)"Semaphore::P(%s)\n", name);
+	DEBUG('s', (char*)"Semaphore::P(%s) by %s\n", name, g_current_thread->GetName());
 	IntStatus oldLevel = g_machine->interrupt->GetStatus();
 	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
 	
 	if (value <= 0) {
 	  queue->Append(g_current_thread);
 	  g_current_thread->Sleep();
-	  g_machine->interrupt->GetStatus();
 	}
 	value--;
-	
+
 	g_machine->interrupt->SetStatus(oldLevel);
 #endif
 }
@@ -107,7 +106,7 @@ void Semaphore::V() {
 	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-	DEBUG('s', (char*)"Semaphore::V(%s)\n", name);
+	DEBUG('s', (char*)"Semaphore::V(%s) by %s\n", name, g_current_thread->GetName());
 	IntStatus oldLevel = g_machine->interrupt->GetStatus();
 	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
 	value++;
@@ -165,12 +164,12 @@ void Lock::Acquire() {
 	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-	DEBUG('s', (char*)"Lock::Acquire(%s)\n", name);
+	DEBUG('s', (char*)"Lock::Acquire(%s) by %s\n", name, g_current_thread->GetName());
 	IntStatus oldLevel = g_machine->interrupt->GetStatus();
 	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
 	if (!free) {
-		g_current_thread->Sleep();
 		sleepqueue->Append(g_current_thread);
+		g_current_thread->Sleep();
 	} else {
 		owner = g_current_thread;
 		free = false;
@@ -194,7 +193,7 @@ void Lock::Release() {
 	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-	DEBUG('s', (char*)"Lock::Release(%s)\n", name);
+	DEBUG('s', (char*)"Lock::Release(%s) by %s\n", name, g_current_thread->GetName());
 	IntStatus oldLevel = g_machine->interrupt->GetStatus();
 	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
 	ASSERT(isHeldByCurrentThread());
