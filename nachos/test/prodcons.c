@@ -2,7 +2,11 @@
 #include "userlib/libnachos.h"
 
 #define BSIZE 1
-#define THNUM 100
+
+#define PROD_ITEM 1
+#define CONS_REPL 0
+
+#define NB_THREAD 1
 
 char buf[BSIZE];
 SemId occupied;
@@ -11,6 +15,10 @@ int nextin;
 int nextout;
 LockId pmut;
 LockId cmut;
+
+SemId lol;
+
+CondId start;
 
 int balance, nb_actions;
 
@@ -23,75 +31,91 @@ int main() {
   pmut     = LockCreate("pmut");
   cmut     = LockCreate("cmut");
   nextin   = nextout = 0;
-
+  
+  start = CondCreate("starting gate");
+  
   balance    = 0;
   nb_actions = 0;
-
-  ThreadId prod[THNUM], cons[THNUM];
-
+  
+  ThreadId prod[NB_THREAD], cons[NB_THREAD];
+  
   int i;
-  for (i = 0; i < THNUM; i++) {
+  for (i = 0; i < NB_THREAD; i++) {
     char str[20];
     n_snprintf(str, 20, "prod%d", i);
     prod[i] = threadCreate(str, producer);
     n_snprintf(str, 20, "cons%d", i);
     cons[i] = threadCreate(str, consumer);
   }
-  for (i = 0; i < THNUM; i++) {
-    Join(prod[i]);
+
+  CondBroadcast(start);
+  
+  for (i = 0; i < NB_THREAD; i++) {
+    Join(prod[i]); // rendezvous: parent thread waits for children
     Join(cons[i]);
   }
-
+  
   SemDestroy(occupied);
   SemDestroy(empty);
   LockDestroy(pmut);
   LockDestroy(cmut);
 
-  n_printf("> balance: %d\n", balance);
-  n_printf("> nb of actions done on balance: %d\n", nb_actions);
-
+  n_printf(">>> balance: %d\n", balance);
+  n_printf(">>> num actions: %d\n", nb_actions);
+  
   return 0;
 }
 
-
-void producer() {
-  char item = 1;
-
+void producer() {  
+  CondWait(start);
+  n_printf("lol, not sleeping\n");
+  
   int i;
-  for (i=0; i<100; i++) {
+  for (i=0; i<3; i++) {
     P(empty);
 
     LockAcquire(pmut);
 
-    buf[nextin] = item;
+    if (buf[nextin] == PROD_ITEM) {
+      // producer overflow
+      n_printf(">>> overflow\n");
+    }
+    buf[nextin] = PROD_ITEM; // produce item
     nextin++;
     nextin %= BSIZE;
 
     nb_actions++;
     balance++;
-    n_printf("%d\n", balance);
+    n_printf(">>> producer: %d\n", balance);
 
     LockRelease(pmut);
     V(occupied);
   }
 }
 
-void consumer() {
-  char item;
+void consumer() {  
+  CondWait(start);
+  n_printf("lol, not sleeping\n");
 
   int i;
-  for (i=0; i<100; i++) {
+  for (i=0; i<3; i++) {
     P(occupied);
 
     LockAcquire(cmut);
 
-    item = buf[nextout];
+    if (buf[nextout] == CONS_REPL) {
+      // consumer underflow
+      n_printf(">>> undeflow\n");
+    }
+    
+    buf[nextout] = CONS_REPL; // consume item
+    
     nextout++;
     nextout %= BSIZE;
 
     nb_actions++;
     balance--;
-    n_printf("%d\n", balance);
+    n_printf(">>> consumer: %d\n", balance);
 
     LockRelease(cmut);
 
