@@ -671,8 +671,6 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 				ret = fid;
 				//g_syscall_error->SetMsg((char *)"", NoError);
 			}
-
-
 			g_machine->WriteIntRegister(2, ret);
 			break;
 		}
@@ -709,11 +707,19 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			char debugName[sizep];
 			GetStringParam(addr, debugName, sizep);
 			// Try to create it
-			new Lock(debugName);
+			Lock *lock = new Lock(debugName);
 			// How could an error be thrown?
 			g_syscall_error->SetMsg((char *)"", NoError);
-			ret = 0;
+
+			if (lock == NULL) {
+				ret = -1;
+			} else {
+				int32_t fid = g_object_ids->AddObject(lock);
+				ret = fid;
+			}
+
 			g_machine->WriteIntRegister(2, ret);
+
 			break;
 		}
 
@@ -785,10 +791,17 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			char debugName[sizep];
 			GetStringParam(addr, debugName, sizep);
 			// Try to create it
-			new Condition(debugName);
+			Condition *cond = new Condition(debugName);
 			// How could an error be thrown?
 			g_syscall_error->SetMsg((char *)"", NoError);
-			ret = 0;
+
+			if (cond == NULL) {
+				ret = -1;
+			} else {
+				int32_t fid = g_object_ids->AddObject(cond);
+				ret = fid;
+			}
+
 			g_machine->WriteIntRegister(2, ret);
 			break;
 		}
