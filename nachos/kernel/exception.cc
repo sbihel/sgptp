@@ -602,20 +602,24 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 		}
 #ifdef ETUDIANTS_TP
 		case SC_P: {
-			DEBUG('s', (char *)"Semaphore: proberen call.\n");
+			DEBUG('s', (char *)"BEGIN SYSCALL SC_P\n");
+
 			int32_t sid;
 			Semaphore *ptSem;
 			sid = g_machine->ReadIntRegister(4);
 			ptSem = (Semaphore *)g_object_ids->SearchObject(sid);
+
+			DEBUG('s', (char*)"ReadIntRegister(4) = %i\n", g_machine->ReadIntRegister(4));
+
 			if (ptSem && ptSem->typeId == SEMAPHORE_TYPE_ID) {
+				DEBUG('s', (char *)"SYSCALL SC_P(%s)\n", ptSem->getName());
 				ptSem->P();
 				g_syscall_error->SetMsg((char *)"", NoError);
 				g_machine->WriteIntRegister(2, 0);
 			} else {
-				g_syscall_error->SetMsg((char *)"Error", NoError);
 				g_machine->WriteIntRegister(2, -1);
 			}
-			DEBUG('e', (char *)"Fin Semaphore");
+			DEBUG('s', (char *)"END SYSCALL SC_P\n");
 			break;
 		}
 
@@ -652,10 +656,23 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			GetStringParam(addr, debugName, sizep);
 			// Try to create it
 			DEBUG('s', (char *)"Semaphore: Create call [%s].\n", debugName);
-			new Semaphore(debugName, initialValue);
-			// How could an error be thrown?
-			g_syscall_error->SetMsg((char *)"", NoError);
-			ret = 0;
+			Semaphore *sem = new Semaphore(debugName, initialValue);
+
+			if (sem == NULL) {
+				ret = -1;
+
+				DEBUG('s', (char *)"SYSCALL SC_SEM_CREATE id = NULL\n");
+				//g_syscall_error->SetMsg(, OpenFileError);
+			} else {
+				int32_t fid = g_object_ids->AddObject(sem);
+
+				DEBUG('s', (char *)"SYSCALL SC_SEM_CREATE id = %i\n", fid);
+
+				ret = fid;
+				//g_syscall_error->SetMsg((char *)"", NoError);
+			}
+
+
 			g_machine->WriteIntRegister(2, ret);
 			break;
 		}
@@ -677,7 +694,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 				g_machine->WriteIntRegister(2, -1);
 			}
 			break;
-		 }
+		}
 
 		case SC_LOCK_CREATE: {
 			// The create system call
@@ -698,7 +715,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			ret = 0;
 			g_machine->WriteIntRegister(2, ret);
 			break;
-		 }
+		}
 
 		case SC_LOCK_DESTROY: {
 			// The destroy system call
@@ -774,7 +791,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			ret = 0;
 			g_machine->WriteIntRegister(2, ret);
 			break;
-		 }
+		}
 
 		case SC_COND_DESTROY: {
 			// The destroy system call
