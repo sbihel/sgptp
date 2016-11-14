@@ -52,10 +52,22 @@ static void threadStart(int func)
 //	\param func is the address of the function to execute.
 */
 //----------------------------------------------------------------------
+#ifndef ETUDIANTS_TP
 ThreadId threadCreate(char * debug_name, VoidNoArgFunctionPtr func) 
 { 
     return newThread(debug_name, (int)threadStart,(int)func);
 }
+#endif
+#ifdef ETUDIANTS_TP
+ThreadId threadCreate(char *debug_name, VoidWithArgFunctionPtr func, ...)
+{
+  va_list arguments;
+  va_start(arguments, func);
+  ThreadId res = newThread(debug_name, (int)threadStart,(int)func, arguments);
+  va_end(arguments);
+  return res;
+}
+#endif
 
 //----------------------------------------------------------------------
 // n_strcmp()

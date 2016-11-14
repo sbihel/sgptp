@@ -20,6 +20,9 @@
 #include "userlib/syscall.h"
 
 typedef void (*VoidNoArgFunctionPtr)();
+#ifdef ETUDIANTS_TP
+typedef void *VoidWithArgFunctionPtr;
+#endif
 typedef unsigned int size_t;
 
 // Thread management

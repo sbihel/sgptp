@@ -201,6 +201,7 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			fun = g_machine->ReadIntRegister(5);
 			// Get the function parameters
 			arg = g_machine->ReadIntRegister(6);
+			// TODO, see which registers can be used to pass arguments
 			// Build the name of the thread
 			int size = GetLengthParam(name_addr);
 			char thr_name[size];
