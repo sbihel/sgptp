@@ -78,7 +78,7 @@ ThreadId threadCreate(char *debug_name, VoidWithArgFunctionPtr func, ...)
 {
   va_list arguments;
   va_start(arguments, func);
-  ThreadId res = newThread(debug_name, (int)threadStart,(int)func, arguments);
+  ThreadId res = newThread(debug_name, (int)threadStart, (int)func, arguments);
   va_end(arguments);
   return res;
 }

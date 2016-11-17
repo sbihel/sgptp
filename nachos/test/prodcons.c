@@ -6,7 +6,7 @@
 #define PROD_ITEM 1
 #define CONS_REPL 0
 
-#define NB_THREAD 1
+#define NB_THREAD 2
 
 char buf[BSIZE];
 SemId occupied;
@@ -19,6 +19,7 @@ LockId cmut;
 SemId lol;
 
 CondId start;
+SemId  wait_broadcast;
 
 int balance, nb_actions;
 
@@ -31,30 +32,38 @@ int main() {
   pmut     = LockCreate("pmut");
   cmut     = LockCreate("cmut");
   nextin   = nextout = 0;
-  
-  start = CondCreate("starting gate");
-  
+
+  start          = CondCreate("starting gate");
+  wait_broadcast = SemCreate("wait_broadcast", 0);
+
   balance    = 0;
   nb_actions = 0;
-  
+
   ThreadId prod[NB_THREAD], cons[NB_THREAD];
-  
+
   int i;
   for (i = 0; i < NB_THREAD; i++) {
     char str[20];
     n_snprintf(str, 20, "prod%d", i);
-    prod[i] = threadCreate(str, producer, i);
+    prod[i] = threadCreate(str, producer, i, 10, i);
     n_snprintf(str, 20, "cons%d", i);
     cons[i] = threadCreate(str, consumer);
   }
 
+  for(i = 0; i < 2 * NB_THREAD; i++) {
+    P(wait_broadcast);
+    // supposed to wait for all threads to wait on the condition but that's not
+    // working (I know that this has edge cases)
+  }
   CondBroadcast(start);
-  
+  SemDestroy(wait_broadcast);
+  CondDestroy(start);
+
   for (i = 0; i < NB_THREAD; i++) {
     Join(prod[i]); // rendezvous: parent thread waits for children
     Join(cons[i]);
   }
-  
+
   SemDestroy(occupied);
   SemDestroy(empty);
   LockDestroy(pmut);
@@ -62,15 +71,20 @@ int main() {
 
   n_printf(">>> balance: %d\n", balance);
   n_printf(">>> num actions: %d\n", nb_actions);
-  
+
   return 0;
 }
 
-void producer(int test) {
-  test++;
-  n_printf("lol, not sleeping\n");
+void producer(int test, int test2, int test3) {
+  V(wait_broadcast);
   /*CondWait(start);*/
+
+  test++;
+  test2++;
+  test3++;
   n_printf("test: %d\n", test);
+  n_printf("test2: %d\n", test2);
+  n_printf("test3: %d\n", test3);
 
   int i;
   for (i=0; i<3; i++) {
@@ -95,9 +109,9 @@ void producer(int test) {
   }
 }
 
-void consumer() {  
+void consumer() {
+  V(wait_broadcast);
   /*CondWait(start);*/
-  n_printf("lol, not sleeping\n");
 
   int i;
   for (i=0; i<3; i++) {
@@ -109,9 +123,9 @@ void consumer() {
       // consumer underflow
       n_printf(">>> undeflow\n");
     }
-    
+
     buf[nextout] = CONS_REPL; // consume item
-    
+
     nextout++;
     nextout %= BSIZE;
 
