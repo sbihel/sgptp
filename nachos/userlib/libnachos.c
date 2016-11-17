@@ -27,7 +27,7 @@
 //	\param func is the identificator of the function to execute.
 */
 //----------------------------------------------------------------------
-
+#ifndef ETUDIANTS_TP
 static void threadStart(int func)
 {
     VoidNoArgFunctionPtr func2;
@@ -35,8 +35,23 @@ static void threadStart(int func)
     // Call the function that actually contains the thread code
     func2();
     // Call exit, such that there is no return using an empty stack
-    Exit(0);    
+    Exit(0);
 }
+#endif
+#ifdef ETUDIANTS_TP
+static void threadStart(int func, ...)
+{
+    VoidNoArgFunctionPtr func2;
+    func2=(VoidNoArgFunctionPtr)func;
+    // Call the function that actually contains the thread code
+    va_list arguments;
+    va_start(arguments, func);
+    func2(arguments);
+    va_end(arguments);
+    // Call exit, such that there is no return using an empty stack
+    Exit(0);
+}
+#endif
 
 //----------------------------------------------------------------------
 // threadCreate()
@@ -53,8 +68,8 @@ static void threadStart(int func)
 */
 //----------------------------------------------------------------------
 #ifndef ETUDIANTS_TP
-ThreadId threadCreate(char * debug_name, VoidNoArgFunctionPtr func) 
-{ 
+ThreadId threadCreate(char * debug_name, VoidNoArgFunctionPtr func)
+{
     return newThread(debug_name, (int)threadStart,(int)func);
 }
 #endif
