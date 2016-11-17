@@ -43,7 +43,7 @@ int main() {
   for (i = 0; i < NB_THREAD; i++) {
     char str[20];
     n_snprintf(str, 20, "prod%d", i);
-    prod[i] = threadCreate(str, producer);
+    prod[i] = threadCreate(str, producer, i);
     n_snprintf(str, 20, "cons%d", i);
     cons[i] = threadCreate(str, consumer);
   }
@@ -66,10 +66,12 @@ int main() {
   return 0;
 }
 
-void producer() {  
-  CondWait(start);
+void producer(int test) {
+  test++;
   n_printf("lol, not sleeping\n");
-  
+  /*CondWait(start);*/
+  n_printf("test: %d\n", test);
+
   int i;
   for (i=0; i<3; i++) {
     P(empty);
@@ -94,7 +96,7 @@ void producer() {
 }
 
 void consumer() {  
-  CondWait(start);
+  /*CondWait(start);*/
   n_printf("lol, not sleeping\n");
 
   int i;
