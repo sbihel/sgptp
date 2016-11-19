@@ -1,5 +1,6 @@
 #include "userlib/syscall.h"
 #include "userlib/libnachos.h"
+#include <stdarg.h>
 
 #define BSIZE 1
 
@@ -75,7 +76,16 @@ int main() {
   return 0;
 }
 
-void producer(int test, int test2, int test3) {
+void producer(va_list arguments) {
+  /*va_list ap2;                                             */
+  /*va_copy(ap2, arguments);                                 */
+  /*n_printf("||||||||||||||||||||||\n");                    */
+  /*n_printf("%d||||||||||||||||||||||\n", va_arg(ap2, int));*/
+  /*va_end(ap2);                                             */
+  // Implementing a wraper might be hard
+  int test  = va_arg(arguments, int);
+  int test2 = va_arg(arguments, int);
+  int test3 = va_arg(arguments, int);
   V(wait_broadcast);
   /*CondWait(start);*/
 

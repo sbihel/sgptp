@@ -18,10 +18,11 @@
 */
 
 #include "userlib/syscall.h"
+#include <stdarg.h>
 
 typedef void (*VoidNoArgFunctionPtr)();
 #ifdef ETUDIANTS_TP
-typedef void (*VoidWithArgFunctionPtr)();
+typedef void (*VoidWithArgFunctionPtr)(va_list);
 #endif
 typedef unsigned int size_t;
 
