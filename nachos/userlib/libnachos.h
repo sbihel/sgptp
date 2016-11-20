@@ -22,7 +22,7 @@
 
 typedef void (*VoidNoArgFunctionPtr)();
 #ifdef ETUDIANTS_TP
-typedef void (*VoidWithArgFunctionPtr)(va_list);
+typedef void (*VoidWithArgFunctionPtr)(int argc, char *argv[]);
 #endif
 typedef unsigned int size_t;
 
@@ -32,7 +32,7 @@ typedef unsigned int size_t;
 ThreadId threadCreate(char *debug_name, VoidNoArgFunctionPtr func);
 #endif
 #ifdef ETUDIANTS_TP
-ThreadId threadCreate(char *debug_name, VoidNoArgFunctionPtr func, ...);
+ThreadId threadCreate(char *debug_name, VoidWithArgFunctionPtr func, int argc, char *argv[]);
 #endif
 
 // Input/Output operations :

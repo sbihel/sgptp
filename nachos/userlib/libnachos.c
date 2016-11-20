@@ -38,17 +38,12 @@ static void threadStart(int func)
 }
 #endif
 #ifdef ETUDIANTS_TP
-static void threadStart(int func, va_list arguments)
+static void threadStart(int func, int argc, char *argv[])
 {
   VoidWithArgFunctionPtr func2;
   func2=(VoidWithArgFunctionPtr)func;
-  /*va_list ap2;                                             */
-  /*va_copy(ap2, arguments);                                 */
-  /*n_printf("||||||||||||||||||||||\n");                    */
-  /*n_printf("%d||||||||||||||||||||||\n", va_arg(ap2, int));*/
-  /*va_end(ap2);                                             */
   // Call the function that actually contains the thread code
-  func2(arguments);
+  func2(argc, argv);
   // Call exit, such that there is no return using an empty stack
   Exit(0);
 }
@@ -75,19 +70,10 @@ ThreadId threadCreate(char * debug_name, VoidNoArgFunctionPtr func)
 }
 #endif
 #ifdef ETUDIANTS_TP
-ThreadId threadCreate(char *debug_name, VoidWithArgFunctionPtr func, ...)
+ThreadId threadCreate(char *debug_name, VoidWithArgFunctionPtr func, int argc,
+                      char *argv[])
 {
-  va_list arguments, arguments2;
-  va_start(arguments, func);
-  va_copy(arguments2, arguments);
-  /*va_list ap2;                                             */
-  /*va_copy(ap2, arguments);                                 */
-  /*n_printf("||||||||||||||||||||||\n");                    */
-  /*n_printf("%d||||||||||||||||||||||\n", va_arg(ap2, int));*/
-  /*va_end(ap2);                                             */
-  ThreadId res = newThread(debug_name, (int)threadStart, (int)func, arguments);
-  va_end(arguments);
-  va_end(arguments2);
+  ThreadId res = newThread(debug_name, (int)threadStart, (int)func, argc, argv);
   return res;
 }
 #endif

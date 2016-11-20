@@ -1,6 +1,5 @@
 #include "userlib/syscall.h"
 #include "userlib/libnachos.h"
-#include <stdarg.h>
 
 #define BSIZE 1
 
@@ -43,12 +42,13 @@ int main() {
   ThreadId prod[NB_THREAD], cons[NB_THREAD];
 
   int i;
+  char *argv_test[3] = {"Hello", ", ", "world"};
   for (i = 0; i < NB_THREAD; i++) {
     char str[20];
     n_snprintf(str, 20, "prod%d", i);
-    prod[i] = threadCreate(str, producer, i, 10, i);
+    prod[i] = threadCreate(str, producer, 3, argv_test);
     n_snprintf(str, 20, "cons%d", i);
-    cons[i] = threadCreate(str, consumer);
+    cons[i] = threadCreate(str, consumer, 0, argv_test);
   }
 
   for(i = 0; i < 2 * NB_THREAD; i++) {
@@ -76,27 +76,18 @@ int main() {
   return 0;
 }
 
-void producer(va_list arguments) {
-  /*va_list ap2;                                             */
-  /*va_copy(ap2, arguments);                                 */
-  /*n_printf("||||||||||||||||||||||\n");                    */
-  /*n_printf("%d||||||||||||||||||||||\n", va_arg(ap2, int));*/
-  /*va_end(ap2);                                             */
-  // Implementing a wraper might be hard
-  int test  = va_arg(arguments, int);
-  int test2 = va_arg(arguments, int);
-  int test3 = va_arg(arguments, int);
+void producer(int argc, char *argv[]) {
+  int i;
+  n_printf("%d\n", argc);
+  for(i = 0; i < argc; i++) {
+    n_printf("%s", argv[i]);
+  }
+  n_printf("\n");
+
   V(wait_broadcast);
   /*CondWait(start);*/
 
-  test++;
-  test2++;
-  test3++;
-  n_printf("test: %d\n", test);
-  n_printf("test2: %d\n", test2);
-  n_printf("test3: %d\n", test3);
 
-  int i;
   for (i=0; i<3; i++) {
     P(empty);
 
