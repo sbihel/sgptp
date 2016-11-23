@@ -31,7 +31,7 @@ typedef struct {
   char **argv;
 } FunArgs;
 
-ThreadId threadCreate(char *debug_name, VoidFunctionPtr func, int argc, char *argv[]);
+ThreadId threadCreate2(char *debug_name, VoidFunctionPtr func, int argc, char *argv[]);
 #endif
 
 // Thread management
