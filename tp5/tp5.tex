@@ -1,0 +1,56 @@
+\documentclass[a4paper,11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{babel}
+
+\usepackage{lmodern}
+\usepackage{inconsolata} % default typewriter kills me
+
+\usepackage[htt]{hyphenat} % hyphen with tt
+
+\usepackage{enumitem}
+\setlist[enumerate]{leftmargin=*}
+
+\setlength{\parindent}{0cm}
+
+\usepackage{fullpage}
+
+\title{SGP --- TP5\\Scheduling and Synchronization}
+\author{Louis Béziaud \and Simon Bihel}
+
+\begin{document}
+
+\maketitle
+
+\section{Synchronization Tools}
+
+
+\section{Thread Management}
+
+
+\section{Tests}
+
+
+\section{Addition of Parameters at Thread Creation}
+To add parameters, we tried different approaches and eventually settled on an
+``argc/argv'' solution (we will discuss other solutions later on). Basically,
+the \texttt{threadCreate} available to the user has been extended to accept the
+two additional parameters. Then \texttt{threadStart} is called and to avoid
+problems with additional parameters through syscalls we put all parameters in a
+\texttt{struct}. Then, the user's function is called with argc and argv.
+
+Because having to use argc/argv is not natural for user defined functions, we
+wanted to explore other solutions. The first step is to make
+\texttt{threadCreate} a variadic function (i.e.\ it can accept a variable number
+of parameters). Then to pass the parameters to \texttt{threadStart} we have to
+make a \texttt{va\_list}, and then again pass it to the user's function. While
+the user doesn't have to change the parameters into strings, they have to
+manipulate a \texttt{va\_list}. Writing a wrapper to extract parameters from the
+\texttt{va\_list} would make things hidden to the user though we haven't found
+how to do it. We can't use variadic functions all the way up (or down? hahaha)
+because of limited registers to pass arguments.
+
+
+\end{document}
