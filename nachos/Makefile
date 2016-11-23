@@ -60,6 +60,3 @@ src.ps:
 
 print: src.ps
 	$(LPR) $<
-
-indent:
-	astyle --style=google -W -T --suffix=none --recursive *.cc *.h

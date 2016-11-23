@@ -1,7 +1,7 @@
-/*! \file drvDisk.cc
+/*! \file drvDisk.cc 
 //  \brief Routines to synchronously access the disk
 //
-//      The physical disk
+//      The physical disk 
 //	is an asynchronous device (disk requests return immediately, and
 //	an interrupt happens later on).  This is a layer on top of
 //	the disk providing a synchronous interface (requests wait until
@@ -13,31 +13,33 @@
 //	exclusion.
 */
 // Copyright (c) 1992-1993 The Regents of the University of California.
-// All rights reserved.  See copyright.h for copyright notice and limitation
+// All rights reserved.  See copyright.h for copyright notice and limitation 
 // of liability and disclaimer of warranty provisions.
 
 #include "drivers/drvDisk.h"
 
 //----------------------------------------------------------------------
 // DiskRequestDone
-/*! 	Disk interrupt handler.  Need this to be a C routine, because
+/*! 	Disk interrupt handler.  Need this to be a C routine, because 
 //	C++ can't handle pointers to member functions.
 */
 //----------------------------------------------------------------------
 
-void DiskRequestDone() {
-	g_disk_driver->RequestDone();
+void DiskRequestDone()
+{
+    g_disk_driver->RequestDone();
 }
 
 //----------------------------------------------------------------------
 // DiskSwapRequestDone
-/*! 	Disk Swap interrupt handler.  Need this to be a C routine, because
+/*! 	Disk Swap interrupt handler.  Need this to be a C routine, because 
 //	C++ can't handle pointers to member functions.
 */
 //----------------------------------------------------------------------
 
-void DiskSwapRequestDone() {
-	g_swap_disk_driver->RequestDone();
+void DiskSwapRequestDone()
+{
+    g_swap_disk_driver->RequestDone();
 }
 
 //----------------------------------------------------------------------
@@ -48,10 +50,11 @@ void DiskSwapRequestDone() {
 */
 //----------------------------------------------------------------------
 
-DriverDisk::DriverDisk(char* sem_name, char* lock_name, Disk* theDisk) {
-	semaphore = new Semaphore((char*)sem_name, 0);
-	lock = new Lock((char*)lock_name);
-	disk = theDisk;
+DriverDisk::DriverDisk(char* sem_name, char *lock_name, Disk* theDisk)
+{
+    semaphore = new Semaphore((char*)sem_name, 0);
+    lock = new Lock((char*)lock_name);
+    disk = theDisk;
 }
 
 //----------------------------------------------------------------------
@@ -61,9 +64,10 @@ DriverDisk::DriverDisk(char* sem_name, char* lock_name, Disk* theDisk) {
 */
 //----------------------------------------------------------------------
 
-DriverDisk::~DriverDisk() {
-	delete lock;
-	delete semaphore;
+DriverDisk::~DriverDisk()
+{
+    delete lock;
+    delete semaphore;
 }
 
 //----------------------------------------------------------------------
@@ -76,14 +80,16 @@ DriverDisk::~DriverDisk() {
 */
 //----------------------------------------------------------------------
 
-void DriverDisk::ReadSector(int sectorNumber, char* data) {
-	DEBUG('d', (char*)"[sdisk] rd req\n");
-	lock->Acquire();  // only one disk I/O at a time
-	disk->ReadRequest(sectorNumber, data);
-	DEBUG('d', (char*)"[sdisk] rd req: wait irq\n");
-	semaphore->P();  // wait for interrupt
-	DEBUG('d', (char*)"[sdisk] rd req: wait irq OK\n");
-	lock->Release();
+void
+DriverDisk::ReadSector(int sectorNumber, char* data)
+{
+    DEBUG('d', (char*)"[sdisk] rd req\n");
+    lock->Acquire();			// only one disk I/O at a time
+    disk->ReadRequest(sectorNumber, data);
+    DEBUG('d', (char*)"[sdisk] rd req: wait irq\n");
+    semaphore->P();			// wait for interrupt
+    DEBUG('d', (char*)"[sdisk] rd req: wait irq OK\n");
+    lock->Release();
 }
 
 //----------------------------------------------------------------------
@@ -96,14 +102,16 @@ void DriverDisk::ReadSector(int sectorNumber, char* data) {
 */
 //----------------------------------------------------------------------
 
-void DriverDisk::WriteSector(int sectorNumber, char* data) {
-	DEBUG('d', (char*)"[sdisk] wr req\n");
-	lock->Acquire();  // only one disk I/O at a time
-	disk->WriteRequest(sectorNumber, data);
-	DEBUG('d', (char*)"[sdisk] wr req: wait irq...\n");
-	semaphore->P();  // wait for interrupt
-	DEBUG('d', (char*)"[sdisk] wr req: wait irq OK\n");
-	lock->Release();
+void
+DriverDisk::WriteSector(int sectorNumber, char* data)
+{
+    DEBUG('d', (char*)"[sdisk] wr req\n");
+    lock->Acquire();			// only one disk I/O at a time
+    disk->WriteRequest(sectorNumber, data);
+    DEBUG('d', (char*)"[sdisk] wr req: wait irq...\n");
+    semaphore->P();			// wait for interrupt
+    DEBUG('d', (char*)"[sdisk] wr req: wait irq OK\n");
+    lock->Release();
 }
 
 //----------------------------------------------------------------------
@@ -113,7 +121,9 @@ void DriverDisk::WriteSector(int sectorNumber, char* data) {
 */
 //----------------------------------------------------------------------
 
-void DriverDisk::RequestDone() {
-	DEBUG('d', (char*)"[sdisk] req done\n");
-	semaphore->V();
+void
+DriverDisk::RequestDone()
+{ 
+  DEBUG('d', (char*)"[sdisk] req done\n");
+  semaphore->V();
 }

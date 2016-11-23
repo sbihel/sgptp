@@ -1,9 +1,9 @@
-/*! \file drvDisk.h
-    \brief Data structures to export a synchronous interface to the raw
-       disk device.
+/*! \file drvDisk.h 
+    \brief Data structures to export a synchronous interface to the raw 
+  	   disk device.
 
    Copyright (c) 1992-1993 The Regents of the University of California.
-   All rights reserved.  See copyright.h for copyright notice and limitation
+   All rights reserved.  See copyright.h for copyright notice and limitation 
    of liability and disclaimer of warranty provisions.
 */
 
@@ -33,31 +33,31 @@ class Lock;
 */
 class DriverDisk {
   public:
-	DriverDisk(char* sem_name, char* lock_name, Disk* theDisk);
-	// Constructor. Initializes the disk
-	// driver by initializing the raw Disk.
-	~DriverDisk();  // Destructor. De-allocate the driver data
+  DriverDisk(char* sem_name, char* lock_name, Disk* theDisk); 
+                                        // Constructor. Initializes the disk
+                                        // driver by initializing the raw Disk.
+    ~DriverDisk();			// Destructor. De-allocate the driver data
+    
+    void ReadSector(int sectorNumber, char* data);
+    					// Read/write a disk sector, returning
+    					// only once the data is actually read 
+					// or written.  
+    void WriteSector(int sectorNumber, char* data);
+    
+    void RequestDone();			// Called by the disk device interrupt
+					// handler, to signal that the
+					// current disk operation is complete.
 
-	void ReadSector(int sectorNumber, char* data);
-	// Read/write a disk sector, returning
-	// only once the data is actually read
-	// or written.
-	void WriteSector(int sectorNumber, char* data);
-
-	void RequestDone();  // Called by the disk device interrupt
-	// handler, to signal that the
-	// current disk operation is complete.
-
-  private:
-	Semaphore* semaphore; /*!< To synchronize requesting thread
-           with the interrupt handler
-      */
-	Lock* lock;           /*!< Mutual exclusion on the disk device
-            */
-	Disk* disk;           /* The disk */
+private:
+  Semaphore *semaphore; 		/*!< To synchronize requesting thread 
+					     with the interrupt handler
+					*/
+  Lock *lock;		  		/*!< Mutual exclusion on the disk device
+					*/
+  Disk *disk;                         /* The disk */
 };
 
 void DiskRequestDone();
 void DiskSwapRequestDone();
 
-#endif  // SYNCHDISK_H
+#endif // SYNCHDISK_H
