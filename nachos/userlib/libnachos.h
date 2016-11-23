@@ -22,6 +22,18 @@
 typedef void (*VoidNoArgFunctionPtr)();
 typedef unsigned int size_t;
 
+#ifdef ETUDIANTS_TP
+typedef void (*VoidFunctionPtr)();
+
+typedef struct {
+  VoidFunctionPtr func;
+  int argc;
+  char **argv;
+} FunArgs;
+
+ThreadId threadCreate(char *debug_name, VoidFunctionPtr func, int argc, char *argv[]);
+#endif
+
 // Thread management
 // ----------------------------
 ThreadId threadCreate(char *debug_name, VoidNoArgFunctionPtr func);

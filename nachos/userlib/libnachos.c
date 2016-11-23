@@ -38,6 +38,20 @@ static void threadStart(int func)
     Exit(0);    
 }
 
+#ifdef ETUDIANTS_TP
+static void threadStart2(int fa) {
+  VoidFunctionPtr func = ((FunArgs*)fa)->func;
+  int argc = ((FunArgs*)fa)->argc;
+  char **argv = ((FunArgs*)fa)->argv;
+
+  VoidFunctionPtr func2;
+  func2 = (VoidFunctionPtr)func;
+  func2(argc, argv);
+
+  Exit(0);
+}
+#endif
+
 //----------------------------------------------------------------------
 // threadCreate()
 /*!	 Creates a thread and makes it execute a function.
@@ -56,6 +70,17 @@ ThreadId threadCreate(char * debug_name, VoidNoArgFunctionPtr func)
 { 
     return newThread(debug_name, (int)threadStart,(int)func);
 }
+
+#ifdef ETUDIANTS_TP
+ThreadId threadCreate2(char *debug_name, VoidFunctionPtr func, int argc, char *argv[]) {
+  FunArgs fa;
+  fa.func = func;
+  fa.argc = argc;
+  fa.argv = argv;
+
+  return newThread(debug_name, (int)threadStart2, (int)(&fa));
+}
+#endif
 
 //----------------------------------------------------------------------
 // n_strcmp()

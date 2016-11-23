@@ -10,35 +10,6 @@
 #include "userlib/syscall.h"
 #include "userlib/libnachos.h"
 
-typedef void (*VoidFunctionPtr)();
-
-typedef struct {
-  VoidFunctionPtr func;
-  int argc;
-  char **argv;
-} FunArgs;
-
-static void threadStart(int fa) {
-  VoidFunctionPtr func = ((FunArgs*)fa)->func;
-  int argc = ((FunArgs*)fa)->argc;
-  char **argv = ((FunArgs*)fa)->argv;
-
-  VoidFunctionPtr func2;
-  func2 = (VoidFunctionPtr)func;
-  func2(argc, argv);
-
-  Exit(0);
-}
-
-ThreadId threadCreate2(char *debug_name, VoidFunctionPtr func, int argc, char *argv[]) {
-  FunArgs fa;
-  fa.func = func;
-  fa.argc = argc;
-  fa.argv = argv;
-
-  return newThread(debug_name, (int)threadStart, (int)(&fa));
-}
-
 void dump_args(int argc, char *argv[]) {
   int i;
   n_printf("%d\n", argc);
