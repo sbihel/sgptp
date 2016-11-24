@@ -37,12 +37,23 @@ The program \texttt{test/prodcons.c} is a \textit{multiple producer/consumer} wh
 
 Running the program outputs the following code bloc. The absence of ``overflow'' (resp.\ ``underflow''), along with a null balance show that the test went fine.
 \begin{lstlisting}[basicstyle=\ttfamily\small,mathescape]
-# ./nachos
+# ./nachos -x prodcons
 $\ldots$
 >>> balance: 0
 >>> num actions: 60
 $\ldots$
 \end{lstlisting}
+
+Passing parameters to threads was tested though the program \texttt{test/hello.c}. A thread is created from a function which prints each member of its \texttt{argc} arguments.
+\begin{lstlisting}[basicstyle=\ttfamily\small,mathescape]
+# ./nachos -x hello
+$\ldots$
+3
+Bonjour le monde 
+$\ldots$
+\end{lstlisting}
+
+
 
 \section{Addition of Parameters at Thread Creation}
 To add parameters, we tried different approaches and eventually settled on an
