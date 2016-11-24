@@ -49,9 +49,26 @@ DriverACIA::DriverACIA()
 
 int DriverACIA::TtySend(char* buff)
 { 
+#ifdef ETUDIANTS_TP
+  send_sema->P();
+
+  int i = 0;
+  while (1) {
+    send_buffer[ind_send] = buff[i];
+
+    if (buff[i] == '\0')
+      break;
+
+    i++;
+    ind_send = (ind_send + 1) % BUFFER_SIZE;
+  }
+
+  send_sema->V();
+#else
   printf("**** Warning: method Tty_Send of the ACIA driver not implemented yet\n");
   exit(-1);
   return 0;
+#endif
 }
 
 //-------------------------------------------------------------------------
@@ -63,9 +80,27 @@ int DriverACIA::TtySend(char* buff)
 
 int DriverACIA::TtyReceive(char* buff,int lg)
 {
-   printf("**** Warning: method Tty_Receive of the ACIA driver not implemented yet\n");
+#ifdef ETUDIANTS_TP
+  receive_sema->P();
+
+  int i = 0;
+  while (1) {
+    buff[i] = receive_buffer[ind_send];
+
+    if (i >= lg)
+      break;
+
+    i++;
+    ind_rec = (ind_rec + 1) % BUFFER_SIZE;
+  }
+
+  receive_sema->V();
+#
+#else
+  printf("**** Warning: method Tty_Receive of the ACIA driver not implemented yet\n");
   exit(-1);
   return 0;
+#endif
 }
 
 
