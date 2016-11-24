@@ -26,14 +26,10 @@
 
 \maketitle
 
-\section{Synchronization Tools}
-
-
-\section{Thread Management}
-
+This report presents how we tested the code that we wrote for the mandatory part of the assignment. It also presents what we have done to add parameters to threads.
 
 \section{Tests}
-The program \texttt{test/prodcons.c} is a \textit{multiple producer/consumer} which make use of \texttt{Semaphore}, \texttt{Lock}, and threads. We mainly ensure two properties. First, we check that a producer (resp.\ consumer) cannot write (resp.\ read) on an unconsumed (resp. unproduced) buffer emplacement. Secondly, we verify that ``nothing is lost'' by maintaining a balance of producing/consuming calls.
+The program \texttt{test/prodcons.c} is a \textit{multiple producer/consumer} which makes use of \texttt{Semaphore}, \texttt{Lock}, and threads. We mainly ensure two properties. First, we check that a producer (resp.\ consumer) cannot write (resp.\ read) on an unconsumed (resp. unproduced) buffer emplacement. Secondly, we verify that ``nothing is lost'' by maintaining a balance of producing/consuming calls.
 
 Running the program outputs the following code bloc. The absence of ``overflow'' (resp.\ ``underflow''), along with a null balance show that the test went fine.
 \begin{lstlisting}[basicstyle=\ttfamily\small,mathescape]
@@ -52,6 +48,8 @@ $\ldots$
 Bonjour le monde 
 $\ldots$
 \end{lstlisting}
+
+We haven't been able to write a good test for \texttt{Conditions} as we can't know for sure if all threads are waiting. Others students have used the fact that a thread can't be interrupted if it is not waiting. That means that if we use interrupt handler we can be sure that all threads are waiting but this is a very specific solution to Nachos and it is quite ugly to poke around manually.
 
 
 
