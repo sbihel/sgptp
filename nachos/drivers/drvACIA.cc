@@ -37,8 +37,16 @@
 
 DriverACIA::DriverACIA()
 {
+#ifdef ETUDIANTS_TP
+  send_sema    = new Semaphore((char*)"send_sema driver", 0);
+  receive_sema = new Semaphore((char*)"receive_sema driver", BUFFER_SIZE);
+  ind_send     = 0;
+  ind_rec      = 0;
+  g_machine->acia->SetWorkingMode(REC_INTERRUPT | SEND_INTERRUPT);
+#else
   printf("**** Warning: contructor of the ACIA driver not implemented yet\n");
   exit(-1);
+#endif
 }
 
 //-------------------------------------------------------------------------
