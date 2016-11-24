@@ -157,10 +157,10 @@ void DriverACIA::InterruptSend()
 {
 #ifdef ETUDIANTS_TP
   g_machine->acia->PutChar(send_buffer[ind_send]);
-  ind_send++;
   if(send_buffer[ind_send] == '\0') {
     send_sema->V();
   }
+  ind_send++;
 #else
   printf("**** Warning: send interrupt handler not implemented yet\n");
   exit(-1);
@@ -181,11 +181,11 @@ void DriverACIA::InterruptReceive()
 {
 #ifdef ETUDIANTS_TP
   receive_buffer[ind_rec] = g_machine->acia->GetChar();
-  ind_rec++;
   if(receive_buffer[ind_rec] == '\0') {
     g_machine->acia->SetWorkingMode(g_machine->acia->GetWorkingMode() ^ REC_INTERRUPT);
     receive_sema->V();
   }
+  ind_rec++;
 #else
     printf("**** Warning: receive interrupt handler not implemented yet\n");
     exit(-1);
