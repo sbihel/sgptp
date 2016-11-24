@@ -12,7 +12,6 @@ test/shell
 test/sort
 test/prodcons
 
-drivers/drvACIA.cc
 drivers/drvACIA.h
 drivers/drvConsole.cc
 drivers/drvConsole.h
