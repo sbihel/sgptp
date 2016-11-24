@@ -1,4 +1,4 @@
-\documentclass[a4paper,11pt]{article}
+\documentclass[a4paper,11pt,english]{article}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
@@ -7,6 +7,8 @@
 
 \usepackage{lmodern}
 \usepackage{inconsolata} % default typewriter kills me
+
+\usepackage{listings}
 
 \usepackage[htt]{hyphenat} % hyphen with tt
 
@@ -31,7 +33,16 @@
 
 
 \section{Tests}
+The program \texttt{test/prodcons.c} is a \textit{multiple producer/consumer} which make use of \texttt{Semaphore}, \texttt{Lock}, and threads. We mainly ensure two properties. First, we check that a producer (resp.\ consumer) cannot write (resp.\ read) on an unconsumed (resp. unproduced) buffer emplacement. Secondly, we verify that ``nothing is lost'' by maintaining a balance of producing/consuming calls.
 
+Running the program outputs the following code bloc. The absence of ``overflow'' (resp.\ ``underflow''), along with a null balance show that the test went fine.
+\begin{lstlisting}[basicstyle=\ttfamily\small,mathescape]
+# ./nachos
+$\ldots$
+>>> balance: 0
+>>> num actions: 60
+$\ldots$
+\end{lstlisting}
 
 \section{Addition of Parameters at Thread Creation}
 To add parameters, we tried different approaches and eventually settled on an

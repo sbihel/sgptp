@@ -97,7 +97,7 @@ void Scheduler::SwitchTo(Thread *nextThread) {
 	// Save the context of old thread
 	oldThread->SaveProcessorState();
 	oldThread->SaveSimulatorState();
-
+#ifdef ETUDIANTS_TP
 	// If the old thread gave up the processor because it was finishing,
 	// we need to delete its carcass.  Note we cannot delete the thread
 	// before now (for example, in Thread::Finish()), because up to this
@@ -107,7 +107,7 @@ void Scheduler::SwitchTo(Thread *nextThread) {
 		g_alive->RemoveItem(oldThread);
 		delete oldThread;
 	}
-
+#endif
 	// Do the context switch if the two threads are different
 	if (oldThread != g_current_thread) {
 		// Restore the state of the operating system from its
