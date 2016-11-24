@@ -2,8 +2,7 @@
 #include "userlib/libnachos.h"
 
 int main() {
-  char *buf = "ceci est un test";
-  TtySend(buf);
+  TtySend("ceci est un test");
 
   return 0;
 }
