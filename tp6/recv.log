@@ -1,0 +1,43 @@
+$ ../nachos -f nachos_recv.cfg 
+Copying Unix file test_acia_recv to Nachos file /test_acia_recv
+
+NachOS File System content :
+----------------------------
+test_acia_recv
+Free Space : 237440 bytes ( 90 % )
+Check done 
+
+****  Loading file /test_acia_recv :
+	- Section .sys : file offset 0x1000, size 0x230, addr 0x4000, R/X
+	- Section .text : file offset 0x2000, size 0x19cc, addr 0x400000, R/X
+	- Section .rodata : file offset 0x4000, size 0x28, addr 0x404000, R
+	- Program start address : 0x4000
+
+ceci est un test
+^C
+Cleaning up...
+
+------------------------------------------------------------
+Statistics for process : BOOT 
+   Number of instructions executed : 0
+   System time : 14043 cycles on 100Mz processor (0 sec,140430 nanos)
+   User time   : 1220 cycles on 100Mz processor (0 sec,12200 nanos)
+   Disk Input/Output : reads 2437 , writes 2243 
+   Console Input Output : reads 0 , writes 0 
+   Memory Management : 122 accesses, 0 page faults
+------------------------------------------------------------
+
+------------------------------------------------------------
+Statistics for process : /test_acia_recv 
+   Number of instructions executed : 850
+   System time : 20 cycles on 100Mz processor (0 sec,200 nanos)
+   User time   : 44767 cycles on 100Mz processor (0 sec,447670 nanos)
+   Disk Input/Output : reads 0 , writes 0 
+   Console Input Output : reads 0 , writes 16 
+   Memory Management : 4392 accesses, 0 page faults
+------------------------------------------------------------
+
+
+Concerning Nachos : 
+   Idle time : 1923918606 cycles on 100Mz processor (19 sec, 239186060 nanos)
+   Total time : 1923978656 cycles on 100Mz processor (19 sec, 239786560 nanos) 
