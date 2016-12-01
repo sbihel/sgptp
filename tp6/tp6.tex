@@ -43,18 +43,24 @@
 
 \section{Tests}
 
-We have done the test with a single sender and a single receiver, running on two different nachos units.
+We have done the test with a single sender and a single receiver, running on two different nachos units. The receiver's and sender's output are visible on Listings~\ref{lst:recv_out} and \ref{lst:send_out}.
+
+It must be noted that our program assumes the receiver is started before the sender. Furthermore, both the sender and the receiver sometimes ends with a \texttt{Segmentation fault (core dumped)}, although the message is correctly transmitted.
+
+We used a single computer to execute the tests, and therefore set the \texttt{TargetMachineName} to be the local host, as seen on Listings~\ref{lst:recv_cfg} and \ref{lst:send_cfg}. 
 
 \begin{minipage}[t]{0.45\linewidth}
 \lstinputlisting[%
   caption={receiver's output},
- linerange={1-1,10-10,16-18}
+  label={lst:recv_out},
+  linerange={1-1,10-10,16-18}
 ]{recv.log}
 \end{minipage}
 \hfill
 \begin{minipage}[t]{0.45\linewidth}
 \lstinputlisting[%
   caption={sender's output},
+  label={lst:send_out},
   linerange={1-1,10-10,16-16}
 ]{send.log}
 \end{minipage}
@@ -62,6 +68,7 @@ We have done the test with a single sender and a single receiver, running on two
 \begin{minipage}[t]{0.45\linewidth}
 \lstinputlisting[%
   caption={receiver's config},
+  label={lst:recv_cfg},
   linerange={9-10,23-23,28-28,34-34}
 ]{../nachos/test/nachos_recv.cfg}
 \end{minipage}
@@ -69,6 +76,7 @@ We have done the test with a single sender and a single receiver, running on two
 \begin{minipage}[t]{0.45\linewidth}
 \lstinputlisting[%
   caption={sender's config},
+  label={lst:send_cfg},
   linerange={9-10,23-23,28-28,34-34}
 ]{../nachos/test/nachos_send.cfg}
 \end{minipage}
