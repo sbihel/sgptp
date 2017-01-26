@@ -10,19 +10,10 @@
 #include "userlib/syscall.h"
 #include "userlib/libnachos.h"
 
-void dump_args(int argc, char *argv[]) {
-  int i;
-  n_printf("%d\n", argc);
-  for(i = 0; i < argc; i++) {
-    n_printf("%s ", argv[i]);
-  }
-  n_printf("\n");
-}
-
-int main() {
-  char *argv[3] = {"Bonjour", "le", "monde"};
-
-  threadCreate2("dump_args", dump_args, 3, argv);
+int
+main()
+{
+  n_printf("** ** ** Bonjour le monde ** ** **\n");
 
   return 0;
 }

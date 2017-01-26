@@ -5,7 +5,7 @@
 #
 # To add generate a new program, just update the PROGRAMS target below
 
-PROGRAMS = halt hello shell matmult sort prodcons test_acia_send test_acia_recv
+PROGRAMS = halt hello shell matmult sort
 
 all: $(PROGRAMS)
 
