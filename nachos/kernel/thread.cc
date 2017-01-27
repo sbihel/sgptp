@@ -391,6 +391,7 @@ void Thread::RestoreProcessorState() {
 	for(int i = 0; i < NUM_FP_REGS; i++)
 		g_machine->float_registers[i] = thread_context.float_registers[i];
 	g_machine->cc = thread_context.cc;
+	g_machine->mmu->translationTable = process->addrspace->translationTable;
 #endif
 }
 
