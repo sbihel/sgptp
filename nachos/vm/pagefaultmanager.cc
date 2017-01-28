@@ -45,8 +45,10 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
   printf("**** Warning: page fault manager is not implemented yet\n");
   exit(-1);
 #else // #ifdef ETUDIANTS_TP
+  int pp = g_physical_mem_manager->AddPhysicalToVirtualMapping(g_current_thread->GetProcessOwner()->addrspace,
+      virtualPage);
+
   if(g_machine->mmu->translationTable->getBitSwap(virtualPage) == 1) {
-    /* 1. */
     int num_sector = g_machine->mmu->translationTable->getAddrDisk(virtualPage);
     if(num_sector == -1) {
       printf("TODO, wait for the page to be unlocked\n");
@@ -55,33 +57,24 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
     }
     char temp_page[g_cfg->PageSize];
     g_swap_manager->GetPageSwap(num_sector, temp_page);
-    // TODO, if anonymous, set with zeros
 
-    /* 2. */
-    int pp = g_physical_mem_manager->AddPhysicalToVirtualMapping(g_current_thread->GetProcessOwner()->addrspace,
-        virtualPage);
-
-    // int pp = g_physical_mem_manager->FindFreePage();
-    // if (pp == -1) {
-    //   printf("Not enough free space (PageFault)\n");
-    //   g_machine->interrupt->Halt(-1);
-    // }
-    // // g_physical_mem_manager->tpr[pp].virtualPage = virtPage;
-    // // g_physical_mem_manager->tpr[pp].owner       = ;
-    // // g_physical_mem_manager->tpr[pp].locked      = true;
-    // g_machine->mmu->translationTable->setPhysicalPage(virtualPage,pp);
-    // memset(&(g_machine->mainMemory[g_machine->mmu->translationTable->getPhysicalPage(virtualPage)*g_cfg->PageSize]),
-    //     0, g_cfg->PageSize);
-
-    // [> 3. <]
-    // g_physical_mem_manager->AddPhysicalToVirtualMapping(g_current_thread->GetProcessOwner()->addrspace, virtualPage);
-  } else { //TODO
-    if(g_machine->mmu->translationTable->getAddrDisk(virtualPage) != -1) {
-
-    } else {
-
-    }
+    memcpy(&(g_machine->mainMemory[pp*g_cfg->PageSize]), temp_page, g_cfg->PageSize);
+  } else if(g_machine->mmu->translationTable->getAddrDisk(virtualPage) == -1) { // anonymous page
+    memset(&(g_machine->mainMemory[pp*g_cfg->PageSize]), 0, g_cfg->PageSize);
+  } else { // in executable
+    int page_position = g_machine->mmu->translationTable->getAddrDisk(virtualPage);
+    g_current_thread->GetProcessOwner()->exec_file->ReadAt((char *)&(g_machine->mainMemory[pp*g_cfg->PageSize]),
+        g_cfg->PageSize, page_position);
   }
+
+  g_machine->mmu->translationTable->setBitValid(virtualPage);
+
+  // Set up default values for the page table entry
+  g_machine->mmu->translationTable->clearBitSwap(virtualPage);
+  g_machine->mmu->translationTable->setBitReadAllowed(virtualPage);
+  g_machine->mmu->translationTable->setBitWriteAllowed(virtualPage);
+  g_machine->mmu->translationTable->clearBitIo(virtualPage);
 #endif /* ETUDIANTS_TP */
+
   return ((ExceptionType)0);
 }

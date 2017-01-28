@@ -124,17 +124,16 @@ int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner, int virtua
   exit(-1);
   return (0);
 #else // #ifdef ETUDIANTS_TP
-    int pp = FindFreePage();
-    if (pp == -1) {
-      printf("Not enough free space (PageFault)\n");
-      g_machine->interrupt->Halt(-1);
-    }
+  int pp = FindFreePage();
+  if (pp == -1) {
+    printf("Not enough free space (PageFault)\n");
+    g_machine->interrupt->Halt(-1);
+  }
 
-    g_machine->mmu->translationTable->setPhysicalPage(virtualPage,pp);
-    memset(&(g_machine->mainMemory[g_machine->mmu->translationTable->getPhysicalPage(virtualPage)*g_cfg->PageSize]),
-	0, g_cfg->PageSize);
-
-  g_machine->mmu->translationTable->setBitValid(virtualPage);
+  tpr[pp].virtualPage = virtualPage;
+  tpr[pp].owner       = owner;
+  tpr[pp].locked      = true;
+  g_machine->mmu->translationTable->setPhysicalPage(virtualPage,pp);
   return pp;
 #endif /* ETUDIANTS_TP */
 }
