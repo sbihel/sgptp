@@ -3,8 +3,8 @@ Routines for the page fault managerPage Fault Manager
 */
 //
 //  Copyright (c) 1999-2000 INSA de Rennes.
-//  All rights reserved.  
-//  See copyright_insa.h for copyright notice and limitation 
+//  All rights reserved.
+//  See copyright_insa.h for copyright notice and limitation
 //  of liability and disclaimer of warranty provisions.
 //
 
@@ -23,8 +23,8 @@ PageFaultManager::~PageFaultManager() {
 }
 
 // ExceptionType PageFault(int virtualPage)
-/*! 	
-//	This method is called by the Memory Management Unit when there is a 
+/*!
+//	This method is called by the Memory Management Unit when there is a
 //      page fault. This method loads the page from :
 //      - read-only sections (text,rodata) $\Rightarrow$ executive
 //        file
@@ -38,18 +38,50 @@ PageFaultManager::~PageFaultManager() {
 //        size of the address space, and supposed to correspond to a
 //        page mapped to something [code/data/bss/...])
 //	\return the exception (generally the NO_EXCEPTION constant)
-*/  
-ExceptionType PageFaultManager::PageFault(int virtualPage) 
+*/
+ExceptionType PageFaultManager::PageFault(int virtualPage)
 {
 #ifndef ETUDIANTS_TP
   printf("**** Warning: page fault manager is not implemented yet\n");
   exit(-1);
-  return ((ExceptionType)0);
 #else // #ifdef ETUDIANTS_TP
+  if(g_machine->mmu->translationTable->getBitSwap(virtualPage) == 1) {
+    /* 1. */
+    int num_sector = g_machine->mmu->translationTable->getAddrDisk(virtualPage);
+    if(num_sector == -1) {
+      printf("TODO, wait for the page to be unlocked\n");
+      exit(-1);
+      return ((ExceptionType)0);
+    }
+    char temp_page[g_cfg->PageSize];
+    g_swap_manager->GetPageSwap(num_sector, temp_page);
+    // TODO, if anonymous, set with zeros
 
-#endif
+    /* 2. */
+    int pp = g_physical_mem_manager->AddPhysicalToVirtualMapping(g_current_thread->GetProcessOwner()->addrspace,
+        virtualPage);
+
+    // int pp = g_physical_mem_manager->FindFreePage();
+    // if (pp == -1) {
+    //   printf("Not enough free space (PageFault)\n");
+    //   g_machine->interrupt->Halt(-1);
+    // }
+    // // g_physical_mem_manager->tpr[pp].virtualPage = virtPage;
+    // // g_physical_mem_manager->tpr[pp].owner       = ;
+    // // g_physical_mem_manager->tpr[pp].locked      = true;
+    // g_machine->mmu->translationTable->setPhysicalPage(virtualPage,pp);
+    // memset(&(g_machine->mainMemory[g_machine->mmu->translationTable->getPhysicalPage(virtualPage)*g_cfg->PageSize]),
+    //     0, g_cfg->PageSize);
+
+    // [> 3. <]
+    // g_physical_mem_manager->AddPhysicalToVirtualMapping(g_current_thread->GetProcessOwner()->addrspace, virtualPage);
+  } else { //TODO
+    if(g_machine->mmu->translationTable->getAddrDisk(virtualPage) != -1) {
+
+    } else {
+
+    }
+  }
+#endif /* ETUDIANTS_TP */
+  return ((ExceptionType)0);
 }
-
-
-
-

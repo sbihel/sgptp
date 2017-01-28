@@ -118,11 +118,25 @@ void PhysicalMemManager::ChangeOwner(long numPage, Thread* owner) {
 //  \return A new physical page number.
 */
 //-----------------------------------------------------------------
-int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner,int virtualPage) 
-{
+int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner, int virtualPage) {
+#ifndef ETUDIANTS_TP
   printf("**** Warning: function AddPhysicalToVirtualMapping is not implemented\n");
   exit(-1);
   return (0);
+#else // #ifdef ETUDIANTS_TP
+    int pp = FindFreePage();
+    if (pp == -1) {
+      printf("Not enough free space (PageFault)\n");
+      g_machine->interrupt->Halt(-1);
+    }
+
+    g_machine->mmu->translationTable->setPhysicalPage(virtualPage,pp);
+    memset(&(g_machine->mainMemory[g_machine->mmu->translationTable->getPhysicalPage(virtualPage)*g_cfg->PageSize]),
+	0, g_cfg->PageSize);
+
+  g_machine->mmu->translationTable->setBitValid(virtualPage);
+  return pp;
+#endif /* ETUDIANTS_TP */
 }
 
 //-----------------------------------------------------------------
