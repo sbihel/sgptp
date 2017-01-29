@@ -126,7 +126,7 @@ int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner, int virtua
 #else // #ifdef ETUDIANTS_TP
   int pp = FindFreePage();
   if (pp == -1) {
-    printf("Not enough free space (PageFault)\n");
+    printf("Not enough free space to load program %s\n", g_current_thread->GetProcessOwner()->exec_file->GetName());
     g_machine->interrupt->Halt(-1);
   }
 

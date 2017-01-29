@@ -217,6 +217,20 @@ AddrSpace::AddrSpace(OpenFile * exec_file, Process *p, int *err)
 #ifdef ETUDIANTS_TP
 	  /* trigger a page fault */
 	  translationTable->clearBitValid(virt_page);
+
+	  // Set up default values for the page table entry
+	  translationTable->clearBitSwap(virt_page);
+	  translationTable->setBitReadAllowed(virt_page);
+	  if (section_table[i].sh_flags & SHF_WRITE)
+	    translationTable->setBitWriteAllowed(virt_page);
+	  else
+	    translationTable->clearBitWriteAllowed(virt_page);
+	  translationTable->clearBitIo(virt_page);
+
+	  if (section_table[i].sh_type != SHT_NOBITS)
+	    translationTable->setAddrDisk(virt_page, section_table[i].sh_offset + pgdisk*g_cfg->PageSize);
+	  else
+	    translationTable->setAddrDisk(virt_page, -1);
 #endif
 	}
     }
