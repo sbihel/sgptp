@@ -67,13 +67,14 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
         g_cfg->PageSize, page_position);
   }
 
-  g_machine->mmu->translationTable->setBitValid(virtualPage);
-
   // Set up default values for the page table entry
-  g_machine->mmu->translationTable->clearBitSwap(virtualPage);
+  g_machine->mmu->translationTable->clearBitSwap(virtualPage);  //TODO, should we remove the page from cache
   g_machine->mmu->translationTable->setBitReadAllowed(virtualPage);
   g_machine->mmu->translationTable->setBitWriteAllowed(virtualPage);
   g_machine->mmu->translationTable->clearBitIo(virtualPage);
+  g_physical_mem_manager->UnlockPage(pp);
+
+  g_machine->mmu->translationTable->setBitValid(virtualPage);
 #endif /* ETUDIANTS_TP */
 
   return ((ExceptionType)0);

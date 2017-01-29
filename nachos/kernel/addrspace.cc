@@ -308,16 +308,16 @@ int AddrSpace::StackAllocate(void)
 	   0x0,g_cfg->PageSize);
     translationTable->setAddrDisk(i,-1);
     translationTable->setBitValid(i);
-#endif
-#ifdef ETUDIANTS_TP
-    /* trigger a page fault */
-    translationTable->clearBitValid(i);
-#endif
     translationTable->clearBitSwap(i);
     translationTable->setBitReadAllowed(i);
     translationTable->setBitWriteAllowed(i);
     translationTable->clearBitIo(i);
     /* End of code without demand paging */
+#endif
+#ifdef ETUDIANTS_TP
+    /* trigger a page fault */
+    translationTable->clearBitValid(i);
+#endif
     }
 
   int stackpointer = (stackBasePage+numPages)*g_cfg->PageSize - 4*sizeof(int);
