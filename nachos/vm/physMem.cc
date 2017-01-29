@@ -126,14 +126,13 @@ int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner, int virtua
 #else // #ifdef ETUDIANTS_TP
   int pp = FindFreePage();
   if (pp == -1) {
-    printf("Not enough free space to load program %s\n", g_current_thread->GetProcessOwner()->exec_file->GetName());
-    g_machine->interrupt->Halt(-1);
+    pp = EvictPage();
   }
 
   tpr[pp].virtualPage = virtualPage;
   tpr[pp].owner       = owner;
   tpr[pp].locked      = true;
-  g_machine->mmu->translationTable->setPhysicalPage(virtualPage,pp);
+  g_machine->mmu->translationTable->setPhysicalPage(virtualPage, pp);
   return pp;
 #endif /* ETUDIANTS_TP */
 }
@@ -179,9 +178,25 @@ int PhysicalMemManager::FindFreePage() {
 */
 //-----------------------------------------------------------------
 int PhysicalMemManager::EvictPage() {
+#ifndef ETUDIANTS_TP
   printf("**** Warning: page replacement algorithm is not implemented yet\n");
-    exit(-1);
-    return (0);
+  exit(-1);
+  return (0);
+#else // #ifdef ETUDIANTS_TP
+  g_current_thread->GetProcessOwner()->stat->incrMemoryAccess();
+
+  while(1) {
+    i_clock++;
+    if(g_machine->mmu->translationTable->getBitU(tpr[i_clock].virtualPage)) {
+      g_machine->mmu->translationTable->clearBitU(tpr[i_clock].virtualPage);
+    } else {
+      g_machine->mmu->translationTable->setBitU(tpr[i_clock].virtualPage);
+      return i_clock;
+    }
+  }
+
+  return -1;
+#endif /* ETUDIANTS_TP */
 }
 
 //-----------------------------------------------------------------
