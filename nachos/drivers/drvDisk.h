@@ -33,7 +33,7 @@ class Lock;
 */
 class DriverDisk {
   public:
-  DriverDisk(char* sem_name, char* lock_name, Disk* theDisk); 
+  DriverDisk(const char* sem_name, const char* lock_name, Disk* theDisk);
                                         // Constructor. Initializes the disk
                                         // driver by initializing the raw Disk.
     ~DriverDisk();			// Destructor. De-allocate the driver data

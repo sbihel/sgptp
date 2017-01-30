@@ -50,7 +50,7 @@ void DiskSwapRequestDone()
 */
 //----------------------------------------------------------------------
 
-DriverDisk::DriverDisk(char* sem_name, char *lock_name, Disk* theDisk)
+DriverDisk::DriverDisk(const char* sem_name, const char *lock_name, Disk* theDisk)
 {
     semaphore = new Semaphore((char*)sem_name, 0);
     lock = new Lock((char*)lock_name);
