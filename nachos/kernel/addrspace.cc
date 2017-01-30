@@ -331,6 +331,10 @@ int AddrSpace::StackAllocate(void)
 #ifdef ETUDIANTS_TP
     /* trigger a page fault */
     translationTable->clearBitValid(i);
+    translationTable->clearBitSwap(i);
+    translationTable->setBitReadAllowed(i);
+    translationTable->setBitWriteAllowed(i);
+    translationTable->clearBitIo(i);
 #endif
     }
 
