@@ -51,11 +51,11 @@ Statistics::Print()
   delete allStatistics;
   allStatistics = list;
   printf("\nConcerning Nachos : \n");
-  printf("   Idle time : %llu cycles on %dMz processor (%llu sec, %llu nanos)\n",
+  printf("   Idle time : %lu cycles on %dMz processor (%lu sec, %lu nanos)\n",
 	 idleTicks,g_cfg->ProcessorFrequency,
 	 cycle_to_sec(idleTicks,g_cfg->ProcessorFrequency),
 	 cycle_to_nano(idleTicks,g_cfg->ProcessorFrequency));
-  printf("   Total time : %llu cycles on %dMz processor (%llu sec, %llu nanos) \n",
+  printf("   Total time : %lu cycles on %dMz processor (%lu sec, %lu nanos) \n",
 	 totalTicks,g_cfg->ProcessorFrequency,
 	 cycle_to_sec(totalTicks,g_cfg->ProcessorFrequency),
 	 cycle_to_nano(totalTicks,g_cfg->ProcessorFrequency));
@@ -156,11 +156,11 @@ void ProcessStat::Print(void)
   printf("------------------------------------------------------------\n");
   printf("Statistics for process : %s \n", name);
   printf("   Number of instructions executed : %d\n",numInstruction); 
-  printf("   System time : %llu cycles on %dMz processor (%llu sec,%llu nanos)\n",
+  printf("   System time : %lu cycles on %dMz processor (%lu sec,%lu nanos)\n",
 	 systemTicks,g_cfg->ProcessorFrequency,
 	 cycle_to_sec(systemTicks,g_cfg->ProcessorFrequency),
 	 cycle_to_nano(systemTicks,g_cfg->ProcessorFrequency));
-  printf("   User time   : %llu cycles on %dMz processor (%llu sec,%llu nanos)\n",
+  printf("   User time   : %lu cycles on %dMz processor (%lu sec,%lu nanos)\n",
 	 userTicks,g_cfg->ProcessorFrequency,
 	 cycle_to_sec(userTicks,g_cfg->ProcessorFrequency),
 	 cycle_to_nano(userTicks,g_cfg->ProcessorFrequency));

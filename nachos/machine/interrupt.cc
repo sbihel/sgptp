@@ -341,7 +341,7 @@ PrintPending(int64_t arg)
 {
     PendingInterrupt *pend = (PendingInterrupt *)arg;
 
-    printf("Interrupt handler %s, scheduled at time %llu\n", 
+    printf("Interrupt handler %s, scheduled at time %lu\n",
 	   intTypeNames[pend->type], pend->when);
 }
 
