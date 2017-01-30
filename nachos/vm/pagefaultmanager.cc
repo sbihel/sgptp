@@ -47,13 +47,20 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
 #else // #ifdef ETUDIANTS_TP
   //TODO, access to unmapped virtual address  might be due to concurrent problems
 
+  if(g_machine->mmu->translationTable->getBitIo(virtualPage) == true) {
+    printf("TODO, another page fault resolution in progress\n");  //TODO, how to wait?
+    exit(-1);
+    return ((ExceptionType)0);
+  }
+  g_machine->mmu->translationTable->setBitIo(virtualPage);  // Deny other page fault
+
   int pp = g_physical_mem_manager->AddPhysicalToVirtualMapping(g_current_thread->GetProcessOwner()->addrspace,
       virtualPage);
 
   if(g_machine->mmu->translationTable->getBitSwap(virtualPage) == 1) {
     int num_sector = g_machine->mmu->translationTable->getAddrDisk(virtualPage);
-    if(num_sector == -1) {  //TODO, should we ask for a physical mapping after to avoir "deadlock"?
-      printf("TODO, wait for the page to be unlocked\n");
+    if(num_sector == -1) {  //TODO, should we ask for a physical mapping after to avoid "deadlock"?
+      printf("TODO, wait for the page to be unlocked\n");  //TODO, how to wait?
       exit(-1);
       return ((ExceptionType)0);
     }
@@ -73,6 +80,7 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
 
   g_physical_mem_manager->UnlockPage(pp);
 
+  g_machine->mmu->translationTable->clearBitIo(virtualPage);
   g_machine->mmu->translationTable->setBitValid(virtualPage);
 #endif /* ETUDIANTS_TP */
 

@@ -186,11 +186,12 @@ int PhysicalMemManager::EvictPage() {
   g_current_thread->GetProcessOwner()->stat->incrMemoryAccess();
 
   while(1) {
-    i_clock++;
-    if(g_machine->mmu->translationTable->getBitU(tpr[i_clock].virtualPage)) {
-      g_machine->mmu->translationTable->clearBitU(tpr[i_clock].virtualPage);
+    //TODO, need an explicit critical section?
+    int i_clock_local = ++i_clock;
+    if(g_machine->mmu->translationTable->getBitU(tpr[i_clock_local].virtualPage)) {
+      g_machine->mmu->translationTable->clearBitU(tpr[i_clock_local].virtualPage);
     } else {
-      g_machine->mmu->translationTable->setBitU(tpr[i_clock].virtualPage);
+      g_machine->mmu->translationTable->setBitU(tpr[i_clock_local].virtualPage);
       return i_clock;
     }
   }
