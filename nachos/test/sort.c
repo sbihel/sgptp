@@ -15,6 +15,8 @@
 // Nachos system calls
 #include "userlib/syscall.h"
 
+#include "userlib/libnachos.h" // n_printf
+
 // Table to be sorted
 #define NUM 30
 int A[NUM];	
