@@ -185,13 +185,12 @@ int PhysicalMemManager::EvictPage() {
   return (0);
 #else // #ifdef ETUDIANTS_TP
   while(1) {
-    //TODO, two processes can chose the same page (?)
     int i_clock_local = ++i_clock;
     if(g_machine->mmu->translationTable->getBitU(tpr[i_clock_local].virtualPage)) {
       g_machine->mmu->translationTable->clearBitU(tpr[i_clock_local].virtualPage);
-    } else {
+    } else if(!tpr[i_clock_local].locked) {
       g_machine->mmu->translationTable->setBitU(tpr[i_clock_local].virtualPage);
-      g_current_thread->GetProcessOwner()->stat->incrMemoryAccess();
+      ChangeOwner(i_clock_local, g_current_thread);
       return i_clock;
     }
   }
