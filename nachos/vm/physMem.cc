@@ -124,6 +124,7 @@ int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner, int virtua
   exit(-1);
   return (0);
 #else // #ifdef ETUDIANTS_TP
+  g_machine->mmu->translationTable->setPhysicalPage(virtualPage, -1);
   int pp = FindFreePage();
   if (pp == -1) {
     pp = EvictPage();
@@ -183,15 +184,14 @@ int PhysicalMemManager::EvictPage() {
   exit(-1);
   return (0);
 #else // #ifdef ETUDIANTS_TP
-  g_current_thread->GetProcessOwner()->stat->incrMemoryAccess();
-
   while(1) {
-    //TODO, need an explicit critical section?
+    //TODO, two processes can chose the same page (?)
     int i_clock_local = ++i_clock;
     if(g_machine->mmu->translationTable->getBitU(tpr[i_clock_local].virtualPage)) {
       g_machine->mmu->translationTable->clearBitU(tpr[i_clock_local].virtualPage);
     } else {
       g_machine->mmu->translationTable->setBitU(tpr[i_clock_local].virtualPage);
+      g_current_thread->GetProcessOwner()->stat->incrMemoryAccess();
       return i_clock;
     }
   }

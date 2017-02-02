@@ -45,12 +45,8 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
   printf("**** Warning: page fault manager is not implemented yet\n");
   exit(-1);
 #else // #ifdef ETUDIANTS_TP
-  //TODO, access to unmapped virtual address  might be due to concurrent problems
-
-  if(g_machine->mmu->translationTable->getBitIo(virtualPage) == true) {
-    printf("TODO, another page fault resolution in progress\n");  //TODO, how to wait?
-    exit(-1);
-    return ((ExceptionType)0);
+  while(g_machine->mmu->translationTable->getBitIo(virtualPage) == true) {
+    g_current_thread->Yield();
   }
   g_machine->mmu->translationTable->setBitIo(virtualPage);  // Deny other page fault
 
@@ -59,10 +55,8 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
 
   if(g_machine->mmu->translationTable->getBitSwap(virtualPage) == 1) {
     int num_sector = g_machine->mmu->translationTable->getAddrDisk(virtualPage);
-    if(num_sector == -1) {  //TODO, should we ask for a physical mapping after to avoid "deadlock"?
-      printf("TODO, wait for the page to be unlocked\n");  //TODO, how to wait?
-      exit(-1);
-      return ((ExceptionType)0);
+    while(num_sector == -1) {  //TODO, should we ask for a physical mapping after to avoid "deadlock"?
+      g_current_thread->Yield();
     }
     char temp_page[g_cfg->PageSize];
     g_swap_manager->GetPageSwap(num_sector, temp_page);
