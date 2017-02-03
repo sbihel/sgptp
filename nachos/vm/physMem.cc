@@ -128,8 +128,18 @@ int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner, int virtua
   int pp = FindFreePage();
   if (pp == -1) {
     pp = EvictPage();
-    RemovePhysicalToVirtualMapping(pp);
+    if (tpr[pp].owner->translationTable!=NULL)
+      tpr[pp].owner->translationTable->clearBitValid(tpr[pp].virtualPage);
     ChangeOwner(pp, g_current_thread);
+    tpr[pp].locked = true;  // make sure the page isn't modified while accessing disk
+
+    // Copy after remap to avoid interuptions while accessing disk
+    char temp_page[g_cfg->PageSize];
+    memcpy(temp_page, &(g_machine->mainMemory[pp*g_cfg->PageSize]), g_cfg->PageSize);
+    int num_sector = g_swap_manager->PutPageSwap(-1, temp_page);
+    int old_virtualPage = tpr[pp].virtualPage;
+    g_machine->mmu->translationTable->setAddrDisk(old_virtualPage, num_sector);
+    g_machine->mmu->translationTable->setBitSwap(old_virtualPage);
   }
 
   ASSERT(pp < g_cfg->NumPhysPages);
@@ -191,6 +201,8 @@ int PhysicalMemManager::EvictPage() {
   while(1) {
     i_clock = (i_clock + 1) % g_cfg->NumPhysPages;
     int i_clock_local = i_clock;
+    if(!i_clock_local) continue;
+
     if(g_machine->mmu->translationTable->getBitU(tpr[i_clock_local].virtualPage)) {
       g_machine->mmu->translationTable->clearBitU(tpr[i_clock_local].virtualPage);
     } else if(!tpr[i_clock_local].locked) {

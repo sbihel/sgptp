@@ -55,8 +55,9 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
 
   if(g_machine->mmu->translationTable->getBitSwap(virtualPage) == 1) {
     int num_sector = g_machine->mmu->translationTable->getAddrDisk(virtualPage);
-    while(num_sector == -1) {  //TODO, should we ask for a physical mapping after to avoid "deadlock"?
+    while(num_sector == -1) {
       g_current_thread->Yield();
+      num_sector = g_machine->mmu->translationTable->getAddrDisk(virtualPage);
     }
     char temp_page[g_cfg->PageSize];
     g_swap_manager->GetPageSwap(num_sector, temp_page);
