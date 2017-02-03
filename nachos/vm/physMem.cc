@@ -128,9 +128,9 @@ int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner, int virtua
   int pp = FindFreePage();
   if (pp == -1) {
     pp = EvictPage();
+    RemovePhysicalToVirtualMapping(pp);
+    ChangeOwner(pp, g_current_thread);
   }
-
-  g_machine->mmu->translationTable->clearBitValid(tpr[pp].virtualPage);
 
   ASSERT(pp < g_cfg->NumPhysPages);
 
@@ -195,7 +195,6 @@ int PhysicalMemManager::EvictPage() {
       g_machine->mmu->translationTable->clearBitU(tpr[i_clock_local].virtualPage);
     } else if(!tpr[i_clock_local].locked) {
       g_machine->mmu->translationTable->setBitU(tpr[i_clock_local].virtualPage);
-      ChangeOwner(i_clock_local, g_current_thread);
       return i_clock_local;
     }
   }
