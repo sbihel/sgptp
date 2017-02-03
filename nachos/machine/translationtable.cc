@@ -233,7 +233,8 @@ void TranslationTable::clearBitReadAllowed(int virtualPage) {
 */
 //----------------------------------------------------------------------
 bool TranslationTable::getBitReadAllowed(int virtualPage) {
-  ASSERT ((virtualPage >= 0) && (virtualPage < maxNumPages));
+  ASSERT (virtualPage >= 0);
+  ASSERT (virtualPage < maxNumPages);
   return pageTable[virtualPage].readAllowed;
 }
 
