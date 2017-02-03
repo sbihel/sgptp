@@ -130,6 +130,8 @@ int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner, int virtua
     pp = EvictPage();
   }
 
+  g_machine->mmu->translationTable->clearBitValid(tpr[pp].virtualPage);
+
   ASSERT(pp < g_cfg->NumPhysPages);
 
   tpr[pp].virtualPage = virtualPage;
