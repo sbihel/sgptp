@@ -130,6 +130,8 @@ int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner, int virtua
     pp = EvictPage();
   }
 
+  ASSERT(pp < g_cfg->NumPhysPages);
+
   tpr[pp].virtualPage = virtualPage;
   tpr[pp].owner       = owner;
   tpr[pp].locked      = true;
@@ -185,16 +187,19 @@ int PhysicalMemManager::EvictPage() {
   return (0);
 #else // #ifdef ETUDIANTS_TP
   while(1) {
-    int i_clock_local = ++i_clock;
+    i_clock = (i_clock + 1) % g_cfg->NumPhysPages;
+    int i_clock_local = i_clock;
     if(g_machine->mmu->translationTable->getBitU(tpr[i_clock_local].virtualPage)) {
       g_machine->mmu->translationTable->clearBitU(tpr[i_clock_local].virtualPage);
     } else if(!tpr[i_clock_local].locked) {
       g_machine->mmu->translationTable->setBitU(tpr[i_clock_local].virtualPage);
       ChangeOwner(i_clock_local, g_current_thread);
-      return i_clock;
+      return i_clock_local;
     }
   }
 
+  // never reached
+  ASSERT (0);
   return -1;
 #endif /* ETUDIANTS_TP */
 }
