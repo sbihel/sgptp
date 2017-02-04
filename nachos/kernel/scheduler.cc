@@ -87,7 +87,7 @@ void Scheduler::SwitchTo(Thread *nextThread) {
 	// had an undetected stack overflow
 
 	DEBUG('t',
-		  (char *)"Switching from thread \"%s\" to thread \"%s\" time %llu\n",
+		  (char *)"Switching from thread \"%s\" to thread \"%s\" time %" PRIu64 "\n",
 		  g_current_thread->GetName(), nextThread->GetName(),
 		  g_stats->getTotalTicks());
 
@@ -107,7 +107,7 @@ void Scheduler::SwitchTo(Thread *nextThread) {
 		nextThread->RestoreSimulatorState();
 	}
 
-	DEBUG('t', (char *)"Now in thread \"%s\" time %llu\n",
+	DEBUG('t', (char *)"Now in thread \"%s\" time %" PRIu64 "\n",
 		  g_current_thread->GetName(), g_stats->getTotalTicks());
 
 	// If the old thread gave up the processor because it was finishing,

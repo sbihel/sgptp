@@ -216,7 +216,7 @@ Machine::OneInstruction(Instruction *instr)
 	     TypeToReg(stri->args[1], instr), 
 	     TypeToReg(stri->args[2], instr));
     }
-    printf(" Time total %llu\n",g_stats->getTotalTicks());
+    printf(" Time total %" PRIu64 "\n",g_stats->getTotalTicks());
   }
 
   // Compute next Program Counter (PC), but don't install in 
