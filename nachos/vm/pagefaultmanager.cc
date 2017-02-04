@@ -82,7 +82,7 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
 
   g_physical_mem_manager->UnlockPage(physPage);
 
-  delete buffer;
+  delete[] buffer;
 
   return NO_EXCEPTION;
 #endif
