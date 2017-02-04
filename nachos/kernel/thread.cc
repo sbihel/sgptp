@@ -273,8 +273,12 @@ void Thread::Finish() {
 	DEBUG('t', (char *)"Finishing thread \"%s\"\n", GetName());
 	IntStatus oldStatus = g_machine->interrupt->GetStatus();
 	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
-	g_thread_to_be_destroyed = this;
+
+  g_thread_to_be_destroyed = this;
+  g_alive->RemoveItem(this);
+
 	Sleep();
+
 	g_machine->interrupt->SetStatus(oldStatus);
 #endif
 }
@@ -373,7 +377,7 @@ void Thread::SaveProcessorState() {
 		thread_context.int_registers[i] = g_machine->int_registers[i];
 	for(int i = 0; i < NUM_FP_REGS; i++)
 		thread_context.float_registers[i] = g_machine->float_registers[i];
-	thread_context.cc = g_machine->cc;
+	thread_context.cc = g_machine->ReadCC();
   g_machine->interrupt->SetStatus(oldLevel);
 #endif
 }
@@ -397,7 +401,7 @@ void Thread::RestoreProcessorState() {
 		g_machine->int_registers[i] = thread_context.int_registers[i];
 	for(int i = 0; i < NUM_FP_REGS; i++)
 		g_machine->float_registers[i] = thread_context.float_registers[i];
-	g_machine->cc = thread_context.cc;
+	g_machine->WriteCC(thread_context.cc);
 	g_machine->mmu->translationTable = process->addrspace->translationTable;
   g_machine->interrupt->SetStatus(oldLevel);
 #endif
