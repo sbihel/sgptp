@@ -120,9 +120,21 @@ void PhysicalMemManager::ChangeOwner(long numPage, Thread* owner) {
 //-----------------------------------------------------------------
 int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner,int virtualPage) 
 {
+#ifndef ETUDIANTS_TP
   printf("**** Warning: function AddPhysicalToVirtualMapping is not implemented\n");
   exit(-1);
   return (0);
+#endif
+#ifdef ETUDIANTS_TP
+  int page = FindFreePage();
+  if (page == -1) {
+    page = EvictPage();
+  }
+  tpr[page].virtualPage = virtualPage;
+  tpr[page].owner = owner;
+  tpr[page].locked = true;
+  return page;
+#endif
 }
 
 //-----------------------------------------------------------------
@@ -166,9 +178,59 @@ int PhysicalMemManager::FindFreePage() {
 */
 //-----------------------------------------------------------------
 int PhysicalMemManager::EvictPage() {
+#ifndef ETUDIANTS_TP
   printf("**** Warning: page replacement algorithm is not implemented yet\n");
     exit(-1);
     return (0);
+#endif
+#ifdef ETUDIANTS_TP
+    int local_i_clock = i_clock, nb_looked_pages = 0, virtPage, numSector;
+    bool found = false;
+    tpr_c realPage;
+    TranslationTable *transTab;
+
+    while (!found) {
+      local_i_clock = (local_i_clock + 1) % (g_cfg->NumPhysPages);
+
+      realPage = tpr[local_i_clock];
+      virtPage = realPage.virtualPage;
+      transTab = realPage.owner->translationTable;
+
+      if (nb_looked_pages == g_cfg->NumPhysPages) {
+        i_clock = local_i_clock;
+        g_current_thread->Yield();
+        local_i_clock = (i_clock + 1) % (g_cfg->NumPhysPages);
+        nb_looked_pages = 0;
+      }
+
+      if (!realPage.locked) {
+        if (!transTab->getBitU(virtPage)) {
+          found = true;
+        } else {
+          transTab->clearBitU(virtPage);
+        }
+      }
+
+      nb_looked_pages++;
+    }
+
+    i_clock = local_i_clock;
+    realPage.locked = true;
+    // clearBitValid(virtPage) ??
+    
+    if (transTab->getBitM(virtPage)) {
+      if (transTab->getBitSwap(virtPage)) {
+        g_swap_manager->PutPageSwap(transTab->getAddrDisk(virtPage), (char*)(&(g_machine->mainMemory[local_i_clock * g_cfg->PageSize])));
+      } else {
+        numSector = g_swap_manager->PutPageSwap(-1, (char*)(&(g_machine->mainMemory[local_i_clock * g_cfg->PageSize])));
+
+        transTab->setAddrDisk(virtPage, numSector);
+        transTab->setBitSwap(virtPage);
+      }
+    }
+
+    return local_i_clock;
+#endif
 }
 
 //-----------------------------------------------------------------
