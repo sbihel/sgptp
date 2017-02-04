@@ -118,38 +118,11 @@ void PhysicalMemManager::ChangeOwner(long numPage, Thread* owner) {
 //  \return A new physical page number.
 */
 //-----------------------------------------------------------------
-int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner, int virtualPage) {
-#ifndef ETUDIANTS_TP
+int PhysicalMemManager::AddPhysicalToVirtualMapping(AddrSpace* owner,int virtualPage) 
+{
   printf("**** Warning: function AddPhysicalToVirtualMapping is not implemented\n");
   exit(-1);
   return (0);
-#else // #ifdef ETUDIANTS_TP
-  g_machine->mmu->translationTable->setPhysicalPage(virtualPage, -1);
-  int pp = FindFreePage();
-  if (pp == -1) {
-    pp = EvictPage();
-    if (tpr[pp].owner->translationTable!=NULL)
-      tpr[pp].owner->translationTable->clearBitValid(tpr[pp].virtualPage);
-    ChangeOwner(pp, g_current_thread);
-    tpr[pp].locked = true;  // make sure the page isn't modified while accessing disk
-
-    // Copy after remap to avoid interuptions while accessing disk
-    char temp_page[g_cfg->PageSize];
-    memcpy(temp_page, &(g_machine->mainMemory[pp*g_cfg->PageSize]), g_cfg->PageSize);
-    int num_sector = g_swap_manager->PutPageSwap(-1, temp_page);
-    int old_virtualPage = tpr[pp].virtualPage;
-    g_machine->mmu->translationTable->setAddrDisk(old_virtualPage, num_sector);
-    g_machine->mmu->translationTable->setBitSwap(old_virtualPage);
-  }
-
-  ASSERT(pp < g_cfg->NumPhysPages);
-
-  tpr[pp].virtualPage = virtualPage;
-  tpr[pp].owner       = owner;
-  tpr[pp].locked      = true;
-  g_machine->mmu->translationTable->setPhysicalPage(virtualPage, pp);
-  return pp;
-#endif /* ETUDIANTS_TP */
 }
 
 //-----------------------------------------------------------------
@@ -193,28 +166,9 @@ int PhysicalMemManager::FindFreePage() {
 */
 //-----------------------------------------------------------------
 int PhysicalMemManager::EvictPage() {
-#ifndef ETUDIANTS_TP
   printf("**** Warning: page replacement algorithm is not implemented yet\n");
-  exit(-1);
-  return (0);
-#else // #ifdef ETUDIANTS_TP
-  while(1) {
-    i_clock = (i_clock + 1) % g_cfg->NumPhysPages;
-    int i_clock_local = i_clock;
-    if(!i_clock_local) continue;
-
-    if(g_machine->mmu->translationTable->getBitU(tpr[i_clock_local].virtualPage)) {
-      g_machine->mmu->translationTable->clearBitU(tpr[i_clock_local].virtualPage);
-    } else if(!tpr[i_clock_local].locked) {
-      g_machine->mmu->translationTable->setBitU(tpr[i_clock_local].virtualPage);
-      return i_clock_local;
-    }
-  }
-
-  // never reached
-  ASSERT (0);
-  return -1;
-#endif /* ETUDIANTS_TP */
+    exit(-1);
+    return (0);
 }
 
 //-----------------------------------------------------------------

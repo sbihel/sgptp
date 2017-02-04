@@ -166,7 +166,7 @@ AddrSpace::AddrSpace(OpenFile * exec_file, Process *p, int *err)
 	{
 
 	  /* Without demand paging */
-#ifndef ETUDIANTS_TP
+	  
 	  // Set up default values for the page table entry
 	  translationTable->clearBitSwap(virt_page);
 	  translationTable->setBitReadAllowed(virt_page);
@@ -211,27 +211,8 @@ AddrSpace::AddrSpace(OpenFile * exec_file, Process *p, int *err)
 
 	  // The entry is valid
 	  translationTable->setBitValid(virt_page);
-#endif
+	  
 	  /* End of code without demand paging */
-
-#ifdef ETUDIANTS_TP
-	  /* trigger a page fault */
-	  translationTable->clearBitValid(virt_page);
-
-	  // Set up default values for the page table entry
-	  translationTable->clearBitSwap(virt_page);
-	  translationTable->setBitReadAllowed(virt_page);
-	  if (section_table[i].sh_flags & SHF_WRITE)
-	    translationTable->setBitWriteAllowed(virt_page);
-	  else
-	    translationTable->clearBitWriteAllowed(virt_page);
-	  translationTable->clearBitIo(virt_page);
-
-	  if (section_table[i].sh_type != SHT_NOBITS)
-	    translationTable->setAddrDisk(virt_page, section_table[i].sh_offset + pgdisk*g_cfg->PageSize);
-	  else
-	    translationTable->setAddrDisk(virt_page, -1);
-#endif
 	}
     }
   delete [] shnames;
@@ -305,7 +286,7 @@ int AddrSpace::StackAllocate(void)
 
   for (int i = stackBasePage ; i < (stackBasePage + numPages) ; i++) {
     /* Without demand paging */
-#ifndef ETUDIANTS_TP
+
     // Allocate a new physical page for the stack, halt if not page availabke
     int pp = g_physical_mem_manager->FindFreePage();
     if (pp == -1) { 
@@ -327,15 +308,6 @@ int AddrSpace::StackAllocate(void)
     translationTable->setBitWriteAllowed(i);
     translationTable->clearBitIo(i);
     /* End of code without demand paging */
-#endif
-#ifdef ETUDIANTS_TP
-    /* trigger a page fault */
-    translationTable->clearBitValid(i);
-    translationTable->clearBitSwap(i);
-    translationTable->setBitReadAllowed(i);
-    translationTable->setBitWriteAllowed(i);
-    translationTable->clearBitIo(i);
-#endif
     }
 
   int stackpointer = (stackBasePage+numPages)*g_cfg->PageSize - 4*sizeof(int);
