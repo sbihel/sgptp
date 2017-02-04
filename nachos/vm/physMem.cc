@@ -36,8 +36,7 @@ PhysicalMemManager::PhysicalMemManager() {
 
 PhysicalMemManager::~PhysicalMemManager() {
   // Empty free page list
-  int64_t page;
-  while (!free_page_list.IsEmpty()) page =  (int64_t)free_page_list.Remove();
+  while (!free_page_list.IsEmpty()) (void)free_page_list.Remove();
 
   // Delete physical page table
   delete[] tpr;
