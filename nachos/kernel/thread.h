@@ -31,7 +31,7 @@ class Thread;
 #define SIMULATORSTACKSIZE	(32 * 1024) // in Bytes
 
 // External function, dummy routine whose sole job is to call Thread::Print.
-extern void ThreadPrint(int arg);	 
+extern void ThreadPrint(intptr_t arg);
 
 class Semaphore;
 class Process;

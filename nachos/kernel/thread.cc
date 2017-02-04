@@ -161,7 +161,7 @@ void Thread::InitThreadContext(int32_t initialPCREG, int32_t initialSP,
 //	member function.
 */
 //----------------------------------------------------------------------
-void ThreadPrint(int arg) {
+void ThreadPrint(intptr_t arg) {
 	Thread *t = (Thread *)arg;
 	printf("%s", t->GetName());
 }
