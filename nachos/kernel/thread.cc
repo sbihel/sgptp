@@ -104,16 +104,22 @@ int Thread::Start(Process *owner, int32_t func, int arg) {
 	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-	ASSERT(process == NULL);
-	// Nothing returns an error code
-	process = owner;
-	int user_stack = owner->addrspace->StackAllocate();
-	int8_t *kernel_stack = AllocBoundedArray(SIMULATORSTACKSIZE);
-	InitThreadContext(func, user_stack, arg);
-	InitSimulatorContext(kernel_stack, SIMULATORSTACKSIZE);
-	owner->numThreads++;
-	g_alive->Append(this);
-	g_scheduler->ReadyToRun(this);
+  IntStatus oldLevel = g_machine->interrupt->GetStatus();
+  g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+
+  ASSERT(process == NULL);
+
+  process = owner;
+  process->numThreads++;
+
+  InitSimulatorContext(AllocBoundedArray(SIMULATORSTACKSIZE), SIMULATORSTACKSIZE);
+  InitThreadContext(func, process->addrspace->StackAllocate(), arg);
+
+  g_alive->Append(this);
+  g_scheduler->ReadyToRun(this);
+
+  g_machine->interrupt->SetStatus(oldLevel);
+
 	return NoError;
 #endif
 }
@@ -362,12 +368,13 @@ void Thread::SaveProcessorState() {
 	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-	// TODO, should we use getter methods?
+  IntStatus oldLevel = g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
 	for(int i = 0; i < NUM_INT_REGS; i++)
 		thread_context.int_registers[i] = g_machine->int_registers[i];
 	for(int i = 0; i < NUM_FP_REGS; i++)
 		thread_context.float_registers[i] = g_machine->float_registers[i];
 	thread_context.cc = g_machine->cc;
+  g_machine->interrupt->SetStatus(oldLevel);
 #endif
 }
 
@@ -385,13 +392,14 @@ void Thread::RestoreProcessorState() {
 	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-	// TODO, should we use setter methods?
-	for(int i = 0; i < NUM_INT_REGS; i++)
+  IntStatus oldLevel = g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+  for(int i = 0; i < NUM_INT_REGS; i++)
 		g_machine->int_registers[i] = thread_context.int_registers[i];
 	for(int i = 0; i < NUM_FP_REGS; i++)
 		g_machine->float_registers[i] = thread_context.float_registers[i];
 	g_machine->cc = thread_context.cc;
 	g_machine->mmu->translationTable = process->addrspace->translationTable;
+  g_machine->interrupt->SetStatus(oldLevel);
 #endif
 }
 
