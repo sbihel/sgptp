@@ -114,6 +114,9 @@ public:
   char* GetName() { return (name); }
   Process* GetProcessOwner() { return process; }
 
+  void SetIClock(int i) {local_i_clock=i;}
+  int GetIClock() {return local_i_clock;}
+
 protected:
   //! Thread name (for debugging)   
   char* name;
@@ -126,6 +129,8 @@ protected:
 
   //! Thread context
   threadContextT thread_context;
+
+  int local_i_clock;
 
 public:
   //! signature to make sure the thread is in the correct state

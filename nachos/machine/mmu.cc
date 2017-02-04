@@ -195,13 +195,12 @@ MMU::Translate(int virtAddr, int* physAddr, int size, bool writing)
 	virtAddr, writing ? "write" : "read");
   
   // check for alignment errors
-  /*
   if (((size == 4) && (virtAddr & 0x3))
       || ((size == 2) && (virtAddr & 0x1))){
     DEBUG('h', (char *)"alignment problem at %d, size %d!\n", virtAddr, size);
-    return BusErrorException;
+    //return BusErrorException;
+    ASSERT (false);
   }
-  */
 
   // Compute virtual page number and offset in the page
   int vpn = virtAddr / g_cfg->PageSize;

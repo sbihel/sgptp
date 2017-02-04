@@ -189,7 +189,7 @@ void Machine::Debugger()
     DumpState();
 
     // Print the current clock tick
-    printf("At cycle %" PRIu64 "\n",g_stats->getTotalTicks());
+    printf("At cycle %llu\n",g_stats->getTotalTicks());
     fflush(stdout);
 
     // Gets of command of the basic debugger on stdin

@@ -165,8 +165,9 @@ AddrSpace::AddrSpace(OpenFile * exec_file, Process *p, int *err)
 	   pgdisk++, virt_page ++)
 	{
 
-	  /* Without demand paging */
 #ifndef ETUDIANTS_TP
+	  /* Without demand paging */
+	  
 	  // Set up default values for the page table entry
 	  translationTable->clearBitSwap(virt_page);
 	  translationTable->setBitReadAllowed(virt_page);
@@ -211,26 +212,28 @@ AddrSpace::AddrSpace(OpenFile * exec_file, Process *p, int *err)
 
 	  // The entry is valid
 	  translationTable->setBitValid(virt_page);
-#endif
+	  
 	  /* End of code without demand paging */
-
+#endif
 #ifdef ETUDIANTS_TP
-	  /* trigger a page fault */
-	  translationTable->clearBitValid(virt_page);
+    translationTable->clearBitSwap(virt_page);
+    translationTable->setBitReadAllowed(virt_page);
 
-	  // Set up default values for the page table entry
-	  translationTable->clearBitSwap(virt_page);
-	  translationTable->setBitReadAllowed(virt_page);
-	  if (section_table[i].sh_flags & SHF_WRITE)
-	    translationTable->setBitWriteAllowed(virt_page);
-	  else
-	    translationTable->clearBitWriteAllowed(virt_page);
-	  translationTable->clearBitIo(virt_page);
+    if (section_table[i].sh_type != SHT_NOBITS) {
+      translationTable->setAddrDisk(virt_page, section_table[i].sh_offset + pgdisk * g_cfg->PageSize);
+    } else {
+      translationTable->setAddrDisk(virt_page, -1);
+    }
 
-	  if (section_table[i].sh_type != SHT_NOBITS)
-	    translationTable->setAddrDisk(virt_page, section_table[i].sh_offset + pgdisk*g_cfg->PageSize);
-	  else
-	    translationTable->setAddrDisk(virt_page, -1);
+    if (section_table[i].sh_flags & SHF_WRITE) {
+      translationTable->setBitWriteAllowed(virt_page);
+    } else {
+      translationTable->clearBitWriteAllowed(virt_page);
+    }
+    translationTable->clearBitIo(virt_page);
+
+    // not loaded in memory so not valid
+    translationTable->clearBitValid(virt_page);
 #endif
 	}
     }
@@ -304,8 +307,9 @@ int AddrSpace::StackAllocate(void)
 	(stackBasePage+numPages)*g_cfg->PageSize);
 
   for (int i = stackBasePage ; i < (stackBasePage + numPages) ; i++) {
-    /* Without demand paging */
 #ifndef ETUDIANTS_TP
+    /* Without demand paging */
+
     // Allocate a new physical page for the stack, halt if not page availabke
     int pp = g_physical_mem_manager->FindFreePage();
     if (pp == -1) { 
@@ -329,8 +333,8 @@ int AddrSpace::StackAllocate(void)
     /* End of code without demand paging */
 #endif
 #ifdef ETUDIANTS_TP
-    /* trigger a page fault */
     translationTable->clearBitValid(i);
+    translationTable->setAddrDisk(i, -1);
     translationTable->clearBitSwap(i);
     translationTable->setBitReadAllowed(i);
     translationTable->setBitWriteAllowed(i);
