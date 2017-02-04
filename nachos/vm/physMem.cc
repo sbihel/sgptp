@@ -54,7 +54,6 @@ PhysicalMemManager::~PhysicalMemManager() {
 */
 //-----------------------------------------------------------------
 void PhysicalMemManager::RemovePhysicalToVirtualMapping(long num_page) {
-  
   // Check that the page is not already free 
   ASSERT(!tpr[num_page].free);
 
@@ -155,13 +154,13 @@ int PhysicalMemManager::FindFreePage() {
 
   // Update statistics
   g_current_thread->GetProcessOwner()->stat->incrMemoryAccess();
-  
+
   // Get a page from the free list
   page = (int64_t)free_page_list.Remove();
-  
+
   // Check that the page is really free
   ASSERT(tpr[page].free);
-  
+
   // Update the physical page table
   tpr[page].free = false;
 
@@ -180,56 +179,57 @@ int PhysicalMemManager::FindFreePage() {
 int PhysicalMemManager::EvictPage() {
 #ifndef ETUDIANTS_TP
   printf("**** Warning: page replacement algorithm is not implemented yet\n");
-    exit(-1);
-    return (0);
+  exit(-1);
+  return (0);
 #endif
 #ifdef ETUDIANTS_TP
-    int local_i_clock = i_clock, nb_looked_pages = 0, virtPage, numSector;
-    bool found = false;
-    tpr_c realPage;
-    TranslationTable *transTab;
-
-    while (!found) {
-      local_i_clock = (local_i_clock + 1) % (g_cfg->NumPhysPages);
-
-      realPage = tpr[local_i_clock];
-      virtPage = realPage.virtualPage;
-      transTab = realPage.owner->translationTable;
-
-      if (nb_looked_pages == g_cfg->NumPhysPages) {
-        i_clock = local_i_clock;
-        g_current_thread->Yield();
-        local_i_clock = (i_clock + 1) % (g_cfg->NumPhysPages);
-        nb_looked_pages = 0;
-      }
-
-      if (!realPage.locked) {
-        if (!transTab->getBitU(virtPage)) {
-          found = true;
-        } else {
-          transTab->clearBitU(virtPage);
-        }
-      }
-
-      nb_looked_pages++;
+  int i = 0;
+  do {
+    i_clock = (i_clock + 1) % g_cfg->NumPhysPages;
+    if(! tpr[i_clock].locked) {
+      tpr[i_clock].owner->translationTable->clearBitU(tpr[i_clock].virtualPage);
+    } else {
+      i++;
     }
-
-    i_clock = local_i_clock;
-    realPage.locked = true;
-    // clearBitValid(virtPage) ??
-    
-    if (transTab->getBitM(virtPage)) {
-      if (transTab->getBitSwap(virtPage)) {
-        g_swap_manager->PutPageSwap(transTab->getAddrDisk(virtPage), (char*)(&(g_machine->mainMemory[local_i_clock * g_cfg->PageSize])));
-      } else {
-        numSector = g_swap_manager->PutPageSwap(-1, (char*)(&(g_machine->mainMemory[local_i_clock * g_cfg->PageSize])));
-
-        transTab->setAddrDisk(virtPage, numSector);
-        transTab->setBitSwap(virtPage);
-      }
+    if(i >= g_cfg->NumPhysPages) {
+      IntStatus oldStatus = g_machine->interrupt->GetStatus();
+      g_machine->interrupt-> SetStatus(INTERRUPTS_OFF);
+      g_current_thread->SetIClock(i_clock);
+      g_current_thread->Sleep();
+      i_clock = g_current_thread->GetIClock();
+      g_machine->interrupt-> SetStatus(oldStatus);
     }
+  } while (tpr[i_clock].locked && tpr[i_clock].owner->translationTable->getBitU(tpr[i_clock].virtualPage));
 
-    return local_i_clock;
+  tpr[i_clock].locked = true;
+  tpr[i_clock].owner->translationTable->clearBitValid(tpr[i_clock].virtualPage);
+
+  int res = i_clock;
+
+  // copy page in swap.
+  TranslationTable* tt = tpr[res].owner->translationTable;
+  int vpn = tpr[i_clock].virtualPage;
+
+  while(tt->getBitIo(vpn)) {
+    IntStatus oldStatus = g_machine->interrupt->GetStatus();
+    g_machine->interrupt-> SetStatus(INTERRUPTS_OFF);
+    g_current_thread->Sleep();
+    g_machine->interrupt-> SetStatus(oldStatus);
+  }
+  tt->setBitIo(vpn);
+
+  if (tt->getBitSwap(vpn)) {
+    if(tt->getBitM(vpn)) {
+      g_swap_manager->PutPageSwap(tt->getAddrDisk(vpn), (char*) (g_machine->mainMemory+res*g_cfg->PageSize));
+    }
+  } else {
+    int swapAddr = g_swap_manager->PutPageSwap(-1, (char*) (g_machine->mainMemory+res*g_cfg->PageSize));
+    tt->setAddrDisk(vpn, swapAddr);
+    tt->setBitSwap(vpn);
+  }
+
+  tt->clearBitIo(vpn);
+  return res;
 #endif
 }
 
@@ -248,12 +248,12 @@ void PhysicalMemManager::Print(void) {
   printf("Contents of TPR (%d pages)\n",g_cfg->NumPhysPages);
   for (i=0;i<g_cfg->NumPhysPages;i++) {
     printf("Page %d free=%d locked=%d virtpage=%d owner=%lx U=%d M=%d\n",
-	   i,
-	   tpr[i].free,
-	   tpr[i].locked,
-	   tpr[i].virtualPage,
-	   (long int)tpr[i].owner,
-	   (tpr[i].owner!=NULL) ? tpr[i].owner->translationTable->getBitU(tpr[i].virtualPage) : 0,
-	   (tpr[i].owner!=NULL) ? tpr[i].owner->translationTable->getBitM(tpr[i].virtualPage) : 0);
+        i,
+        tpr[i].free,
+        tpr[i].locked,
+        tpr[i].virtualPage,
+        (long int)tpr[i].owner,
+        (tpr[i].owner!=NULL) ? tpr[i].owner->translationTable->getBitU(tpr[i].virtualPage) : 0,
+        (tpr[i].owner!=NULL) ? tpr[i].owner->translationTable->getBitM(tpr[i].virtualPage) : 0);
   }
 }

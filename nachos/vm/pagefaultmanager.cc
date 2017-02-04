@@ -43,55 +43,47 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
 {
 #ifndef ETUDIANTS_TP
   printf("**** Warning: page fault manager is not implemented yet\n");
-    exit(-1);
-    return ((ExceptionType)0);
+  exit(-1);
+  return ((ExceptionType)0);
 #endif
 #ifdef ETUDIANTS_TP
-    Process *proc = g_current_thread->GetProcessOwner();
-    AddrSpace *addr_space = proc->addrspace;
-    TranslationTable *trans_table = addr_space->translationTable;
+  TranslationTable* tt = g_machine->mmu->translationTable;
+  char* buffer = new char[g_cfg->PageSize];
 
-    int disk_addr = trans_table->getAddrDisk(virtualPage);
-    int page_size = g_cfg->PageSize;
-    char tmp_page[page_size];
-    int addr_phy;
-
-    if (trans_table->getBitIo(virtualPage)) {
-      while (trans_table->getBitIo(virtualPage)) {
-        g_current_thread->Yield();
-      }
-      return NO_EXCEPTION;
+  if (tt->getBitSwap(virtualPage) == 0) {
+    if(tt->getAddrDisk(virtualPage) == -1) { // anonymous page
+      memset(buffer,0,g_cfg->PageSize);
+    } else { // read from file
+      g_current_thread->GetProcessOwner()->exec_file->ReadAt(buffer, g_cfg->PageSize, tt->getAddrDisk(virtualPage));
     }
-
-    trans_table->setBitIo(virtualPage);
-
-    if (!trans_table->getBitSwap(virtualPage)) {
-      if (disk_addr == -1) {
-        memset(tmp_page, 0x0, page_size);
-      } else {
-        if (proc->exec_file->ReadAt(tmp_page, page_size, disk_addr) != page_size) {
-          return PAGEFAULT_EXCEPTION;
-        } else {
-          // ok
-        }
-      }
-    } else {
-      g_swap_manager->GetPageSwap(disk_addr, tmp_page);
+  } else { // page on disk
+    while(tt->getBitIo(virtualPage)) {
+      IntStatus oldStatus = g_machine->interrupt->GetStatus();
+      g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+      g_current_thread->Sleep();
+      g_machine->interrupt-> SetStatus(oldStatus);
     }
+    tt->setBitIo(virtualPage);
+    g_swap_manager->GetPageSwap(tt->getAddrDisk(virtualPage), buffer);
+    tt->clearBitIo(virtualPage);
+  }
 
-    addr_phy = g_physical_mem_manager->AddPhysicalToVirtualMapping(addr_space, virtualPage);
+  tt->clearBitM(virtualPage);
+  tt->setBitU(virtualPage);
 
-    memcpy(&(g_machine->mainMemory[addr_phy * page_size]), tmp_page, page_size);
+  long physPage = g_physical_mem_manager->AddPhysicalToVirtualMapping(g_current_thread->GetProcessOwner()->addrspace,virtualPage);
 
-    trans_table->setPhysicalPage(virtualPage, addr_phy);
-    trans_table->setBitValid(virtualPage);
-    g_physical_mem_manager->UnlockPage(addr_phy);
-    trans_table->clearBitIo(virtualPage);
+  for(int i = 0; i < g_cfg->PageSize; i++) {
+    g_machine->mainMemory[physPage*g_cfg->PageSize + i] = buffer[i];
+  }
 
-    return NO_EXCEPTION;
+  tt->setPhysicalPage(virtualPage,physPage);
+  tt->setBitValid(virtualPage);
+
+  g_physical_mem_manager->UnlockPage(physPage);
+
+  delete buffer;
+
+  return NO_EXCEPTION;
 #endif
 }
-
-
-
-
