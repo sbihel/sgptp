@@ -69,7 +69,7 @@ SyscallError::~SyscallError() {
 void SyscallError::SetMsg(char *about,int num) {
 
   // Delete old "about" string
-  if (errorAbout != NULL) delete errorAbout;
+  if (errorAbout != NULL) delete[] errorAbout;
 
   // Allocate a new one if the argument is not NULL
   if (about != NULL) {
