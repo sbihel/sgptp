@@ -93,7 +93,7 @@ bool decompname (const char * orig_path, char * head, char * tail)
   // Init "tail" with the remainder
   if(*path == '\0') {
     *head = '\0';
-    strcpy(tail, orig_path);
+    memmove(tail, orig_path+1, strlen(tail));
     return false;
   } else {
     strcpy(tail, path);
