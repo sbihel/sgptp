@@ -93,8 +93,10 @@ class Config {
   /** File descriptor of the configuration file */
   FILE *cfg;
 
+#ifndef ETUDIANTS_TP
   /** File name of the configuration file */
   char *name;
+#endif
 };
 
 #endif // CONFIG_H
