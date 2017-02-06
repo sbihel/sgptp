@@ -182,27 +182,23 @@ int PhysicalMemManager::EvictPage() {
   return (0);
 #endif
 #ifdef ETUDIANTS_TP
-  int local_i_clock = i_clock;
-  int i = 0;
-  do {
-    i_clock = (i_clock + 1) % g_cfg->NumPhysPages;
-    if(! tpr[i_clock].locked) {
-      tpr[i_clock].owner->translationTable->clearBitU(tpr[i_clock].virtualPage);
-    } else {
-      i++;
-    }
-    if(i >= g_cfg->NumPhysPages) {
-      IntStatus oldStatus = g_machine->interrupt->GetStatus();
-      g_machine->interrupt-> SetStatus(INTERRUPTS_OFF);
-      local_i_clock = i_clock;
-      g_current_thread->Sleep();
-      i_clock = local_i_clock;
-      g_machine->interrupt-> SetStatus(oldStatus);
-    }
-  } while (tpr[i_clock].locked && tpr[i_clock].owner->translationTable->getBitU(tpr[i_clock].virtualPage));
+  int local_i_clock = (i_clock + 1) % g_cfg->NumPhysPages;
+  int beginning = (local_i_clock - 1) % g_cfg->NumPhysPages;
 
+  // search for a page that isn't locked or used recently
+  while ((tpr[local_i_clock].owner->translationTable->getBitU(tpr[local_i_clock].virtualPage)) || (tpr[local_i_clock].locked)) {
+    tpr[local_i_clock].owner->translationTable->clearBitU(tpr[local_i_clock].virtualPage);
+    local_i_clock = (local_i_clock + 1) % g_cfg->NumPhysPages;
+    // back at beginning means we found nothing
+    if (local_i_clock >= beginning) {
+      g_current_thread->Yield();
+    }
+  }
+
+  i_clock = local_i_clock;
+
+  tpr[i_clock].owner->translationTable->clearBitValid(tpr[local_i_clock].virtualPage);
   tpr[i_clock].locked = true;
-  tpr[i_clock].owner->translationTable->clearBitValid(tpr[i_clock].virtualPage);
 
   int res = i_clock;
 
