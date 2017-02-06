@@ -182,6 +182,7 @@ int PhysicalMemManager::EvictPage() {
   return (0);
 #endif
 #ifdef ETUDIANTS_TP
+  int local_i_clock = i_clock;
   int i = 0;
   do {
     i_clock = (i_clock + 1) % g_cfg->NumPhysPages;
@@ -193,9 +194,9 @@ int PhysicalMemManager::EvictPage() {
     if(i >= g_cfg->NumPhysPages) {
       IntStatus oldStatus = g_machine->interrupt->GetStatus();
       g_machine->interrupt-> SetStatus(INTERRUPTS_OFF);
-      g_current_thread->SetIClock(i_clock);
+      local_i_clock = i_clock;
       g_current_thread->Sleep();
-      i_clock = g_current_thread->GetIClock();
+      i_clock = local_i_clock;
       g_machine->interrupt-> SetStatus(oldStatus);
     }
   } while (tpr[i_clock].locked && tpr[i_clock].owner->translationTable->getBitU(tpr[i_clock].virtualPage));
