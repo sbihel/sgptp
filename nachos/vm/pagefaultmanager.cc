@@ -73,9 +73,7 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
 
   long physPage = g_physical_mem_manager->AddPhysicalToVirtualMapping(g_current_thread->GetProcessOwner()->addrspace,virtualPage);
 
-  for(int i = 0; i < g_cfg->PageSize; i++) {
-    g_machine->mainMemory[physPage*g_cfg->PageSize + i] = buffer[i];
-  }
+  memcpy(&(g_machine->mainMemory[physPage * g_cfg->PageSize]), buffer, g_cfg->PageSize);
 
   tt->setPhysicalPage(virtualPage,physPage);
   tt->setBitValid(virtualPage);
