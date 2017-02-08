@@ -203,10 +203,7 @@ int PhysicalMemManager::EvictPage() {
   int vpn = tpr[local_i_clock].virtualPage;
 
   while(tt->getBitIo(vpn)) {
-    IntStatus oldStatus = g_machine->interrupt->GetStatus();
-    g_machine->interrupt-> SetStatus(INTERRUPTS_OFF);
     g_current_thread->Yield();
-    g_machine->interrupt-> SetStatus(oldStatus);
   }
   tt->setBitIo(vpn);
 
