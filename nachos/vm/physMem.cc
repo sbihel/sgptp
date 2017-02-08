@@ -195,16 +195,12 @@ int PhysicalMemManager::EvictPage() {
     }
   }
 
-  i_clock = local_i_clock;
-
-  tpr[i_clock].owner->translationTable->clearBitValid(tpr[local_i_clock].virtualPage);
-  tpr[i_clock].locked = true;
-
-  int res = i_clock;
+  tpr[local_i_clock].owner->translationTable->clearBitValid(tpr[local_i_clock].virtualPage);
+  tpr[local_i_clock].locked = true;
 
   // copy page in swap.
-  TranslationTable* tt = tpr[res].owner->translationTable;
-  int vpn = tpr[i_clock].virtualPage;
+  TranslationTable* tt = tpr[local_i_clock].owner->translationTable;
+  int vpn = tpr[local_i_clock].virtualPage;
 
   while(tt->getBitIo(vpn)) {
     IntStatus oldStatus = g_machine->interrupt->GetStatus();
@@ -216,16 +212,19 @@ int PhysicalMemManager::EvictPage() {
 
   if (tt->getBitSwap(vpn)) {
     if(tt->getBitM(vpn)) {
-      g_swap_manager->PutPageSwap(tt->getAddrDisk(vpn), (char*) (g_machine->mainMemory+res*g_cfg->PageSize));
+      g_swap_manager->PutPageSwap(tt->getAddrDisk(vpn), (char*) (g_machine->mainMemory + local_i_clock * g_cfg->PageSize));
     }
   } else {
-    int swapAddr = g_swap_manager->PutPageSwap(-1, (char*) (g_machine->mainMemory+res*g_cfg->PageSize));
+    int swapAddr = g_swap_manager->PutPageSwap(-1, (char*) (g_machine->mainMemory + local_i_clock * g_cfg->PageSize));
     tt->setAddrDisk(vpn, swapAddr);
     tt->setBitSwap(vpn);
   }
 
   tt->clearBitIo(vpn);
-  return res;
+
+  i_clock = local_i_clock;
+
+  return local_i_clock;
 #endif
 }
 
