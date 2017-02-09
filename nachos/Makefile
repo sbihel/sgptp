@@ -42,8 +42,9 @@ clean:
 	-NO_DEP=no_dep ; export NO_DEP ; \
 	for d in kernel filesys drivers utility vm machine \
 	  userlib test perso test_locking ; do \
-	  [ -d $$d ] && \
-	  $(MAKE) -C $$d clean ; \
+	  if [ -d $$d ]; then \
+			$(MAKE) -C $$d clean ; \
+		fi \
 	done
 
 doxygen:
