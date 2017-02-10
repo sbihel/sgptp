@@ -53,7 +53,7 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
   while(tt->getBitIo(virtualPage)) {
       g_current_thread->Yield();
   }
-  if (tt->getBitValid(virtualPage)) {
+  if (tt->getBitValid(virtualPage)) { // page fault has been fixed
     return NO_EXCEPTION;
   }
 

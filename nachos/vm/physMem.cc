@@ -197,6 +197,7 @@ int PhysicalMemManager::EvictPage() {
 
   tpr[local_i_clock].owner->translationTable->clearBitValid(tpr[local_i_clock].virtualPage);
   tpr[local_i_clock].locked = true;
+  ChangeOwner(local_i_clock, g_current_thread);
 
   // copy page in swap.
   TranslationTable* tt = tpr[local_i_clock].owner->translationTable;
@@ -209,9 +210,13 @@ int PhysicalMemManager::EvictPage() {
 
   if (tt->getBitSwap(vpn)) {
     if(tt->getBitM(vpn)) {
-      g_swap_manager->PutPageSwap(tt->getAddrDisk(vpn), (char*) (g_machine->mainMemory + local_i_clock * g_cfg->PageSize));
+      int addrDisk = tt->getAddrDisk(vpn);
+      tt->setAddrDisk(vpn, -1);
+      g_swap_manager->PutPageSwap(addrDisk, (char*) (g_machine->mainMemory + local_i_clock * g_cfg->PageSize));
+      tt->setAddrDisk(vpn, addrDisk);
     }
   } else {
+    tt->setAddrDisk(vpn, -1);
     int swapAddr = g_swap_manager->PutPageSwap(-1, (char*) (g_machine->mainMemory + local_i_clock * g_cfg->PageSize));
     tt->setAddrDisk(vpn, swapAddr);
     tt->setBitSwap(vpn);
