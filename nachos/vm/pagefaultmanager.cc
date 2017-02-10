@@ -50,6 +50,16 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
   TranslationTable* tt = g_machine->mmu->translationTable;
   char* buffer = new char[g_cfg->PageSize];
 
+  while(tt->getBitIo(virtualPage)) {
+      g_current_thread->Yield();
+  }
+
+  if (tt->getBitValid(virtualPage)) {
+    return NO_EXCEPTION;
+  }
+
+  tt->setBitIo(virtualPage);
+
   if (tt->getBitSwap(virtualPage) == 0) {
     if(tt->getAddrDisk(virtualPage) == -1) { // anonymous page
       memset(buffer,0,g_cfg->PageSize);
@@ -57,16 +67,10 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
       g_current_thread->GetProcessOwner()->exec_file->ReadAt(buffer, g_cfg->PageSize, tt->getAddrDisk(virtualPage));
     }
   } else { // page on disk
-    while(tt->getBitIo(virtualPage)) {
-      IntStatus oldStatus = g_machine->interrupt->GetStatus();
-      g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
-      g_current_thread->Sleep();
-      g_machine->interrupt-> SetStatus(oldStatus);
-    }
-    tt->setBitIo(virtualPage);
     g_swap_manager->GetPageSwap(tt->getAddrDisk(virtualPage), buffer);
-    tt->clearBitIo(virtualPage);
   }
+
+  tt->clearBitIo(virtualPage);
 
   tt->clearBitM(virtualPage);
   tt->setBitU(virtualPage);
