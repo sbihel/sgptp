@@ -372,13 +372,11 @@ void Thread::SaveProcessorState() {
 	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-  IntStatus oldLevel = g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
 	for(int i = 0; i < NUM_INT_REGS; i++)
 		thread_context.int_registers[i] = g_machine->int_registers[i];
 	for(int i = 0; i < NUM_FP_REGS; i++)
 		thread_context.float_registers[i] = g_machine->float_registers[i];
 	thread_context.cc = g_machine->ReadCC();
-  g_machine->interrupt->SetStatus(oldLevel);
 #endif
 }
 
@@ -396,14 +394,12 @@ void Thread::RestoreProcessorState() {
 	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-  IntStatus oldLevel = g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
   for(int i = 0; i < NUM_INT_REGS; i++)
 		g_machine->int_registers[i] = thread_context.int_registers[i];
 	for(int i = 0; i < NUM_FP_REGS; i++)
 		g_machine->float_registers[i] = thread_context.float_registers[i];
 	g_machine->WriteCC(thread_context.cc);
 	g_machine->mmu->translationTable = process->addrspace->translationTable;
-  g_machine->interrupt->SetStatus(oldLevel);
 #endif
 }
 
