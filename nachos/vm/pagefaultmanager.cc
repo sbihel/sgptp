@@ -53,7 +53,6 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
   while(tt->getBitIo(virtualPage)) {
       g_current_thread->Yield();
   }
-
   if (tt->getBitValid(virtualPage)) {
     return NO_EXCEPTION;
   }
@@ -67,19 +66,24 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
       g_current_thread->GetProcessOwner()->exec_file->ReadAt(buffer, g_cfg->PageSize, tt->getAddrDisk(virtualPage));
     }
   } else { // page on disk
-    g_swap_manager->GetPageSwap(tt->getAddrDisk(virtualPage), buffer);
+    int num_sector = tt->getAddrDisk(virtualPage);
+    while(num_sector == -1) {
+      g_current_thread->Yield();
+      num_sector = tt->getAddrDisk(virtualPage);
+    }
+    g_swap_manager->GetPageSwap(num_sector, buffer);
   }
-
-  tt->clearBitIo(virtualPage);
-
-  tt->clearBitM(virtualPage);
-  tt->setBitU(virtualPage);
 
   long physPage = g_physical_mem_manager->AddPhysicalToVirtualMapping(g_current_thread->GetProcessOwner()->addrspace,virtualPage);
 
   memcpy(&(g_machine->mainMemory[physPage * g_cfg->PageSize]), buffer, g_cfg->PageSize);
 
   tt->setPhysicalPage(virtualPage,physPage);
+
+  tt->clearBitIo(virtualPage);
+  tt->clearBitM(virtualPage);
+  tt->setBitU(virtualPage);
+
   tt->setBitValid(virtualPage);
 
   g_physical_mem_manager->UnlockPage(physPage);
