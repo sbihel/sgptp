@@ -197,7 +197,6 @@ int PhysicalMemManager::EvictPage() {
 
   tpr[local_i_clock].owner->translationTable->clearBitValid(tpr[local_i_clock].virtualPage);
   tpr[local_i_clock].locked = true;
-  ChangeOwner(local_i_clock, g_current_thread);
 
   // copy page in swap.
   TranslationTable* tt = tpr[local_i_clock].owner->translationTable;
@@ -221,6 +220,8 @@ int PhysicalMemManager::EvictPage() {
     tt->setAddrDisk(vpn, swapAddr);
     tt->setBitSwap(vpn);
   }
+
+  ChangeOwner(local_i_clock, g_current_thread);
 
   tt->clearBitIo(vpn);
 
