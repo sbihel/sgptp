@@ -1,0 +1,35 @@
+\documentclass[a4paper]{article}
+
+\usepackage[english]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{parskip}
+
+\title{Decentralized Crowdsourcing of Congestion Data}
+\author{Louis Béziaud \and Simon Bihel}
+
+\begin{document}
+
+\maketitle
+
+\section{Nachos modifications}
+
+The deletion of \texttt{errorAbout} in the \texttt{SyscallError} destructor needs \texttt{delete[]}. (issue \href{https://github.com/lbeziaud/sgmtp/issues/13}{\#13})
+
+We replaced \texttt{strcpy(tail, orig\_path);} with \texttt{memmove(tail, orig\_path, strlen(tail));} in the function \texttt{decompname} to avoid the Valgrind warning \texttt{Source and destination overlap in strcpy}. (issue \href{https://github.com/lbeziaud/sgmtp/issues/11}{\#11})
+
+The \texttt{sort} requires \texttt{libnachos.h} to use \texttt{n\_printf}. (issue \href{https://github.com/lbeziaud/sgmtp/issues/10}{\#10})
+
+The variable \texttt{page} is unused in the \texttt{PhysicalMemManager} destructor. (issue \href{https://github.com/lbeziaud/sgmtp/issues/6}{\#6})
+
+The \texttt{shell} is missing a return value \texttt{control reaches end of non-void function}. (issue \href{https://github.com/lbeziaud/sgmtp/issues/5}{\#5})
+
+Using \texttt{intptr\_t arg} instead of \texttt{int arg} removes the warning \texttt{cast to pointer from integer of different size}. (issue \href{https://github.com/lbeziaud/sgmtp/issues/3}{\#3})
+
+Replacing \texttt{\%llu} with \texttt{PRIu64} removed the warning \texttt{format ‘\%llu’ expects argument of type ‘long long unsigned int’, but argument 2 has type ‘Time {aka long unsignied int}’}. (issue \href{https://github.com/lbeziaud/sgmtp/issues/4}{\#4})
+
+
+\end{document}
+
