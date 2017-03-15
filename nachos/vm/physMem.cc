@@ -183,18 +183,21 @@ int PhysicalMemManager::EvictPage() {
 #endif
 #ifdef ETUDIANTS_TP
   int local_i_clock = (i_clock + 1) % g_cfg->NumPhysPages;
-  int beginning = (local_i_clock - 1) % g_cfg->NumPhysPages;
+  int i = 0;
 
   // search for a page that isn't locked or used recently
   while ((tpr[local_i_clock].owner->translationTable->getBitU(tpr[local_i_clock].virtualPage)) || (tpr[local_i_clock].locked)) {
     tpr[local_i_clock].owner->translationTable->clearBitU(tpr[local_i_clock].virtualPage);
-    local_i_clock = (local_i_clock + 1) % g_cfg->NumPhysPages;
+    i++;
     // back at beginning means we found nothing
-    if (local_i_clock >= beginning) {
+    if (i > g_cfg->NumPhysPages) {
+      i_clock = local_i_clock;
       g_current_thread->Yield();
     }
+    local_i_clock = (local_i_clock + 1) % g_cfg->NumPhysPages;
   }
 
+  i_clock = local_i_clock;
   tpr[local_i_clock].owner->translationTable->clearBitValid(tpr[local_i_clock].virtualPage);
   tpr[local_i_clock].locked = true;
 
@@ -224,8 +227,6 @@ int PhysicalMemManager::EvictPage() {
   ChangeOwner(local_i_clock, g_current_thread);
 
   tt->clearBitIo(vpn);
-
-  i_clock = local_i_clock;
 
   return local_i_clock;
 #endif
