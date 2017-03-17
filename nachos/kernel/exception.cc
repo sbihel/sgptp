@@ -875,6 +875,28 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			}
 			break;
 		}
+
+    case SC_MMAP: {
+      DEBUG('e', (char*)"call SC_MMAP\n");
+
+      OpenFile *file = (OpenFile *)g_machine->ReadIntRegister(4);
+      int size = g_machine->ReadIntRegister(5);
+      ASSERT(file != NULL);
+      ASSERT(size > 0);
+
+      Process *current_process = g_current_thread->GetProcessOwner();
+      ASSERT(current_process != NULL);
+
+      int result = current_process->addrspace->Mmap(file, size);
+      if (result < 0) {
+        g_machine->WriteIntRegister(2, -1);
+        g_syscall_error->SetMsg((char*)"Mmap() failed\n", OutOfMemory);
+      }
+
+      g_machine->WriteIntRegister(2, result);
+      g_syscall_error->SetMsg((char*)"", NoError);
+      break;
+    }
 #endif
 
 		default:
