@@ -384,8 +384,44 @@ int AddrSpace::Alloc(int numPages)
 // ----------------------------------------------------------------------
 int AddrSpace::Mmap(OpenFile *f, int size)
 {
+#ifndef ETUDIANTS_TP
   printf("**** Warning: method AddrSpace::Mmap is not implemented yet\n");
   exit(-1);
+#else
+  int nb_pages = divRoundUp(size, g_cfg->PageSize);
+
+  int addr_allocated = Alloc(nb_pages);
+  if (addr_allocated == 0) {
+    fprintf(stderr, "Alloc() in Mmap failed to allocate %d bytes\n", size);
+    g_machine->interrupt->Halt(-1);
+  }
+
+  s_mapped_file element;
+  element.first_address = addr_allocated;
+  element.size = nb_pages;
+  element.file = f;
+
+  mapped_files[nb_mapped_files] = element;
+
+  nb_mapped_files++;
+
+  int i, virtualPage, byte_offset;
+  for (i = 0; i < nb_pages; ++i) {
+    byte_offset = i * g_cfg->PageSize;
+    virtualPage = addr_allocated + byte_offset;
+
+    translationTable->setAddrDisk(virtualPage, byte_offset);
+    translationTable->clearBitIo(virtualPage);
+    translationTable->setBitValid(virtualPage);
+    translationTable->clearBitSwap(virtualPage);
+    translationTable->setBitReadAllowed(virtualPage);
+    translationTable->setBitWriteAllowed(virtualPage);
+    translationTable->clearBitU(virtualPage);
+    translationTable->clearBitM(virtualPage);
+  }
+
+  return addr_allocated;
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -396,9 +432,23 @@ int AddrSpace::Mmap(OpenFile *f, int size)
  */
 //----------------------------------------------------------------------
 OpenFile *AddrSpace::findMappedFile(int32_t addr) {
+#ifndef ETUDIANTS_TP
   printf("**** Warning: method AddrSpace::findMappedFile is not implemented yet\n");
   exit(-1);
-
+#else
+  int i, j;
+  for (i = 0; i < nb_mapped_files; i++) {
+      s_mapped_file mf = mapped_files[i];
+      int mf_start = mf.first_address;
+      int mf_end   = mf_start + mf.size;
+      printf("%d %d %d\n", addr, mf_start, mf_end);
+      if (addr >= mf_start && addr <= mf_end) {
+        printf("found!\n");
+        return mf.file;
+      }
+  }
+  return NULL;
+#endif
 }
 
 //----------------------------------------------------------------------

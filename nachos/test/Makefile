@@ -5,7 +5,7 @@
 #
 # To add generate a new program, just update the PROGRAMS target below
 
-PROGRAMS = halt hello shell matmult sort prodcons prodcons2 ab
+PROGRAMS = halt hello shell matmult sort prodcons prodcons2 ab sortf
 
 all: $(PROGRAMS)
 
