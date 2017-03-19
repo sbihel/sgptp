@@ -876,27 +876,32 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			break;
 		}
 
-    case SC_MMAP: {
-      DEBUG('e', (char*)"call SC_MMAP\n");
-
-      OpenFile *file = (OpenFile *)g_machine->ReadIntRegister(4);
-      int size = g_machine->ReadIntRegister(5);
-      ASSERT(file != NULL);
-      ASSERT(size > 0);
-
-      Process *current_process = g_current_thread->GetProcessOwner();
-      ASSERT(current_process != NULL);
-
-      int result = current_process->addrspace->Mmap(file, size);
-      if (result < 0) {
-        g_machine->WriteIntRegister(2, -1);
-        g_syscall_error->SetMsg((char*)"Mmap() failed\n", OutOfMemory);
-      }
-
-      g_machine->WriteIntRegister(2, result);
-      g_syscall_error->SetMsg((char*)"", NoError);
-      break;
-    }
+		case SC_MMAP: {
+			DEBUG('e', (char*)"Filesystem: call SC_MMAP\n");
+			// Get the openfile number
+			int32_t fid = g_machine->ReadIntRegister(4);
+			OpenFile *file = (OpenFile *)g_object_ids->SearchObject(fid);
+			int size = g_machine->ReadIntRegister(5);
+			if (file && file->typeId == FILE_TYPE_ID && size > 0) {
+				Process *current_process = g_current_thread->GetProcessOwner();
+				int result = current_process->addrspace->Mmap(file, size);
+				if (result < 0) {
+					g_machine->WriteIntRegister(2, -1);
+					g_syscall_error->SetMsg((char*)"Mmap() failed\n", OutOfMemory);
+				} else {
+					g_machine->WriteIntRegister(2, result);
+					g_syscall_error->SetMsg((char*)"", NoError);
+				}
+			} else {
+				g_machine->WriteIntRegister(2, -1);
+				sprintf(msg, "%d", fid);
+				if (size <= 0)
+					g_syscall_error->SetMsg((char*)"Invalid size", NoError);
+				else
+					g_syscall_error->SetMsg(msg, InvalidFileId);
+			}
+			break;
+		}
 #endif
 
 		default:

@@ -62,7 +62,7 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
   tt->setBitIo(virtualPage);
 
   int ad = tt->getAddrDisk(virtualPage);
-  OpenFile *f = as->findMappedFile(virtualPage);
+  OpenFile *f = as->findMappedFile(virtualPage * g_cfg->PageSize);
   if (f != NULL) { // mapped file
     printf("readat\n");
     f->ReadAt(buffer, g_cfg->PageSize, ad);
@@ -71,7 +71,7 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
       if(tt->getAddrDisk(virtualPage) == -1) { // anonymous page
         memset(buffer,0,g_cfg->PageSize);
       } else { // read from file
-        g_current_thread->GetProcessOwner()->exec_file->ReadAt(buffer, g_cfg->PageSize, tt->getAddrDisk(virtualPage));
+        g_current_thread->GetProcessOwner()->exec_file->ReadAt(buffer, g_cfg->PageSize, ad);
       }
     } else { // page on disk
       int num_sector = tt->getAddrDisk(virtualPage);

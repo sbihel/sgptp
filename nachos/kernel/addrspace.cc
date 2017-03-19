@@ -390,7 +390,8 @@ int AddrSpace::Mmap(OpenFile *f, int size)
 #else
   int nb_pages = divRoundUp(size, g_cfg->PageSize);
 
-  int addr_allocated = Alloc(nb_pages);
+  int page_allocated = Alloc(nb_pages);
+  int addr_allocated = page_allocated * g_cfg->PageSize;
   if (addr_allocated == 0) {
     fprintf(stderr, "Alloc() in Mmap failed to allocate %d bytes\n", size);
     g_machine->interrupt->Halt(-1);
@@ -408,11 +409,11 @@ int AddrSpace::Mmap(OpenFile *f, int size)
   int i, virtualPage, byte_offset;
   for (i = 0; i < nb_pages; ++i) {
     byte_offset = i * g_cfg->PageSize;
-    virtualPage = addr_allocated + byte_offset;
+    virtualPage = page_allocated + i;
 
     translationTable->setAddrDisk(virtualPage, byte_offset);
     translationTable->clearBitIo(virtualPage);
-    translationTable->setBitValid(virtualPage);
+    translationTable->clearBitValid(virtualPage);
     translationTable->clearBitSwap(virtualPage);
     translationTable->setBitReadAllowed(virtualPage);
     translationTable->setBitWriteAllowed(virtualPage);
@@ -436,13 +437,13 @@ OpenFile *AddrSpace::findMappedFile(int32_t addr) {
   printf("**** Warning: method AddrSpace::findMappedFile is not implemented yet\n");
   exit(-1);
 #else
-  int i, j;
+  int i;
   for (i = 0; i < nb_mapped_files; i++) {
       s_mapped_file mf = mapped_files[i];
       int mf_start = mf.first_address;
-      int mf_end   = mf_start + mf.size;
-      printf("%d %d %d\n", addr, mf_start, mf_end);
-      if (addr >= mf_start && addr <= mf_end) {
+      int mf_end   = mf_start + (mf.size + 1) * g_cfg->PageSize;
+      // printf("%d %d %d\n", addr, mf_start, mf_end);
+      if (addr >= mf_start && addr < mf_end) {
         printf("found!\n");
         return mf.file;
       }

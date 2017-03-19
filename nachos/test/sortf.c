@@ -1,7 +1,7 @@
 #include "userlib/syscall.h"
 #include "userlib/libnachos.h"
 
-#define SIZE_BUFF 1
+#define SIZE_BUFF 4
 
 void sort(int *p, int size) {
   int i, j;
@@ -31,13 +31,13 @@ int main(void) {
     Exit(1);
   }
 
-  n_printf("file: %x, buffer: %x\n", f, buff);
+  n_printf("file: %x, buffer: %d\n", f, buff);
 
   /* sort(buff, SIZE_BUFF); */
 
   int i;
   for (i = 0; i < SIZE_BUFF; i++) {
-    n_printf("%d: %d \n", &buff[i], buff[i]);
+    n_printf("%d: %c \n", &buff[i], buff[i]);
   }
 
   Close(f);
