@@ -263,8 +263,23 @@ AddrSpace::~AddrSpace()
     for (i = 0 ; i <  freePageId ; i++) {
       
       // If it is in physical memory, free the physical page
-      if (translationTable->getBitValid(i))
+      if (translationTable->getBitValid(i)) {
+
+#ifdef ETUDIANTS_TP
+	TranslationTable* tt = translationTable;
+	AddrSpace *as = this;
+	OpenFile *f = as->findMappedFile(i * g_cfg->PageSize);
+	if (f != NULL) { // mapped file
+	  if (tt->getBitM(i)) {
+	    int ad = tt->getAddrDisk(i);
+	    f->WriteAt((char*) (g_machine->mainMemory + i * g_cfg->PageSize), g_cfg->PageSize, ad);
+	  }
+	}
+#endif
+
 	g_physical_mem_manager->RemovePhysicalToVirtualMapping(translationTable->getPhysicalPage(i));
+      }
+
       // If it is in the swap disk, free the corresponding disk sector
       if (translationTable->getBitSwap(i)) {
 	int addrDisk = translationTable->getAddrDisk(i);
