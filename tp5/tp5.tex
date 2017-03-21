@@ -1,0 +1,76 @@
+\documentclass[a4paper,11pt,english]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{babel}
+
+\usepackage{lmodern}
+\usepackage{inconsolata} % default typewriter kills me
+
+\usepackage{listings}
+
+\usepackage[htt]{hyphenat} % hyphen with tt
+
+\usepackage{enumitem}
+\setlist[enumerate]{leftmargin=*}
+
+\setlength{\parindent}{0cm}
+
+\usepackage{fullpage}
+
+\title{SGP --- TP5\\Scheduling and Synchronization}
+\author{Louis Béziaud \and Simon Bihel}
+
+\begin{document}
+
+\maketitle
+
+This report presents how we tested the code that we wrote for the mandatory part of the assignment. It also presents what we have done to add parameters to threads.
+
+\section{Tests}
+The program \texttt{test/prodcons.c} is a \textit{multiple producer/consumer} which makes use of \texttt{Semaphore}, \texttt{Lock}, and threads. We mainly ensure two properties. First, we check that a producer (resp.\ consumer) cannot write (resp.\ read) on an unconsumed (resp. unproduced) buffer emplacement. Secondly, we verify that ``nothing is lost'' by maintaining a balance of producing/consuming calls.
+
+Running the program outputs the following code bloc. The absence of ``overflow'' (resp.\ ``underflow''), along with a null balance show that the test went fine.
+\begin{lstlisting}[basicstyle=\ttfamily\small,mathescape]
+# ./nachos -x prodcons
+$\ldots$
+>>> balance: 0
+>>> num actions: 60
+$\ldots$
+\end{lstlisting}
+
+Passing parameters to threads was tested though the program \texttt{test/hello.c}. A thread is created from a function which prints each member of its \texttt{argc} arguments.
+\begin{lstlisting}[basicstyle=\ttfamily\small,mathescape]
+# ./nachos -x hello
+$\ldots$
+3
+Bonjour le monde 
+$\ldots$
+\end{lstlisting}
+
+We haven't been able to write a good test for \texttt{Conditions} as we can't know for sure if all threads are waiting. Others students have used the fact that a thread can't be interrupted if it is not waiting. That means that if we use interrupt handler we can be sure that all threads are waiting but this is a very specific solution to Nachos and it is quite ugly to poke around manually.
+
+
+
+\section{Addition of Parameters at Thread Creation}
+To add parameters, we tried different approaches and eventually settled on an
+``argc/argv'' solution (we will discuss other solutions later on). Basically,
+the \texttt{threadCreate} available to the user has been extended to accept the
+two additional parameters. Then \texttt{threadStart} is called and to avoid
+problems with additional parameters through syscalls we put all parameters in a
+\texttt{struct}. Then, the user's function is called with argc and argv.
+
+Because having to use argc/argv is not natural for user defined functions, we
+wanted to explore other solutions. The first step is to make
+\texttt{threadCreate} a variadic function (i.e.\ it can accept a variable number
+of parameters). Then to pass the parameters to \texttt{threadStart} we have to
+make a \texttt{va\_list}, and then again pass it to the user's function. While
+the user doesn't have to change the parameters into strings, they have to
+manipulate a \texttt{va\_list}. Writing a wrapper to extract parameters from the
+\texttt{va\_list} would make things hidden to the user though we haven't found
+how to do it. We can't use variadic functions all the way up (or down? hahaha)
+because of limited registers to pass arguments.
+
+
+\end{document}
