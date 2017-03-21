@@ -10,7 +10,7 @@
 #define NB_CONS 3 /* number of consumer threads */
                   /* needs NB_PROD=NB_CONS */
 
-#define TLIM 10 /* loop count of producers/consumers */
+#define TLIM 40 /* loop count of producers/consumers */
 
 char buf[BSIZE]; // buffer
 
@@ -23,8 +23,10 @@ int nextout; // buffer tail
 LockId pmut; // producers mutex
 LockId cmut; // consumers mutex
 
-int balance;    // |NB_PROD-NB_CONS|
-int nb_actions; // number of produce/consume
+int balance_cons;    // |NB_PROD-NB_CONS|
+int nb_actions_cons; // number of produce/consume
+int balance_prod;    // |NB_PROD-NB_CONS|
+int nb_actions_prod; // number of produce/consume
 
 void producer();
 void consumer();
@@ -39,8 +41,10 @@ int main() {
   nextin  = 0;
   nextout = 0;
 
-  balance    = 0;
-  nb_actions = 0;
+  balance_prod    = 0;
+  balance_cons    = 0;
+  nb_actions_prod = 0;
+  nb_actions_cons = 0;
 
   ThreadId prod[NB_PROD], cons[NB_CONS];
 
@@ -54,7 +58,7 @@ int main() {
   for (i = 0; i < NB_CONS; i++) {
     n_snprintf(str, 20, "cons%d", i);
     cons[i] = threadCreate(str, consumer);
-  } 
+  }
 
   // join threads
   for (i = 0; i < NB_PROD; i++) {
@@ -70,57 +74,46 @@ int main() {
   LockDestroy(pmut);
   LockDestroy(cmut);
 
-  n_printf(">>> balance: %d\n", balance);
-  n_printf(">>> num actions: %d\n", nb_actions);
+  n_printf(">>> balance: %d\n", balance_cons + balance_prod);
+  n_printf(">>> num actions: %d\n", nb_actions_cons + nb_actions_prod);
 
   return 0;
 }
 
-void producer() {  
+void producer() {
   int i;
   for (i=0; i<TLIM; i++) {
     LockAcquire(pmut);
 
     P(empty);
 
-    if (buf[nextin] == PROD_ITEM) {
-      // producer overflow
-      n_printf(">>> overflow\n");
-    }
+    /* if (balance > BSIZE) {    */
+    /*   n_printf("overflow\n"); */
+    /* }                         */
 
-    buf[nextin] = PROD_ITEM; // produce item
-
-    nextin++;
-    nextin %= BSIZE;
-
-    nb_actions++;
-    balance++;
+    nb_actions_prod++;
+    balance_prod++;
 
     V(occupied);
-     LockRelease(pmut);
- }
+    LockRelease(pmut);
+  }
 }
 
-void consumer() {  
+void consumer() {
   int i;
   for (i=0; i<TLIM; i++) {
-     LockAcquire(cmut);
-   P(occupied);
+    LockAcquire(cmut);
 
-    if (buf[nextout] == CONS_REPL) {
-      // consumer underflow
-      n_printf(">>> undeflow\n");
-    }
+    P(occupied);
 
-    buf[nextout] = CONS_REPL; // consume item
+    /* if (balance <= 0) {        */
+    /*   n_printf("underflow\n"); */
+    /* }                          */
 
-    nextout++;
-    nextout %= BSIZE;
-
-    nb_actions++;
-    balance--;
+    nb_actions_cons++;
+    balance_cons--;
 
     V(empty);
-     LockRelease(cmut);
- }
+    LockRelease(cmut);
+  }
 }

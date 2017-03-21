@@ -104,16 +104,22 @@ int Thread::Start(Process *owner, int32_t func, int arg) {
 	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-	ASSERT(process == NULL);
-	// Nothing returns an error code
-	process = owner;
-	int user_stack = owner->addrspace->StackAllocate();
-	int8_t *kernel_stack = AllocBoundedArray(SIMULATORSTACKSIZE);
-	InitThreadContext(func, user_stack, arg);
-	InitSimulatorContext(kernel_stack, SIMULATORSTACKSIZE);
-	owner->numThreads++;
-	g_alive->Append(this);
-	g_scheduler->ReadyToRun(this);
+  IntStatus oldLevel = g_machine->interrupt->GetStatus();
+  g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
+
+  ASSERT(process == NULL);
+
+  process = owner;
+  process->numThreads++;
+
+  InitSimulatorContext(AllocBoundedArray(SIMULATORSTACKSIZE), SIMULATORSTACKSIZE);
+  InitThreadContext(func, process->addrspace->StackAllocate(), arg);
+
+  g_alive->Append(this);
+  g_scheduler->ReadyToRun(this);
+
+  g_machine->interrupt->SetStatus(oldLevel);
+
 	return NoError;
 #endif
 }
@@ -155,7 +161,7 @@ void Thread::InitThreadContext(int32_t initialPCREG, int32_t initialSP,
 //	member function.
 */
 //----------------------------------------------------------------------
-void ThreadPrint(int arg) {
+void ThreadPrint(intptr_t arg) {
 	Thread *t = (Thread *)arg;
 	printf("%s", t->GetName());
 }
@@ -267,8 +273,12 @@ void Thread::Finish() {
 	DEBUG('t', (char *)"Finishing thread \"%s\"\n", GetName());
 	IntStatus oldStatus = g_machine->interrupt->GetStatus();
 	g_machine->interrupt->SetStatus(INTERRUPTS_OFF);
-	g_thread_to_be_destroyed = this;
+
+  g_thread_to_be_destroyed = this;
+  g_alive->RemoveItem(this);
+
 	Sleep();
+
 	g_machine->interrupt->SetStatus(oldStatus);
 #endif
 }
@@ -362,12 +372,11 @@ void Thread::SaveProcessorState() {
 	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-	// TODO, should we use getter methods?
 	for(int i = 0; i < NUM_INT_REGS; i++)
 		thread_context.int_registers[i] = g_machine->int_registers[i];
 	for(int i = 0; i < NUM_FP_REGS; i++)
 		thread_context.float_registers[i] = g_machine->float_registers[i];
-	thread_context.cc = g_machine->cc;
+	thread_context.cc = g_machine->ReadCC();
 #endif
 }
 
@@ -385,12 +394,12 @@ void Thread::RestoreProcessorState() {
 	exit(-1);
 #endif
 #ifdef ETUDIANTS_TP
-	// TODO, should we use setter methods?
-	for(int i = 0; i < NUM_INT_REGS; i++)
+  for(int i = 0; i < NUM_INT_REGS; i++)
 		g_machine->int_registers[i] = thread_context.int_registers[i];
 	for(int i = 0; i < NUM_FP_REGS; i++)
 		g_machine->float_registers[i] = thread_context.float_registers[i];
-	g_machine->cc = thread_context.cc;
+	g_machine->WriteCC(thread_context.cc);
+	g_machine->mmu->translationTable = process->addrspace->translationTable;
 #endif
 }
 

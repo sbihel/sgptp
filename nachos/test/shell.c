@@ -52,7 +52,8 @@ main()
 	    buffer[++i]='\0';
 	    
 	} else {buffer[++i] = '\0';}
-	
+
+	if (n_strcmp("exit", buffer) == 0) break;
 		
 	// Execute the command
 	// In the case it is a background command, don't wait for its completion
@@ -65,5 +66,7 @@ main()
 
 	}
     }
+
+  return 0;
 }
 

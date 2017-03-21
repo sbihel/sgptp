@@ -92,6 +92,11 @@ int DriverACIA::TtySend(char* buff)
     ind_send++;
     return i;
   }
+  else {
+    // should not happen
+    exit(-1);
+    return 0;
+  }
 #else
   printf("**** Warning: method Tty_Send of the ACIA driver not implemented yet\n");
   exit(-1);
@@ -136,6 +141,11 @@ int DriverACIA::TtyReceive(char* buff,int lg)
     ind_rec = 0;
     g_machine->acia->SetWorkingMode(SEND_INTERRUPT|REC_INTERRUPT);
     return i;
+  }
+  else {
+    // should not happen
+    exit(-1);
+    return 0;
   }
 #else
   printf("**** Warning: method Tty_Receive of the ACIA driver not implemented yet\n");

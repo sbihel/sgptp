@@ -1,0 +1,53 @@
+# This is part of a GNU -*- Makefile -*-, included by the Makefiles in
+# each of the subdirectories containing MIPS user code.
+
+include $(TOPDIR)/Makefile.config
+
+USERLIB = $(TOPDIR)/userlib
+
+AS  = $(MIPS_AS) -c
+GCC = $(MIPS_GCC)
+LD  = $(MIPS_LD)
+
+INCPATH += -I$(TOPDIR) -I$(USERLIB)
+ASFLAGS  = $(MIPS_ASFLAGS) $(INCPATH)
+CPPFLAGS = $(MIPS_CPPFLAGS) $(INCPATH)
+CFLAGS   = $(MIPS_CFLAGS) $(INCPATH) -DETUDIANTS_TP
+LDFLAGS  = $(MIPS_LDFLAGS) -T $(TOPDIR)/userlib/ldscript.lds
+
+# Rules
+%.a:
+	$(AR) rcv $@ $^
+
+%.o: %.c
+	$(GCC) $(CFLAGS) -c $<
+
+%.o: %.s
+	$(AS) $(ASFLAGS) -c $<
+
+# Dependencies
+.%.d: %.s
+	@echo Generating dependencies for $<
+	@$(SHELL) -ec '$(GCC) -x assembler-with-cpp -M $(ASFLAGS) $< \
+		| sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@; \
+		[ -s $@ ] || rm -f $@'
+
+.%.d: %.c
+	@echo Generating dependencies for $<
+	@$(SHELL) -ec '$(GCC) -M $(CFLAGS) $< \
+		| sed '\''s/\($*\)\.o[ :]*/\1.o $@ : /g'\'' > $@; \
+		[ -s $@ ] || rm -f $@'
+
+$(PROGRAMS):
+	$(LD) $(LDFLAGS) $+ -o $@
+
+clean:
+	$(RM) $(TOCLEAN) $(PROGRAMS) *.o *~ core prep_*.s *.coff .*.d *.a
+
+# Dependences generation
+OBJS:=$(patsubst %.c,%.o,$(wildcard *.c)) $(patsubst %.s,%.o,$(wildcard *.s))
+ifneq ($(OBJS),)
+ifndef NO_DEP
+-include $(OBJS:%.o=.%.d)
+endif
+endif
