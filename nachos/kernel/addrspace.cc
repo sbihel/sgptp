@@ -270,9 +270,11 @@ AddrSpace::~AddrSpace()
 	AddrSpace *as = this;
 	OpenFile *f = as->findMappedFile(i * g_cfg->PageSize);
 	if (f != NULL) { // mapped file
+	  printf("[delete addrspace] i: %d\n", i);
 	  if (tt->getBitM(i)) {
 	    int ad = tt->getAddrDisk(i);
-	    f->WriteAt((char*) (g_machine->mainMemory + i * g_cfg->PageSize), g_cfg->PageSize, ad);
+	    printf("[WriteAt] death process\n");
+	    f->WriteAt((char*) (g_machine->mainMemory + tt->getAddrDisk(i * g_cfg->PageSize)), g_cfg->PageSize, ad);
 	  }
 	}
 #endif
@@ -459,7 +461,7 @@ OpenFile *AddrSpace::findMappedFile(int32_t addr) {
       int mf_end   = mf_start + (mf.size + 1) * g_cfg->PageSize;
       // printf("%d %d %d\n", addr, mf_start, mf_end);
       if (addr >= mf_start && addr < mf_end) {
-        printf("found!\n");
+        // printf("found!\n");
         return mf.file;
       }
   }

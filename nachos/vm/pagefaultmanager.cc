@@ -64,7 +64,7 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
   int ad = tt->getAddrDisk(virtualPage);
   OpenFile *f = as->findMappedFile(virtualPage * g_cfg->PageSize);
   if (f != NULL) { // mapped file
-    printf("readat\n");
+    // printf("readat\n");
     f->ReadAt(buffer, g_cfg->PageSize, ad);
   } else { // default
     if (tt->getBitSwap(virtualPage) == 0) {
