@@ -454,6 +454,9 @@ void ExceptionHandler(ExceptionType exceptiontype, int vaddr) {
 			// The close system call
 			// Close a file
 			DEBUG('e', (char *)"Filesystem: Close call.\n");
+#ifdef ETUDIANTS_TP
+			sprintf(msg, "Shouldn't do that with a mapped file.");
+#endif
 			// Get the openfile number
 			int32_t fid = g_machine->ReadIntRegister(4);
 			OpenFile *file = (OpenFile *)g_object_ids->SearchObject(fid);

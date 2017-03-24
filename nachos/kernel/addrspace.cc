@@ -267,14 +267,13 @@ AddrSpace::~AddrSpace()
 
 #ifdef ETUDIANTS_TP
 	TranslationTable* tt = translationTable;
-	AddrSpace *as = this;
-	OpenFile *f = as->findMappedFile(i * g_cfg->PageSize);
+	OpenFile *f = findMappedFile(i * g_cfg->PageSize);
 	if (f != NULL) { // mapped file
 	  printf("[delete addrspace] i: %d\n", i);
 	  if (tt->getBitM(i)) {
 	    int ad = tt->getAddrDisk(i);
 	    printf("[WriteAt] death process\n");
-	    f->WriteAt((char*) (g_machine->mainMemory + tt->getAddrDisk(i * g_cfg->PageSize)), g_cfg->PageSize, ad);
+	    f->WriteAt((char*) (g_machine->mainMemory + tt->getPhysicalPage(i) * g_cfg->PageSize), g_cfg->PageSize, ad);
 	  }
 	}
 #endif
@@ -290,6 +289,11 @@ AddrSpace::~AddrSpace()
 	}  
       }
     }
+// #ifdef ETUDIANTS_TP
+//     for (i = 0; i < nb_mapped_files; i++) {
+//       delete mapped_files[i].file;
+//     }
+// #endif
     delete translationTable;
   }
 }
@@ -459,9 +463,7 @@ OpenFile *AddrSpace::findMappedFile(int32_t addr) {
       s_mapped_file mf = mapped_files[i];
       int mf_start = mf.first_address;
       int mf_end   = mf_start + (mf.size + 1) * g_cfg->PageSize;
-      // printf("%d %d %d\n", addr, mf_start, mf_end);
       if (addr >= mf_start && addr < mf_end) {
-        // printf("found!\n");
         return mf.file;
       }
   }

@@ -215,7 +215,7 @@ int PhysicalMemManager::EvictPage() {
   if (f != NULL) { // mapped file
     if (tt->getBitM(vpn)) {
       int ad = tt->getAddrDisk(vpn);
-      f->WriteAt((char*) (g_machine->mainMemory + tt->getAddrDisk(local_i_clock * g_cfg->PageSize)), g_cfg->PageSize, ad);
+      f->WriteAt((char*) (g_machine->mainMemory + local_i_clock * g_cfg->PageSize), g_cfg->PageSize, ad);
     }
   } else {
     if (tt->getBitSwap(vpn)) {
