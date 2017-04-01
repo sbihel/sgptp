@@ -1,3 +1,7 @@
 CFLAGS=-g -Wall -Werror
 
-all: prod cons
+all: shm msg
+
+shm: prod cons
+
+msg: transmitter receiver
