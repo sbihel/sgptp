@@ -5,6 +5,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
+#include <sys/resource.h>
 
 #define KEY_SEG 35
 #define KEY 1337
@@ -84,6 +85,8 @@ void consumer(int sem_id) {
 }
 
 int main() {
+  setpriority(PRIO_PROCESS, getpid(), 19);
+
   // please launch producer before consumer
   int sem_id = semget(KEY, 3, 0660);
   if (sem_id == -1) {
