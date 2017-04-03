@@ -29,7 +29,7 @@ void handler(int signal, siginfo_t* siginfo, void* uap) {
 int main() { 
   srand(time(NULL));
 
-  int f = open(FNAME, O_RDWR|O_TRUNC|O_CREAT);
+  int f = open(FNAME, O_RDWR|O_TRUNC|O_CREAT, S_IRUSR|S_IWUSR);
   if (f == -1) {
     fprintf(stderr, "error calling open()! %s\n", strerror(errno));
     exit(1);
