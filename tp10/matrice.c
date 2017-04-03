@@ -35,6 +35,10 @@ int main() {
     exit(1);
   }
 
+  /* int *matrix;                                                                                */
+  /* if (posix_memalign((void**)&matrix, getpagesize(), ROWSIZE * ROWSIZE * sizeof(int)) != 0) { */
+  /*   fprintf(stderr, "error calling posix_memalign()! %s\n", strerror(errno));                 */
+  /* }                                                                                           */
   int *matrix = malloc(ROWSIZE * ROWSIZE * sizeof(int));
   for (int i = 0; i < ROWSIZE * ROWSIZE; i++)
     matrix[i] = rand() % RANDMAX;
@@ -61,7 +65,7 @@ int main() {
   sigemptyset(&act.sa_mask);
   act.sa_sigaction = handler;
   act.sa_flags = SA_SIGINFO;
-  if (sigaction(SIGSEGV, &act, NULL) < 0) {
+  if (sigaction(SIGSEGV, &act, NULL) < 0 || sigaction(SIGBUS, &act, NULL) < 0) {
     fprintf(stderr, "error calling sigaction()! %s\n", strerror(errno));
     exit(1);
   }
