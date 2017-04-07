@@ -18,7 +18,7 @@ int nb_access = 0;
 
 void handler(int signal, siginfo_t* siginfo, void* uap) {
   nb_access++;
-  if (mprotect(siginfo->si_addr - ((int)siginfo->si_addr % getpagesize()), getpagesize(), PROT_READ) == -1) {
+  if (mprotect(siginfo->si_addr - ((size_t)siginfo->si_addr % getpagesize()), getpagesize(), PROT_READ) == -1) {
     fprintf(stderr, "error calling mprotect()! %s\n", strerror(errno));
     exit(1);
   }
