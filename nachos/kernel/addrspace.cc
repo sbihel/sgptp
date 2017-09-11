@@ -263,8 +263,24 @@ AddrSpace::~AddrSpace()
     for (i = 0 ; i <  freePageId ; i++) {
       
       // If it is in physical memory, free the physical page
-      if (translationTable->getBitValid(i))
+      if (translationTable->getBitValid(i)) {
+
+#ifdef ETUDIANTS_TP
+	TranslationTable* tt = translationTable;
+	OpenFile *f = findMappedFile(i * g_cfg->PageSize);
+	if (f != NULL) { // mapped file
+	  printf("[delete addrspace] i: %d\n", i);
+	  if (tt->getBitM(i)) {
+	    int ad = tt->getAddrDisk(i);
+	    printf("[WriteAt] death process\n");
+	    f->WriteAt((char*) (g_machine->mainMemory + tt->getPhysicalPage(i) * g_cfg->PageSize), g_cfg->PageSize, ad);
+	  }
+	}
+#endif
+
 	g_physical_mem_manager->RemovePhysicalToVirtualMapping(translationTable->getPhysicalPage(i));
+      }
+
       // If it is in the swap disk, free the corresponding disk sector
       if (translationTable->getBitSwap(i)) {
 	int addrDisk = translationTable->getAddrDisk(i);
@@ -273,6 +289,11 @@ AddrSpace::~AddrSpace()
 	}  
       }
     }
+// #ifdef ETUDIANTS_TP
+//     for (i = 0; i < nb_mapped_files; i++) {
+//       delete mapped_files[i].file;
+//     }
+// #endif
     delete translationTable;
   }
 }
@@ -384,8 +405,45 @@ int AddrSpace::Alloc(int numPages)
 // ----------------------------------------------------------------------
 int AddrSpace::Mmap(OpenFile *f, int size)
 {
+#ifndef ETUDIANTS_TP
   printf("**** Warning: method AddrSpace::Mmap is not implemented yet\n");
   exit(-1);
+#else
+  int nb_pages = divRoundUp(size, g_cfg->PageSize);
+
+  int page_allocated = Alloc(nb_pages);
+  int addr_allocated = page_allocated * g_cfg->PageSize;
+  if (addr_allocated == 0) {
+    fprintf(stderr, "Alloc() in Mmap failed to allocate %d bytes\n", size);
+    g_machine->interrupt->Halt(-1);
+  }
+
+  s_mapped_file element;
+  element.first_address = addr_allocated;
+  element.size = nb_pages;
+  element.file = f;
+
+  mapped_files[nb_mapped_files] = element;
+
+  nb_mapped_files++;
+
+  int i, virtualPage, byte_offset;
+  for (i = 0; i < nb_pages; ++i) {
+    byte_offset = i * g_cfg->PageSize;
+    virtualPage = page_allocated + i;
+
+    translationTable->setAddrDisk(virtualPage, byte_offset);
+    translationTable->clearBitIo(virtualPage);
+    translationTable->clearBitValid(virtualPage);
+    translationTable->clearBitSwap(virtualPage);
+    translationTable->setBitReadAllowed(virtualPage);
+    translationTable->setBitWriteAllowed(virtualPage);
+    translationTable->clearBitU(virtualPage);
+    translationTable->clearBitM(virtualPage);
+  }
+
+  return addr_allocated;
+#endif
 }
 
 //----------------------------------------------------------------------
@@ -396,9 +454,21 @@ int AddrSpace::Mmap(OpenFile *f, int size)
  */
 //----------------------------------------------------------------------
 OpenFile *AddrSpace::findMappedFile(int32_t addr) {
+#ifndef ETUDIANTS_TP
   printf("**** Warning: method AddrSpace::findMappedFile is not implemented yet\n");
   exit(-1);
-
+#else
+  int i;
+  for (i = 0; i < nb_mapped_files; i++) {
+      s_mapped_file mf = mapped_files[i];
+      int mf_start = mf.first_address;
+      int mf_end   = mf_start + (mf.size + 1) * g_cfg->PageSize;
+      if (addr >= mf_start && addr < mf_end) {
+        return mf.file;
+      }
+  }
+  return NULL;
+#endif
 }
 
 //----------------------------------------------------------------------

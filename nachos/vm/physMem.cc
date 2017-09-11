@@ -210,18 +210,27 @@ int PhysicalMemManager::EvictPage() {
   }
   tt->setBitIo(vpn);
 
-  if (tt->getBitSwap(vpn)) {
-    if(tt->getBitM(vpn)) {
-      int addrDisk = tt->getAddrDisk(vpn);
-      tt->setAddrDisk(vpn, -1);
-      g_swap_manager->PutPageSwap(addrDisk, (char*) (g_machine->mainMemory + local_i_clock * g_cfg->PageSize));
-      tt->setAddrDisk(vpn, addrDisk);
+  AddrSpace *as = g_current_thread->GetProcessOwner()->addrspace;
+  OpenFile *f = as->findMappedFile(vpn * g_cfg->PageSize);
+  if (f != NULL) { // mapped file
+    if (tt->getBitM(vpn)) {
+      int ad = tt->getAddrDisk(vpn);
+      f->WriteAt((char*) (g_machine->mainMemory + local_i_clock * g_cfg->PageSize), g_cfg->PageSize, ad);
     }
   } else {
-    tt->setAddrDisk(vpn, -1);
-    int swapAddr = g_swap_manager->PutPageSwap(-1, (char*) (g_machine->mainMemory + local_i_clock * g_cfg->PageSize));
-    tt->setAddrDisk(vpn, swapAddr);
-    tt->setBitSwap(vpn);
+    if (tt->getBitSwap(vpn)) {
+      if(tt->getBitM(vpn)) {
+        int addrDisk = tt->getAddrDisk(vpn);
+        tt->setAddrDisk(vpn, -1);
+        g_swap_manager->PutPageSwap(addrDisk, (char*) (g_machine->mainMemory + local_i_clock * g_cfg->PageSize));
+        tt->setAddrDisk(vpn, addrDisk);
+      }
+    } else {
+      tt->setAddrDisk(vpn, -1);
+      int swapAddr = g_swap_manager->PutPageSwap(-1, (char*) (g_machine->mainMemory + local_i_clock * g_cfg->PageSize));
+      tt->setAddrDisk(vpn, swapAddr);
+      tt->setBitSwap(vpn);
+    }
   }
 
   ChangeOwner(local_i_clock, g_current_thread);

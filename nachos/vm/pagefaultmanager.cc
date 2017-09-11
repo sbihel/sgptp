@@ -12,6 +12,7 @@ Routines for the page fault managerPage Fault Manager
 #include "vm/swapManager.h"
 #include "vm/physMem.h"
 #include "vm/pagefaultmanager.h"
+#include "kernel/addrspace.h"
 
 PageFaultManager::PageFaultManager() {
 }
@@ -49,6 +50,7 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
 #ifdef ETUDIANTS_TP
   TranslationTable* tt = g_machine->mmu->translationTable;
   char* buffer = new char[g_cfg->PageSize];
+  AddrSpace *as = g_current_thread->GetProcessOwner()->addrspace;
 
   while(tt->getBitIo(virtualPage)) {
       g_current_thread->Yield();
@@ -59,19 +61,26 @@ ExceptionType PageFaultManager::PageFault(int virtualPage)
 
   tt->setBitIo(virtualPage);
 
-  if (tt->getBitSwap(virtualPage) == 0) {
-    if(tt->getAddrDisk(virtualPage) == -1) { // anonymous page
-      memset(buffer,0,g_cfg->PageSize);
-    } else { // read from file
-      g_current_thread->GetProcessOwner()->exec_file->ReadAt(buffer, g_cfg->PageSize, tt->getAddrDisk(virtualPage));
+  int ad = tt->getAddrDisk(virtualPage);
+  OpenFile *f = as->findMappedFile(virtualPage * g_cfg->PageSize);
+  if (f != NULL) { // mapped file
+    // printf("readat\n");
+    f->ReadAt(buffer, g_cfg->PageSize, ad);
+  } else { // default
+    if (tt->getBitSwap(virtualPage) == 0) {
+      if(tt->getAddrDisk(virtualPage) == -1) { // anonymous page
+        memset(buffer,0,g_cfg->PageSize);
+      } else { // read from file
+        g_current_thread->GetProcessOwner()->exec_file->ReadAt(buffer, g_cfg->PageSize, ad);
+      }
+    } else { // page on disk
+      int num_sector = tt->getAddrDisk(virtualPage);
+      while(num_sector == -1) {
+        g_current_thread->Yield();
+        num_sector = tt->getAddrDisk(virtualPage);
+      }
+      g_swap_manager->GetPageSwap(num_sector, buffer);
     }
-  } else { // page on disk
-    int num_sector = tt->getAddrDisk(virtualPage);
-    while(num_sector == -1) {
-      g_current_thread->Yield();
-      num_sector = tt->getAddrDisk(virtualPage);
-    }
-    g_swap_manager->GetPageSwap(num_sector, buffer);
   }
 
   long physPage = g_physical_mem_manager->AddPhysicalToVirtualMapping(g_current_thread->GetProcessOwner()->addrspace,virtualPage);

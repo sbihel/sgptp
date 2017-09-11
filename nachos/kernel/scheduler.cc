@@ -116,11 +116,10 @@ void Scheduler::SwitchTo(Thread *nextThread) {
 	// point, we were still running on the old thread's stack!
 
 #ifdef ETUDIANTS_TP
-  if (g_thread_to_be_destroyed == oldThread) {
-    g_alive->RemoveItem(g_thread_to_be_destroyed);
-    Thread *to_destroy = g_thread_to_be_destroyed;
-    g_thread_to_be_destroyed = NULL; 
-    delete to_destroy;
+	if (g_thread_to_be_destroyed != NULL) {
+	  Thread *to_destroy = g_thread_to_be_destroyed;
+	  g_thread_to_be_destroyed = NULL;
+	  delete to_destroy;
 	}
 #endif
 }
